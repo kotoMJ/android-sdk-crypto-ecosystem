@@ -16,35 +16,10 @@ dependencyResolutionManagement {
 
 
     //Use kotox github registry from kotox SDK repository
-    val sdkMavenProperties =
-        getSdkMavenReadProperties("public")
 
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri(
-                requireNotNull(sdkMavenProperties["kotox_android_sdk_url"])
-                { "Missing kotox_android_sdk_url in maven properties" },
-            )
-
-            val readToken: String =
-                requireNotNull(sdkMavenProperties["kotox_android_sdk_token"])
-                { "Missing kotox_android_sdk_token in maven properties" }.toString()
-
-            credentials(HttpHeaderCredentials::class) {
-                name = "Deploy-Token"
-                value = readToken
-            }
-
-            authentication {
-                register("header", HttpHeaderAuthentication::class)
-            }
-        }
-        maven {
-            url = uri("https://repo.brightcove.com/releases")
-        }
-
         mavenLocal()
     }
 }
@@ -75,15 +50,3 @@ include(":sdk:internal:logger")
 gradle.startParameter.excludedTaskNames.addAll(
     gradle.startParameter.taskNames.filter { it.contains("testClasses") },
 )
-
-fun getSdkMavenReadProperties(mavenDestination: String): Properties {
-    val sdkMavenPropertiesFile =
-        File("${rootDir}/extras/properties/sdk.gradle.read.${mavenDestination}.properties")
-    if (sdkMavenPropertiesFile.exists()) {
-        val publicationProperties = Properties()
-        publicationProperties.load(FileInputStream(sdkMavenPropertiesFile))
-        return publicationProperties
-    } else {
-        throw GradleException("Missing ${sdkMavenPropertiesFile.path}")
-    }
-}
