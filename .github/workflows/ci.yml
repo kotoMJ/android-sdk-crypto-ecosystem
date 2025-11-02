@@ -31,3 +31,5 @@ jobs:
 
       - name: Run checks
         run: ./gradlew clean spotlessCheck detekt testDebug
+        env:
+          CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
