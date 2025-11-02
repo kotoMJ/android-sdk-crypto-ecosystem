@@ -1,0 +1,53 @@
+complexity:
+  LongMethod:
+    threshold: 100
+  LongParameterList:
+    ignoreAnnotated:
+      - androidx.compose.runtime.Composable
+      - retrofit2.http.GET
+  TooManyFunctions:
+    thresholdInFiles: 20
+    thresholdInClasses: 10
+    thresholdInInterfaces: 10
+    thresholdInObjects: 10
+    thresholdInEnums: 15
+    ignoreDeprecated: false
+    ignorePrivate: true
+    ignoreOverridden: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: [ 'Composable' ]
+  TopLevelPropertyNaming:
+    active: false
+  EnumNaming:
+    active: false
+  MatchingDeclarationName:
+    excludes:  [ '**/ui/*Screen.kt' ]
+
+style:
+  ForbiddenComment:
+    active: false
+  FunctionOnlyReturningConstant:
+    active: false
+  LoopWithTooManyJumpStatements:
+    active: false
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  ReturnCount:
+    active: false
+  SerialVersionUIDInSerializableClass:
+    active: false
+  ThrowsCount:
+    active: false
+  UnnecessaryAbstractClass:
+    active: false
+  UnusedPrivateMember:
+    active: false
+
+empty-blocks:
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: true
