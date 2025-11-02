@@ -54,7 +54,7 @@ project.afterEvaluate {
                     name = "GitHub"
                     url =
                         uri(
-                            "https://maven.pkg.github.com/kotoMJ/android-sdk-ecosystem",
+                            "https://maven.pkg.github.com/kotoMJ/android-sdk-crypto-ecosystem",
                         )
 
                     credentials  {

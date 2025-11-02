@@ -11,7 +11,7 @@ val singleVariantName = "release"
 android {
     namespace = "cz.kotox.crypto.sdk.internal.network"
     group = "cz.kotox.crypto.sdk.internal"
-    version = "0.0.1"
+    version = "0.0.3"
 
     buildTypes {
 
