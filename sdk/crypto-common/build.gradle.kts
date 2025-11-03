@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
+    alias(libs.plugins.buildLogic.sdk.version.read)
     alias(libs.plugins.buildLogic.dokka)
     `maven-publish`
     alias(libs.plugins.ksp)
@@ -11,7 +12,6 @@ val singleVariantName = "release"
 android {
     namespace = "cz.kotox.crypto.sdk.common"
     group = "cz.kotox.crypto.sdk"
-    version = "0.0.3"
     buildFeatures.buildConfig = true
 
     buildTypes {

@@ -60,9 +60,21 @@ gradlePlugin {
             implementationClass = "AndroidKtorConventionPlugin"
         }
 
-        register("dokkax") {
+        register("dokka") {
             id = "kotox.crypto.sdk.dokka"
             implementationClass = "DokkaConventionPlugin"
         }
+
+        register("sdkVersionRead") {
+            id = "kotox.crypto.sdk.version.read"
+            implementationClass = "SdkVersionReadConventionPlugin"
+        }
+
+        register("sdkVersionUpdate") {
+            id = "kotox.crypto.sdk.version.update"
+            implementationClass = "SdkVersionUpdateConventionPlugin"
+        }
+
+
     }
 }

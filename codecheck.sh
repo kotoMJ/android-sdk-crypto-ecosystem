@@ -1,2 +1,2 @@
 #./gradlew clean spotlessApply detekt lintDebug testDebug
-./gradlew clean spotlessApply detekt testDebug
+./gradlew clean spotlessApply detekt checkModuleVersions testDebug
