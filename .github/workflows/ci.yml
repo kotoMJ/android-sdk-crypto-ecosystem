@@ -1,4 +1,4 @@
-name: Run Checks
+name: CodeGuard
 
 # When this action should run
 on:
@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    name: CodeGuard
     runs-on: ubuntu-latest
 
     steps:
