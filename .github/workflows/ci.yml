@@ -30,6 +30,6 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run checks
-        run: ./gradlew clean spotlessCheck detekt testDebug
+        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug
         env:
           CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
