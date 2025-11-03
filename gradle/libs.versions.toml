@@ -91,6 +91,7 @@ buildLogic-sdk-android-library = { id = "kotox.crypto.sdk.android.library" }
 buildLogic-sdk-android-ui-library = { id = "kotox.crypto.sdk.android.ui.library" }
 buildLogic-sdk-android-application = { id = "kotox.crypto.sdk.android.application" }
 buildLogic-dokka = { id = "kotox.crypto.sdk.dokka" }
+buildLogic-sdk-version-read = { id = "kotox.crypto.sdk.version.read" }
 
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }

@@ -1,7 +1,6 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
+    alias(libs.plugins.buildLogic.sdk.version.read)
     `maven-publish`
     alias(libs.plugins.ksp)
 }
@@ -9,13 +8,9 @@ plugins {
 val publishingName = "common"
 val singleVariantName = "release"
 
-val versionProps = Properties()
-file("version.properties").inputStream().use { versionProps.load(it) }
-
 android {
     namespace = "cz.kotox.crypto.sdk.internal.common"
     group = "cz.kotox.crypto.sdk.internal"
-    version = versionProps.getProperty("sdk.version")
     buildFeatures.buildConfig = true
 
     buildTypes {

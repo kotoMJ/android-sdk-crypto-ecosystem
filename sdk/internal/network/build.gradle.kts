@@ -1,7 +1,6 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
+    alias(libs.plugins.buildLogic.sdk.version.read)
     alias(libs.plugins.buildLogic.android.ktor)
     `maven-publish`
     alias(libs.plugins.ksp)
@@ -10,13 +9,9 @@ plugins {
 val publishingName = "network"
 val singleVariantName = "release"
 
-val versionProps = Properties()
-file("version.properties").inputStream().use { versionProps.load(it) }
-
 android {
     namespace = "cz.kotox.crypto.sdk.internal.network"
     group = "cz.kotox.crypto.sdk.internal"
-    version = versionProps.getProperty("sdk.version")
 
     buildTypes {
 

@@ -1,7 +1,6 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
+    alias(libs.plugins.buildLogic.sdk.version.read)
     alias(libs.plugins.buildLogic.android.ktor)
     alias(libs.plugins.buildLogic.dokka)
     `maven-publish`
@@ -12,13 +11,9 @@ plugins {
 val publishingName = "tracker"
 val singleVariantName = "release"
 
-val versionProps = Properties()
-file("version.properties").inputStream().use { versionProps.load(it) }
-
 android {
     namespace = "cz.kotox.crypto.sdk.tracker"
     group = "cz.kotox.crypto.sdk"
-    version = versionProps.getProperty("sdk.version")
     buildFeatures.buildConfig = true
 
     buildTypes {
