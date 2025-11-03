@@ -1,4 +1,5 @@
 import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
@@ -12,10 +13,13 @@ plugins {
 val publishingName = "news"
 val singleVariantName = "release"
 
+val versionProps = Properties()
+file("version.properties").inputStream().use { versionProps.load(it) }
+
 android {
     namespace = "cz.kotox.crypto.sdk.news"
     group = "cz.kotox.crypto.sdk"
-    version = "0.0.3"
+    version = versionProps.getProperty("sdk.version")
     buildFeatures.buildConfig = true
 
     buildTypes {
