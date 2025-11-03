@@ -70,6 +70,11 @@ gradlePlugin {
             implementationClass = "SdkVersionReadConventionPlugin"
         }
 
+        register("sdkVersionUpdate") {
+            id = "kotox.crypto.sdk.version.update"
+            implementationClass = "SdkVersionUpdateConventionPlugin"
+        }
+
 
     }
 }
