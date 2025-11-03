@@ -1,4 +1,4 @@
-name: CodeGuard
+name: CI Pipeline
 
 # When this action should run
 on:
