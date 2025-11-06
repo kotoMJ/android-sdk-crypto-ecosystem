@@ -14,6 +14,10 @@ https://kotomj.github.io/android-sdk-crypto-ecosystem-doc/
 https://github.com/kotoMJ/android-sdk-crypto-ecosystem-doc
 
 
+## Contribution
+
+In order to contribute to this codebase read [Conventions] part.
 
 
 [SDK Versioning]: sdk/bom/VERSIONING.md
+[Conventions]: extras/CONVENTIONS.md
