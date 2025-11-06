@@ -1,0 +1,20 @@
+#!/bin/sh
+echo "Running pre-commit checks (Spotless & Detekt)..."
+
+# Run the checks
+./gradlew spotlessCheck detekt
+
+# Get the exit code of the last command
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "-----------------------------------"
+  echo "Pre-commit checks FAILED."
+  echo "Run './gradlew spotlessApply' to fix formatting."
+  echo "Review the Detekt report for other issues."
+  echo "-----------------------------------"
+  exit 1
+fi
+
+echo "Checks passed! Committing..."
+exit 0
