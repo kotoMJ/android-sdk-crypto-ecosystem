@@ -14,7 +14,7 @@ playServicesCastFramework = "22.0.0"
 targetSdk = "36"
 java = "17"
 
-androidGradlePlugin = "8.12.2"
+androidGradlePlugin = "8.13.0"
 androidMaterial = "1.12.0"
 androidPlayServicesAds = "23.6.0"
 androidxActitivty = "1.9.3"
@@ -42,7 +42,7 @@ compose-wear = "1.4.0"
 composeMarkdown = "0.5.2"
 desugarJdk = "2.1.5"
 detekt = "1.23.8"
-detektRulesCompose = "0.4.11"
+detektRulesCompose = "0.4.27"
 dokka = "2.1.0"
 easyLauncher = "6.4.0"
 espressoCore = "3.6.1"
@@ -72,12 +72,11 @@ okhttp = "4.12.0"
 placeholder = "0.33.0-alpha"
 prettyTime = "5.0.4.Final"
 room = "2.6.1"
-spotless = "6.25.0"
+spotless = "8.0.0"
 systemUi = "0.32.0"
 tiles = "1.4.1"
 timber = "5.0.1"
 watchface-complications = "1.2.1"
-auth0 = "2.11.0"
 core = "1.15.0"
 media3Cast = "1.5.1"
 
@@ -241,8 +240,6 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 system-ui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemUi" }
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-
-auth0 = { module = "com.auth0.android:auth0", version.ref = "auth0" }
 
 # Detekt checks
 detektRules-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektRulesCompose" }
