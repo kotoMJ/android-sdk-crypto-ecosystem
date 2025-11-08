@@ -206,7 +206,7 @@ lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
 
 kotox-crypto-bom = { module = "cz.kotox.crypto.sdk:bom", version.ref = "kotoxBom" }
 kotox-crypto-common = { module = "cz.kotox.crypto.sdk:common" }
-kotox-crypto-content = { module = "cz.kotox.crypto.sdk:content" }
+kotox-crypto-coindata = { module = "cz.kotox.crypto.sdk:coindata" }
 
 network-ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 network-ktor-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

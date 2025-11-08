@@ -27,6 +27,7 @@ dependencyResolutionManagement {
 rootProject.name = "CRYPTO-SDK"
 
 include(
+    "app-mobile-sdk-crypto",
     ":sdk:bom",
     ":sdk:crypto-common",
     ":sdk:internal:common",
