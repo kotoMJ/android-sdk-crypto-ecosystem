@@ -7,7 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.compose.rememberNavController
-import cz.kotox.sdk.crypto.app.navigation.MainBottomNavigation
 import cz.kotox.sdk.crypto.app.navigation.MainNavHost
 import cz.kotox.sdk.crypto.app.ui.component.Screen
 import timber.log.Timber
@@ -36,11 +35,11 @@ fun MainActivityContent(
             navController = navController,
         )
 
-        MainBottomNavigation(
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("bottom_navigation"),
-            navController = navController,
-        )
+//        MainBottomNavigation(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .testTag("bottom_navigation"),
+//            navController = navController,
+//        )
     }
 }

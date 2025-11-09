@@ -7,11 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 
@@ -33,14 +31,7 @@ fun CoinsContentScreen(
                     items = state.coinMarkets,
                     key = { it.id },
                 ) { market ->
-
-                    Text(
-                        text = market.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    CoinListItem(market = market)
                 }
             }
         }
