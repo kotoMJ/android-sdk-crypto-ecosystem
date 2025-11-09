@@ -1,23 +1,23 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coins
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-internal fun CoinsScreen() {
-    // val state by viewModel.state.collectAsStateWithLifecycle()
+internal fun CoinsScreen(
+    viewModel: CoinsViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    var bottomSheetVisible by remember { mutableStateOf(false) }
+    when (val localState = state) {
+        is CoinsScreenState.Content -> {
+            CoinsContentScreen(
+                state = localState,
+            )
+        }
 
-    BackHandler(bottomSheetVisible) {
-        bottomSheetVisible = false
+        CoinsScreenState.Loading -> {}
     }
-
-//    CoinsContentScreen(
-//        //state = state,
-//    )
 }

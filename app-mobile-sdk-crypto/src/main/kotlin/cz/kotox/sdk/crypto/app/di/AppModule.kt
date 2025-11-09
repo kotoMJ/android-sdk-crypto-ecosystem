@@ -1,41 +1,31 @@
 package cz.kotox.sdk.crypto.app.di
 
-// import android.content.Context
-// import androidx.datastore.core.DataStore
-// import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-// import androidx.datastore.preferences.core.Preferences
-// import androidx.datastore.preferences.preferencesDataStoreFile
-// import dagger.Module
-// import dagger.Provides
-// import dagger.hilt.InstallIn
-// import dagger.hilt.android.qualifiers.ApplicationContext
-// import dagger.hilt.components.SingletonComponent
-// import javax.inject.Qualifier
-// import javax.inject.Singleton
-// import timber.log.Timber
+import cz.kotox.crypto.sdk.coindata.CoinData
+import cz.kotox.crypto.sdk.common.logger.LogPriority
+import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
+import org.koin.core.annotation.Single
+import timber.log.Timber
 
-// @Module
-// @InstallIn(SingletonComponent::class)
-object AppModule {
-//
-//    @Provides
-//    @Singleton
-//    fun provideCoinData(
-//        @ApplicationContext applicationContext: Context,
-//    ): CoinData = Content.Builder(
-//        context = applicationContext,
-//    ).setLoggerCallback(
-//        sdkLoggerCallback = object : SDKLoggerCallback {
-//            override fun onLogMessage(
-//                tag: String,
-//                priority: LogPriority,
-//                t: Throwable?,
-//                message: String,
-//            ) {
-//                Timber.tag(tag)
-//                Timber.log(priority = priority.priorityInt, t = t, message = message)
-//            }
-//        },
-//    ).build()
-//
+@Module
+@ComponentScan("cz.kotox.sdk.crypto.app")
+class AppModule {
+
+    @Single
+    fun provideCoinData(): CoinData = CoinData.Builder()
+        .setLoggerCallback(
+            sdkLoggerCallback = object : SDKLoggerCallback {
+                override fun onLogMessage(
+                    tag: String,
+                    priority: LogPriority,
+                    t: Throwable?,
+                    message: String,
+                ) {
+                    Timber.tag(tag)
+                    Timber.log(priority = priority.priorityInt, t = t, message = message)
+                }
+            },
+        )
+        .build()
 }

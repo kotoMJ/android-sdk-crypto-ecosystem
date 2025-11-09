@@ -1,21 +1,7 @@
-import java.util.Properties
-
 plugins {
+    alias(libs.plugins.ksp)
     alias(libs.plugins.buildLogic.sdk.android.application)
-//    alias(libs.plugins.buildLogic.android.hilt)
-}
-
-val sdkSampleProperties = try {
-    Properties().apply {
-        load(
-            rootProject.file("./app-mobile-sdk-crypto-sample/properties/app.crypto.properties")
-                .reader(),
-        )
-    }
-} catch (ignored: Throwable) {
-    println(ignored.printStackTrace())
-    println("Missing app.content.properties file in app-mobile-sdk-crypto-sample/properties/app.crypto.properties!")
-    Properties()
+    alias(libs.plugins.buildLogic.koin)
 }
 
 android {

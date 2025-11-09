@@ -1,17 +1,18 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coins
 
+import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 @Suppress("FunctionName")
-internal fun StoriesScreenPresenter(
-    fakeFlow: Flow<String>,
-    fakeFlow2: Flow<String>,
-) = combine(
-    flow = fakeFlow,
-    flow2 = fakeFlow2,
-) { fake, fake2 ->
-    CoinsScreenState(
-        fake = fake,
-    )
+internal fun CoinsScreenPresenter(
+    coinMarketsFlow: Flow<List<CoinMarket>?>,
+): Flow<CoinsScreenState> = coinMarketsFlow.map { coinMarkets ->
+    if (coinMarkets == null) {
+        CoinsScreenState.Loading
+    } else {
+        CoinsScreenState.Content(
+            coinMarkets = coinMarkets,
+        )
+    }
 }

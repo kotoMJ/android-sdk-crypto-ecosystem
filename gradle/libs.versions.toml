@@ -55,7 +55,8 @@ gradleVersionPlugin = "0.50.0"
 horologist = "0.6.18"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-koin = "4.0.2"
+koin = "4.1.1"
+koinAnnotations = "2.3.0"
 kotlin = "2.2.20"
 kotlin-android = "2.2.20"
 kotlinxCollectionsImmutable = "0.3.7"
@@ -82,6 +83,7 @@ media3Cast = "1.5.1"
 
 
 [plugins]
+buildLogic-koin = { id = "kotox.crypto.koin" }
 buildLogic-kotlin-library = { id = "kotox.crypto.kotlin.library" }
 buildLogic-android-test = { id = "kotox.crypto.android.test" }
 buildLogic-android-room = { id = "kotox.crypto.android.room" }
@@ -186,6 +188,17 @@ firebase-perf = { module = "com.google.firebase:firebase-perf-ktx" }
 firebase-remoteconfig = { module = "com.google.firebase:firebase-config-ktx" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
+
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-core-viewmodel = { group = "io.insert-koin", name = "koin-core-viewmodel", version.ref = "koin" }
+
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
+
+
 
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
