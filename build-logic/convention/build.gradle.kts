@@ -35,26 +35,37 @@ gradlePlugin {
             id = "kotox.crypto.android.test"
             implementationClass = "AndroidTestConventionPlugin"
         }
+
         register("androidRoom") {
             id = "kotox.crypto.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+
+        register("koin") {
+            id = "kotox.crypto.koin"
+            implementationClass = "KoinConventionPlugin"
+        }
+
         register("kotlinLibrary") {
             id = "kotox.crypto.kotlin.library"
             implementationClass = "KotlinLibraryConventionPlugin"
         }
+
         register("sdkAndroidLibrary") {
             id = "kotox.crypto.sdk.android.library"
             implementationClass = "SdkAndroidLibraryConventionPlugin"
         }
+
         register("sdkAndroidUiLibrary") {
             id = "kotox.crypto.sdk.android.ui.library"
             implementationClass = "SdkAndroidUiLibraryConventionPlugin"
         }
+
         register("sdkAndroidApplication") {
             id = "kotox.crypto.sdk.android.application"
             implementationClass = "SdkAndroidApplicationConventionPlugin"
         }
+
         register("androidKtor") {
             id = "kotox.crypto.sdk.kmp.ktor"
             implementationClass = "AndroidKtorConventionPlugin"
@@ -74,7 +85,5 @@ gradlePlugin {
             id = "kotox.crypto.sdk.version.update"
             implementationClass = "SdkVersionUpdateConventionPlugin"
         }
-
-
     }
 }

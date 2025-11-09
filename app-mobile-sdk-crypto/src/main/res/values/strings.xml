@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Kotox Crypto SDK Sample</string>
+
+    <string name="bottom_screen_title_coins">Coins</string>
+
+    <string name="scores_unable_to_refresh_data">Unable to refresh scores</string>
+
+
+</resources>

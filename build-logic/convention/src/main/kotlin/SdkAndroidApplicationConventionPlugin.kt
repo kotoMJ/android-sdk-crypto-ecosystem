@@ -1,3 +1,5 @@
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import cz.kotox.crypto.sdk.configureAndroid
 import cz.kotox.crypto.sdk.configureAndroidCompose
@@ -8,11 +10,14 @@ import cz.kotox.crypto.sdk.configureKotlinCompose
 import cz.kotox.crypto.sdk.configureMobileCompose
 import cz.kotox.crypto.sdk.configureSigning
 import cz.kotox.crypto.sdk.configureSpotless
+import cz.kotox.crypto.sdk.extensions.library
 import cz.kotox.crypto.sdk.extensions.libs
 import cz.kotox.crypto.sdk.extensions.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 @Suppress("unused")
@@ -24,6 +29,21 @@ class SdkAndroidApplicationConventionPlugin : Plugin<Project> {
             configureBaseAppModule()
             configureDetekt()
             configureSpotless()
+
+            pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
+
+            val applicationPluginHandler = {
+                dependencies {
+                    add("implementation", libs.library("kotlinx.serialization.json"))
+                }
+            }
+
+            plugins.withType<AppPlugin> {
+                applicationPluginHandler()
+            }
+            plugins.withType<LibraryPlugin> {
+                applicationPluginHandler()
+            }
         }
     }
 
