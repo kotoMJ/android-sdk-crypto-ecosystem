@@ -1,6 +1,5 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coins
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
@@ -34,6 +33,7 @@ import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 @Composable
 fun CoinListItem(
     market: CoinMarket,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val percentageColor = if ((market.priceChangePercentage24h ?: 0.0) >= 0.0) {
@@ -46,6 +46,7 @@ fun CoinListItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
+        onClick = onItemClick,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -108,25 +109,15 @@ fun CoinListItem(
     }
 }
 
-// This preview shows how the item looks in Night Mode
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Night Mode")
+@PreviewLightDark
 @Composable
-fun CoinListItemPreviewNight() {
-    SDKCryptoSampleAppTheme {
-        // We wrap it in a Surface with a background color to see it clearly
-        Surface(color = MaterialTheme.colorScheme.background) {
-            CoinListItem(market = mockCoinMarkets.first())
-        }
-    }
-}
-
-// This preview shows how the item looks in Light Mode
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
-@Composable
-fun CoinListItemPreviewLight() {
+fun CoinListItemPreview() {
     SDKCryptoSampleAppTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            CoinListItem(market = mockCoinMarkets.first())
+            CoinListItem(
+                market = mockCoinMarkets.first(),
+                onItemClick = {},
+            )
         }
     }
 }

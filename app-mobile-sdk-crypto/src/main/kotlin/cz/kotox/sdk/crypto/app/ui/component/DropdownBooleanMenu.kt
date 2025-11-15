@@ -1,4 +1,4 @@
-package cz.kotox.sdk.crypto.app.ui.screen.component
+package cz.kotox.sdk.crypto.app.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,12 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun <T> DropdownEnumMenu(
-    title: String,
-    items: Array<T?>,
+fun DropdownBooleanMenu(
+    text: String,
     modifier: Modifier = Modifier,
-    onClick: (T?) -> Unit,
+    onClick: (Boolean?) -> Unit,
 ) {
+    val items = arrayOf(null, true, false)
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableIntStateOf(0) }
     Box(
@@ -72,7 +72,7 @@ fun <T> DropdownEnumMenu(
                 }
             },
             onValueChange = {},
-            label = { Text("$title filter") },
+            label = { Text(text) },
         )
         DropdownMenu(
             expanded = expanded,
@@ -83,13 +83,13 @@ fun <T> DropdownEnumMenu(
                     Color.LightGray,
                 ),
         ) {
-            items.forEachIndexed { index, filter ->
+            items.forEachIndexed { index, boolean ->
                 DropdownMenuItem(
-                    text = { Text(filter?.toString() ?: "") },
+                    text = { Text(boolean?.toString() ?: "") },
                     onClick = {
                         selectedIndex = index
                         expanded = false
-                        onClick(filter)
+                        onClick(boolean)
                     },
                 )
             }

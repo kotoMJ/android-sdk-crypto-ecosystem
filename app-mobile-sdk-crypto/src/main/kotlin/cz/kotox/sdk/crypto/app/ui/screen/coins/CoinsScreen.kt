@@ -7,6 +7,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun CoinsScreen(
+    onItemClick: () -> Unit,
     viewModel: CoinsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -15,6 +16,7 @@ internal fun CoinsScreen(
         is CoinsScreenState.Content -> {
             CoinsContentScreen(
                 state = localState,
+                onItemClick = onItemClick,
             )
         }
 
