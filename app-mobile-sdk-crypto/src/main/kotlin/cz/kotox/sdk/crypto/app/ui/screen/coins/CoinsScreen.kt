@@ -8,7 +8,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 internal fun CoinsScreen(
-    onItemClick: () -> Unit,
+    onItemClick: (String) -> Unit,
     contentAvailable: (Boolean) -> Unit,
     viewModel: CoinsViewModel = koinViewModel(),
 ) {

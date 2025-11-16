@@ -33,7 +33,7 @@ import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 @Composable
 fun CoinListItem(
     market: CoinMarket,
-    onItemClick: () -> Unit,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val percentageColor = if ((market.priceChangePercentage24h ?: 0.0) >= 0.0) {
@@ -46,7 +46,7 @@ fun CoinListItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        onClick = onItemClick,
+        onClick = { onItemClick(market.id) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,

@@ -24,20 +24,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import cz.kotox.sdk.crypto.app.navigation.BottomSheetSceneStrategy
 import cz.kotox.sdk.crypto.app.navigation.CompositeSceneStrategy
 import cz.kotox.sdk.crypto.app.ui.component.Screen
+import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailScreen
+import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailViewModel
 import cz.kotox.sdk.crypto.app.ui.screen.coins.CoinsScreen
 import cz.kotox.sdk.crypto.app.ui.screen.currency.CurrencyScreen
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import java.time.Duration
 
 @Serializable
@@ -46,9 +51,10 @@ private data object CoinsScreenRoute : NavKey
 @Serializable
 private data object CurrencyScreenRoute : NavKey
 
-// @Serializable
-// private data class CoinsScreenDetailRoute(val id: String) : NavKey
+@Serializable
+internal data class CoinDetailScreenRoute(val id: String) : NavKey
 
+@Suppress("LongMethod")
 @Composable
 fun MainActivityContent(
     modifier: Modifier = Modifier,
@@ -77,6 +83,8 @@ fun MainActivityContent(
     LaunchedEffect(currentRoute, mainContentAvailable) {
         if (currentRoute is CoinsScreenRoute && mainContentAvailable) {
             showFab = true
+        } else {
+            showFab = false
         }
     }
 
@@ -133,12 +141,19 @@ fun MainActivityContent(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             sceneStrategy = appSceneStrategy,
+            entryDecorators = listOf(
+                // In order to add the `ViewModelStoreNavEntryDecorator` (see comment below for why)
+                // we also need to add the default `NavEntryDecorator`s as well. These provide
+                // extra information to the entry's content to enable it to display correctly
+                // and save its state.
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
             entryProvider = entryProvider {
                 entry<CoinsScreenRoute> {
                     CoinsScreen(
-                        onItemClick = {
-                            // TODO: Add your detail route logic
-                            // e.g., backStack.add(CoinsScreenDetailRoute(it.id))
+                        onItemClick = { id ->
+                            backStack.add(CoinDetailScreenRoute(id))
                         },
                         contentAvailable = {
                             mainContentAvailable = it
@@ -146,9 +161,13 @@ fun MainActivityContent(
                     )
                 }
 
-//                    is CoinsScreenDetailRoute -> NavEntry(key) {
-//                        //
-//                    }
+                entry<CoinDetailScreenRoute> { key ->
+
+                    val viewModel = koinViewModel<CoinDetailViewModel> {
+                        parametersOf(key)
+                    }
+                    CoinDetailScreen(viewModel = viewModel)
+                }
 
                 entry<CurrencyScreenRoute>(
                     // metadata = DialogSceneStrategy.dialog()
