@@ -59,7 +59,10 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.navigationCompose)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     implementation(libs.timber)
 }

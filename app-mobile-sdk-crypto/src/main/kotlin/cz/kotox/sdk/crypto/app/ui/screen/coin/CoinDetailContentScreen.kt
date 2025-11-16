@@ -1,23 +1,20 @@
-package cz.kotox.sdk.crypto.app.ui.screen.coins
+package cz.kotox.sdk.crypto.app.ui.screen.coin
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 
 @Composable
-fun CoinsContentScreen(
-    state: CoinsScreenState.Content,
-    onItemClick: (String) -> Unit,
+fun CoinDetailContentScreen(
+    id: String,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -28,17 +25,7 @@ fun CoinsContentScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            LazyColumn {
-                items(
-                    items = state.coinMarkets,
-                    key = { it.id },
-                ) { market ->
-                    CoinListItem(
-                        market = market,
-                        onItemClick = onItemClick,
-                    )
-                }
-            }
+            Text("DETAIL: $id")
         }
     }
 }
@@ -48,11 +35,8 @@ fun CoinsContentScreen(
 fun CoinsContentScreenPreview() {
     SDKCryptoSampleAppTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            CoinsContentScreen(
-                state = CoinsScreenState.Content(
-                    coinMarkets = mockCoinMarkets,
-                ),
-                onItemClick = {},
+            CoinDetailContentScreen(
+                id = "123",
             )
         }
     }
