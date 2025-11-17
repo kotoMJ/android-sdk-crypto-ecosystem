@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cz.kotox.crypto.sdk.coindata.CoinData
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
+import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.common.fold
 import cz.kotox.sdk.crypto.app.extension.stateInForUi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,7 @@ class CoinsViewModel(
 
     private fun initData() {
         viewModelScope.launch {
-            coinData.getCoinMarkets("usd").fold(
+            coinData.getCoinMarkets(CurrencyId("usd")).fold(
                 {},
                 { markets ->
                     coinMarketsFlow.update { markets }

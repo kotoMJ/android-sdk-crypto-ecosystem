@@ -7,6 +7,8 @@ import cz.kotox.crypto.sdk.coindata.CoinData
 import cz.kotox.crypto.sdk.coindata.CoinDataBuilder
 import cz.kotox.crypto.sdk.coindata.internal.utils.logD
 import cz.kotox.crypto.sdk.coindata.internal.utils.logE
+import cz.kotox.crypto.sdk.common.domain.model.coin.CoinMarketId
+import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.common.fold
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
@@ -42,7 +44,7 @@ class CoinDataTest {
     @Test
     fun testGetCoinMarkets() = runTest {
         val testTag = "[testGetCoinMarkets]"
-        coinData.getCoinMarkets("usd").fold({
+        coinData.getCoinMarkets(CurrencyId("usd")).fold({
             logE(null) { "$testTag ERROR: $it" }
             fail("getCoinMarkets failed to return value")
         }, {
@@ -55,7 +57,7 @@ class CoinDataTest {
     @Test
     fun testGetCoinDetail() = runTest {
         val testTag = "[testGetCoinMarkets]"
-        coinData.getCoinDetail("usd").fold({
+        coinData.getCoinDetail(CoinMarketId("usd")).fold({
             logE(null) { "$testTag ERROR: $it" }
             fail("getCoinMarkets failed to return value")
         }, {

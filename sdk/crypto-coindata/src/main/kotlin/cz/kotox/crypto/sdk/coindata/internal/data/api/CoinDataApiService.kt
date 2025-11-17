@@ -3,6 +3,8 @@ package cz.kotox.crypto.sdk.coindata.internal.data.api
 import cz.kotox.crypto.sdk.coindata.CoinDataConfig
 import cz.kotox.crypto.sdk.coindata.internal.data.dto.CoinDetailDTO
 import cz.kotox.crypto.sdk.coindata.internal.data.dto.CoinMarketDTO
+import cz.kotox.crypto.sdk.common.domain.model.coin.CoinMarketId
+import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.network.KtorConfig
 import cz.kotox.crypto.sdk.internal.network.KtorfitFactory
@@ -24,17 +26,15 @@ internal class CoinDataApiService(
 
     /**
      * Fetches coin market data.
-     * @param currency: String - "usd"
      */
-    suspend fun getMarkets(currency: String): List<CoinMarketDTO> {
-        return coinGeckoApi.getMarkets(currency = currency)
+    suspend fun getMarkets(currency: CurrencyId): List<CoinMarketDTO> {
+        return coinGeckoApi.getMarkets(currency = currency.value)
     }
 
     /**
      * Fetches coin market data.
-     * @param currency: String - "bitcoin", "usd"
      */
-    suspend fun getCoinDetail(coinMarketId: String): CoinDetailDTO {
-        return coinGeckoApi.getCoinDetail(coinMarketId = coinMarketId)
+    suspend fun getCoinDetail(coinMarketId: CoinMarketId): CoinDetailDTO {
+        return coinGeckoApi.getCoinDetail(coinMarketId = coinMarketId.value)
     }
 }
