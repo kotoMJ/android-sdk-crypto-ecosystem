@@ -11,6 +11,8 @@ import cz.kotox.crypto.sdk.coindata.internal.test.CoinDataApiServiceTestImpl
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinDetailUseCase
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinMarketsUseCase
 import cz.kotox.crypto.sdk.common.Either
+import cz.kotox.crypto.sdk.common.domain.model.coin.CoinMarketId
+import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
@@ -39,12 +41,12 @@ internal class CoinDataImpl(
 
     internal val apiTestDelegate by lazy { CoinDataApiServiceTestImpl(coinDataRequestContext = coinDataRequestContext) }
 
-    override suspend fun getCoinMarkets(currency: String): Either<SdkError, List<CoinMarket>> =
+    override suspend fun getCoinMarkets(currency: CurrencyId): Either<SdkError, List<CoinMarket>> =
         GetCoinMarketsUseCase(
             context = coinDataRequestContext,
         ).execute(currency = currency)
 
-    override suspend fun getCoinDetail(coinMarketId: String): Either<SdkError, CoinDetail> =
+    override suspend fun getCoinDetail(coinMarketId: CoinMarketId): Either<SdkError, CoinDetail> =
         GetCoinDetailUseCase(
             context = coinDataRequestContext,
         ).execute(coinMarketId = coinMarketId)
