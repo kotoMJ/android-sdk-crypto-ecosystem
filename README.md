@@ -15,7 +15,7 @@ https://github.com/kotoMJ/android-sdk-crypto-ecosystem-doc
 
 
 ### Public Speaking
-[![Talk about SDK Ecosystem](extras/presentation/AnatomySDKEcosystem_teaser.png)](extras/presentation/AnatomySDKEcosystem_teaser.png)
+[![Talk about SDK Ecosystem](extras/presentation/AnatomySDKEcosystem_teaser.png)](extras/presentation/AnatomySDKEcosystem_slides.pdf)
 
 ## Contribution
 
