@@ -13,7 +13,6 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 
 public class KtorfitFactory(
     private val config: KtorConfig,
@@ -26,13 +25,6 @@ public class KtorfitFactory(
         ignoreUnknownKeys = true
         classDiscriminator = "type" // Important for WSS DTOs
         encodeDefaults = true
-        serializersModule = SerializersModule {
-            // Whenever @Contextual Long is found, this specific instance is used.
-            SafeLongSerializer(
-                logger = sdkLogger,
-                strictMode = BuildConfig.DEBUG, // Fail in DEBUG mode, log.error otherwise
-            )
-        }
     }
 
     val httpClient = HttpClient(CIO) {
@@ -60,7 +52,6 @@ public class KtorfitFactory(
                             t = null,
                             { "[KtorLogger] $message" },
                         )
-                        // Log.v("KtorLogger", message)
                     }
                 }
             }

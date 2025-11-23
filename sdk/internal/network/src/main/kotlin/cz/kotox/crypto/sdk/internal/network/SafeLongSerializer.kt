@@ -2,6 +2,7 @@ package cz.kotox.crypto.sdk.internal.network
 
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
+import cz.kotox.crypto.sdk.internal.network.utils.MODULE_IDENTIFIER
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -18,13 +19,45 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
-// ==========================================
-// Serializer for Nullable Longs (Long?)
-// ==========================================
-internal class SafeNullableLongSerializer(
-    private val logger: SDKLogger,
-    private val strictMode: Boolean,
-) : KSerializer<Long?> {
+/**
+ * Internal configuration holder allows tests to override strict mode.
+ */
+internal object SerializationConfig {
+    // Default to BuildConfig.DEBUG, but mutable for tests
+    var isStrictMode: Boolean = BuildConfig.DEBUG
+}
+
+/**
+ * A custom safe serializer for **nullable** Long fields (`Long?`).
+ *
+ * **Purpose:**
+ * Handles "dirty" API data where a field expected to be a `Long` might arrive as a `Double` (e.g. `31.38`)
+ * or invalid garbage.
+ *
+ * **Behavior:**
+ * - **Valid Long (e.g., `123`):** Returns the value.
+ * - **Explicit Null:** Returns `null`.
+ * - **Double (e.g., `31.38`):**
+ * - **Strict Mode (Debug):** Throws [SerializationException].
+ * - **Relaxed Mode (Prod):** Logs a warning and truncates to `Long` (returns `31L`).
+ * - **Garbage/Invalid:**
+ * - **Strict Mode (Debug):** Throws [SerializationException].
+ * - **Relaxed Mode (Prod):** Logs an error and returns `null`.
+ *
+ * **Usage:**
+ * Apply to nullable fields:
+ * ```
+ * @Serializable(with = SafeNullableLongSerializer::class)
+ * val value: Long?
+ * ```
+ */
+// TODO MJ - think about way how to avoid observability(public) those serializers by the sdk client.
+public object SafeNullableLongSerializer : KSerializer<Long?> {
+
+    val logger = SDKLogger.getLogger(MODULE_IDENTIFIER)
+
+    private val strictMode: Boolean
+        get() = SerializationConfig.isStrictMode
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SafeNullableLong", PrimitiveKind.LONG).nullable
@@ -43,13 +76,36 @@ internal class SafeNullableLongSerializer(
     }
 }
 
-// ==========================================
-// Serializer for Non-Null Longs (Long)
-// ==========================================
-internal class SafeLongSerializer(
-    private val logger: SDKLogger,
-    private val strictMode: Boolean,
-) : KSerializer<Long> {
+/**
+ * A custom safe serializer for **non-nullable** Long fields (`Long`).
+ *
+ * **Purpose:**
+ * Ensures a valid `Long` is always returned, even if the API sends `null`, garbage, or a `Double`.
+ * Prevents application crashes in production when mandatory fields are missing or malformed.
+ *
+ * **Behavior:**
+ * - **Valid Long:** Returns the value.
+ * - **Double (e.g., `31.38`):**
+ * - **Strict Mode:** Throws [SerializationException].
+ * - **Relaxed Mode:** Truncates to `31L`.
+ * - **Null / Missing / Garbage:**
+ * - **Strict Mode:** Throws [SerializationException] (Enforces Non-Null contract).
+ * - **Relaxed Mode:** Logs a warning and **returns `0L`** (Default value).
+ *
+ * **Usage:**
+ * Apply to non-null fields where `0` is an acceptable fallback:
+ * ```
+ * @Serializable(with = SafeLongSerializer::class)
+ * val value: Long
+ * ```
+ */
+// TODO MJ - think about way how to avoid observability(public) those serializers by the sdk client.
+public object SafeLongSerializer : KSerializer<Long> {
+
+    val logger = SDKLogger.getLogger(MODULE_IDENTIFIER)
+
+    private val strictMode: Boolean
+        get() = SerializationConfig.isStrictMode
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SafeLong", PrimitiveKind.LONG)
