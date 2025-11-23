@@ -19,7 +19,7 @@ internal class TrackerApiService(
         networkTimeout = coinDataConfig.networkTimeout,
     )
 
-    val ktorfitFactory = KtorfitFactory(ktorConfig)
+    val ktorfitFactory = KtorfitFactory(config = ktorConfig, sdkLogger = sdkLogger)
 
     private val coinbaseApi: CoinbaseApi = ktorfitFactory.ktorfit.createCoinbaseApi()
 

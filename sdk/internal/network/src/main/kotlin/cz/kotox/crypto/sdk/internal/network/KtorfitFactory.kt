@@ -1,6 +1,7 @@
 package cz.kotox.crypto.sdk.internal.network
 
-import android.util.Log
+import cz.kotox.crypto.sdk.common.logger.LogPriority
+import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -13,7 +14,10 @@ import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-public class KtorfitFactory(private val config: KtorConfig) {
+public class KtorfitFactory(
+    private val config: KtorConfig,
+    private val sdkLogger: SDKLogger,
+) {
 
     public val sdkJson = Json {
         prettyPrint = true
@@ -43,7 +47,11 @@ public class KtorfitFactory(private val config: KtorConfig) {
 
                 logger = object : Logger {
                     override fun log(message: String) {
-                        Log.v("KtorLogger", message)
+                        sdkLogger.log(
+                            priority = LogPriority.VERBOSE,
+                            t = null,
+                            { "[KtorLogger] $message" },
+                        )
                     }
                 }
             }

@@ -17,7 +17,10 @@ internal class NewsApiService(
         networkTimeout = coinDataConfig.networkTimeout,
     )
 
-    val ktorfitFactory = KtorfitFactory(ktorConfig)
+    val ktorfitFactory = KtorfitFactory(
+        config = ktorConfig,
+        sdkLogger = sdkLogger,
+    )
 
     private val newsApi: NewsApi = ktorfitFactory.ktorfit.createNewsApi()
 

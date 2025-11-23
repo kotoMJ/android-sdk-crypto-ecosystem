@@ -20,7 +20,10 @@ internal class CoinDataApiService(
         networkTimeout = coinDataConfig.networkTimeout,
     )
 
-    val ktorfitFactory = KtorfitFactory(ktorConfig)
+    val ktorfitFactory = KtorfitFactory(
+        config = ktorConfig,
+        sdkLogger = sdkLogger,
+    )
 
     private val coinGeckoApi: CoinGeckoApi = ktorfitFactory.ktorfit.createCoinGeckoApi()
 
