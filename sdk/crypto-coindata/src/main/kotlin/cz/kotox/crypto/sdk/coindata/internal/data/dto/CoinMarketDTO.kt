@@ -25,12 +25,14 @@ constructor(
     @SerialName("current_price")
     val currentPrice: Double,
 
+    @Contextual
     @SerialName("market_cap")
     val marketCap: Long,
 
     @SerialName("market_cap_rank")
     val marketCapRank: Int,
 
+    @Contextual
     @SerialName("fully_diluted_valuation")
     val fullyDilutedValuation: Long?,
 

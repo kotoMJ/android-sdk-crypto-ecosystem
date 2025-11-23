@@ -12,7 +12,8 @@ import kotlin.math.min
 private const val MAX_LOG_LENGTH = 4000
 private const val MAX_TAG_LENGTH = 23
 
-internal class AndroidLogger(
+// TODO MJ - make it available out of the package for test only!
+public class AndroidLogger(
     originalTag: String,
     override val loggerCallback: SDKLoggerCallback,
 ) : SDKLogger {
