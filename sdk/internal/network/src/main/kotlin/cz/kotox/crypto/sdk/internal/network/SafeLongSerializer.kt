@@ -19,13 +19,18 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
+// /**
+// * Internal configuration holder allows tests to override strict mode.
+// */
+// internal object SerializationConfig {
+//    // Default to BuildConfig.DEBUG, but mutable for tests
+//    var isStrictMode: Boolean = BuildConfig.DEBUG
+// }
+
 /**
- * Internal configuration holder allows tests to override strict mode.
+ * Default singleton for general use where you don't need a specific log name.
  */
-internal object SerializationConfig {
-    // Default to BuildConfig.DEBUG, but mutable for tests
-    var isStrictMode: Boolean = BuildConfig.DEBUG
-}
+public object SafeNullableLongSerializerDefault : SafeNullableLongSerializer("SafeNullableLong")
 
 /**
  * A custom safe serializer for **nullable** Long fields (`Long?`).
@@ -49,15 +54,14 @@ internal object SerializationConfig {
  * ```
  * @Serializable(with = SafeNullableLongSerializer::class)
  * val value: Long?
- * ```
+ * ``
  */
 // TODO MJ - think about way how to avoid observability(public) those serializers by the sdk client.
-public object SafeNullableLongSerializer : KSerializer<Long?> {
+public open class SafeNullableLongSerializer(
+    private val debugFieldName: String,
+) : KSerializer<Long?> {
 
     val logger = SDKLogger.getLogger(MODULE_IDENTIFIER)
-
-    private val strictMode: Boolean
-        get() = SerializationConfig.isStrictMode
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SafeNullableLong", PrimitiveKind.LONG).nullable
@@ -67,14 +71,27 @@ public object SafeNullableLongSerializer : KSerializer<Long?> {
         if (value != null) encoder.encodeLong(value) else encoder.encodeNull()
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): Long? {
         val jsonDecoder = decoder as? JsonDecoder ?: error("Json only")
         val element = jsonDecoder.decodeJsonElement()
+        val isStrict = decoder.serializersModule.getContextual(StrictModeMarker::class) != null
 
         // Delegates to shared logic
-        return parseSafeLong(element, logger, strictMode, descriptor.serialName)
+        return parseSafeLong(
+            element = element,
+            logger = logger,
+            strictMode = isStrict,
+            serialName = descriptor.serialName,
+            fieldName = debugFieldName,
+        )
     }
 }
+
+/**
+ * Default singleton for general use.
+ */
+public object SafeLongSerializerDefault : SafeLongSerializer("SafeLong")
 
 /**
  * A custom safe serializer for **non-nullable** Long fields (`Long`).
@@ -100,12 +117,11 @@ public object SafeNullableLongSerializer : KSerializer<Long?> {
  * ```
  */
 // TODO MJ - think about way how to avoid observability(public) those serializers by the sdk client.
-public object SafeLongSerializer : KSerializer<Long> {
+public open class SafeLongSerializer(
+    private val debugFieldName: String,
+) : KSerializer<Long> {
 
     val logger = SDKLogger.getLogger(MODULE_IDENTIFIER)
-
-    private val strictMode: Boolean
-        get() = SerializationConfig.isStrictMode
 
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("SafeLong", PrimitiveKind.LONG)
@@ -114,24 +130,35 @@ public object SafeLongSerializer : KSerializer<Long> {
         encoder.encodeLong(value)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): Long {
         val jsonDecoder = decoder as? JsonDecoder ?: error("Json only")
         val element = jsonDecoder.decodeJsonElement()
 
+        // CHECK CONTEXT: "Is the StrictModeMarker registered?"
+        val isStrict = decoder.serializersModule.getContextual(StrictModeMarker::class) != null
+
         // Delegates to shared logic
-        val result = parseSafeLong(element, logger, strictMode, descriptor.serialName)
+        val result = parseSafeLong(
+            element = element,
+            logger = logger,
+            strictMode = isStrict,
+            serialName = descriptor.serialName,
+            fieldName = debugFieldName,
+        )
 
         // FAIL-SAFE LOGIC FOR NON-NULL FIELDS
         if (result == null) {
             // Logic: If strict mode, we would have already thrown inside parseSafeLong (mostly).
             // But if the JSON was explicit "null", parseSafeLong returns null without throwing.
             // For a non-nullable field, receiving "null" is a crash in strict mode.
-            if (strictMode) {
+            if (isStrict) {
                 throw SerializationException("Strict Mode: Non-nullable field '${descriptor.serialName}' received null.")
             }
 
             // In PROD: Return default value 0L instead of crashing
             logger.log(LogPriority.WARN, null) { "⚠️ Field '${descriptor.serialName}' is Non-Null but received null/garbage. Defaulting to 0L." }
+            println("⚠️ Field '${descriptor.serialName}' is Non-Null but received null/garbage. Defaulting to 0L.")
             return 0L
         }
 
@@ -146,6 +173,7 @@ private fun parseSafeLong(
     element: JsonElement,
     logger: SDKLogger,
     strictMode: Boolean,
+    serialName: String,
     fieldName: String,
 ): Long? {
     // A. Handle Explicit Nulls
@@ -157,16 +185,20 @@ private fun parseSafeLong(
 
     // B. Happy Path (Standard Long)
     val longVal = primitive.longOrNull
+
     if (longVal != null) return longVal
 
     // C. Handle Double Mismatch (31.38 -> 31)
     val doubleVal = primitive.doubleOrNull
+
     if (doubleVal != null) {
+        logger.log(LogPriority.ERROR, null) { "⚠️ Double instead of Long Mismatch in field [$fieldName] with double value [$doubleVal] " }
         if (strictMode) {
+            logger.log(LogPriority.ERROR, null) { "⚠️ Strict mode (mismatch to failure) enabled!" }
             throw SerializationException("Strict Mode: Field '$fieldName' received Double ($doubleVal) but expected Long.")
         }
         val truncated = doubleVal.toLong()
-        logger.log(LogPriority.ERROR, null) { "⚠️ Mapping: Truncating $doubleVal to $truncated for $fieldName" }
+        logger.log(LogPriority.INFO, null) { "⚠️ Mapping: Truncating $doubleVal to $truncated for $serialName" }
         return truncated
     }
 

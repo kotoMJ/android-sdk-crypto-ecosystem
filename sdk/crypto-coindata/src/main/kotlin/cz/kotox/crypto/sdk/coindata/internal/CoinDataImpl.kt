@@ -27,10 +27,10 @@ internal class CoinDataImpl(
         installLogger(config)
     }
 
-    // Keep this lazy so we can init logger first.
-    private val logger by lazy {
-        SDKLogger.getLogger(MODULE_IDENTIFIER)
-    }
+//    // Keep this lazy so we can init logger first.
+//    private val logger by lazy {
+//        SDKLogger.getLogger(MODULE_IDENTIFIER)
+//    }
 
     private val coinDataRequestContext: CoinDataRequestContext by lazy {
         CoinDataRequestContext(
@@ -52,7 +52,6 @@ internal class CoinDataImpl(
         ).execute(coinMarketId = coinMarketId)
 
     private fun provideCoinDataApiService(): CoinDataApiService = CoinDataApiService(
-        sdkLogger = logger,
         coinDataConfig = config,
     )
 

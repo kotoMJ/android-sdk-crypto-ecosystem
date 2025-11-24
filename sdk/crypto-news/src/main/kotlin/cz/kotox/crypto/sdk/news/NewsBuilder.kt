@@ -16,6 +16,7 @@ public open class NewsBuilder(
     private var databaseDispatcher: CoroutineDispatcher = SdkDispatchers.databaseDispatcher
     private var networkTimeout: Duration = 30.seconds
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
+    private var isStrictModeEnabled: Boolean = false
 
     /**
      * Set the fetch dispatcher [CoroutineDispatcher]
@@ -45,6 +46,15 @@ public open class NewsBuilder(
         return this
     }
 
+    /**
+     * Enables non-defensive strategy: FAIL FIRST when SDK encounter any unexpected mismatch.
+     * When disabled, observed mismatch is handled with defensive strategy: just logged as an error by the SDKLoggerCallback.
+     */
+    public fun setStrictModeEnabled(strictModeEnabled: Boolean): NewsBuilder {
+        this.isStrictModeEnabled = strictModeEnabled
+        return this
+    }
+
     public fun build(): News = NewsImpl(
         dispatchers = object : CoroutineDispatchers {
             override val fetchDispatcher: CoroutineDispatcher =
@@ -57,6 +67,7 @@ public open class NewsBuilder(
             newsServiceApiKey = newsServiceApiKey,
             networkTimeout = networkTimeout,
             loggerCallback = loggerCallback,
+            isStrictModeEnabled = isStrictModeEnabled,
         ),
     )
 }

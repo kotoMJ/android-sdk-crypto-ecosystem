@@ -23,10 +23,10 @@ internal class TrackerImpl(
         installLogger(config)
     }
 
-    // Keep this lazy so we can init logger first.
-    private val logger by lazy {
-        SDKLogger.getLogger(MODULE_IDENTIFIER)
-    }
+//    // Keep this lazy so we can init logger first.
+//    private val logger by lazy {
+//        SDKLogger.getLogger(MODULE_IDENTIFIER)
+//    }
 
     private val trackerRequestContext: TrackerRequestContext by lazy {
         TrackerRequestContext(
@@ -43,8 +43,7 @@ internal class TrackerImpl(
         ).execute()
 
     private fun provideTrackerApiService(): TrackerApiService = TrackerApiService(
-        sdkLogger = logger,
-        coinDataConfig = config,
+        trackerConfig = config,
     )
 
     private fun installLogger(config: TrackerConfig) {

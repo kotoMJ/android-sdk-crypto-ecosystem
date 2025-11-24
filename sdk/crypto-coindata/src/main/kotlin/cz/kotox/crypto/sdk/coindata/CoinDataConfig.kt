@@ -20,6 +20,7 @@ internal data class CoinDataConfig(
     val networkTimeout: Duration,
     val loggerCallback: SDKLoggerCallback,
     val loggerIdentifier: SDKLoggerIdentifier = MODULE_IDENTIFIER,
+    val isStrictModeEnabled: Boolean = false,
 ) {
 
     val isLoggingEnabled: Boolean = loggerCallback !is SDKLoggerCallbackNoOp
