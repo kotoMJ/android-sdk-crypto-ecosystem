@@ -4,6 +4,11 @@ Case study of the SDK ecosystem with real crypto use-case.
 
 ## Documentation
 
+### Anatomy
+
+[The Anatomy of SDK Ecosystem ->]
+
+
 ### Versioning
 For details about versioning visit [SDK Versioning] section.
 
@@ -22,5 +27,6 @@ https://github.com/kotoMJ/android-sdk-crypto-ecosystem-doc
 In order to contribute to this codebase read [Conventions] part.
 
 
+[The Anatomy of SDK Ecosystem ->]: docs/The_Anatomy_of_SDKs.md
 [SDK Versioning]: sdk/bom/VERSIONING.md
 [Conventions]: extras/CONVENTIONS.md
