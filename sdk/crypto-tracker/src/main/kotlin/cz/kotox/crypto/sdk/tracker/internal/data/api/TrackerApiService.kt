@@ -1,6 +1,5 @@
 package cz.kotox.crypto.sdk.tracker.internal.data.api
 
-import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.network.KtorConfig
 import cz.kotox.crypto.sdk.internal.network.KtorfitFactory
 import cz.kotox.crypto.sdk.tracker.TrackerConfig
@@ -9,17 +8,20 @@ import cz.kotox.crypto.sdk.tracker.internal.dto.TradingProductDTO
 import kotlinx.coroutines.flow.Flow
 
 internal class TrackerApiService(
-    val sdkLogger: SDKLogger, // TODO MJ: can we use our own logger in KtorfitFactory?
-    private val coinDataConfig: TrackerConfig,
+    private val trackerConfig: TrackerConfig,
 ) {
 
     private val ktorConfig = KtorConfig(
         baseUrl = "https://api.exchange.coinbase.com/",
-        isLoggingEnabled = coinDataConfig.isLoggingEnabled,
-        networkTimeout = coinDataConfig.networkTimeout,
+        isLoggingEnabled = trackerConfig.isLoggingEnabled,
+        networkTimeout = trackerConfig.networkTimeout,
+        isStrictModeEnabled = trackerConfig.isStrictModeEnabled,
     )
 
-    val ktorfitFactory = KtorfitFactory(config = ktorConfig, sdkLogger = sdkLogger)
+    val ktorfitFactory = KtorfitFactory(
+        config = ktorConfig,
+        sdkLoggerCallback = trackerConfig.loggerCallback,
+    )
 
     private val coinbaseApi: CoinbaseApi = ktorfitFactory.ktorfit.createCoinbaseApi()
 

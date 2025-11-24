@@ -1,12 +1,14 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.dto
 
 import cz.kotox.crypto.sdk.internal.network.SafeLongSerializer
-import cz.kotox.crypto.sdk.internal.network.SafeNullableLongSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+
+private object MarketCapSerializer : SafeLongSerializer("CoinMarketDTO.market_cap")
+private object FullyDilutedValuationSerializer : SafeLongSerializer("CoinMarketDTO.fully_diluted_valuation")
 
 @Serializable
 public data class CoinMarketDTO
@@ -27,14 +29,14 @@ constructor(
     @SerialName("current_price")
     val currentPrice: Double,
 
-    @Serializable(with = SafeLongSerializer::class)
+    @Serializable(with = MarketCapSerializer::class)
     @SerialName("market_cap")
     val marketCap: Long,
 
     @SerialName("market_cap_rank")
     val marketCapRank: Int,
 
-    @Serializable(with = SafeNullableLongSerializer::class)
+    @Serializable(with = FullyDilutedValuationSerializer::class)
     @SerialName("fully_diluted_valuation")
     val fullyDilutedValuation: Long?,
 

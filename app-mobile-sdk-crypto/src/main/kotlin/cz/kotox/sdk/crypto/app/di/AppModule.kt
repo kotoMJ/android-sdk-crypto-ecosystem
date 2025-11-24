@@ -27,5 +27,6 @@ class AppModule {
                 }
             },
         )
+        .setStrictModeEnabled(false)
         .build()
 }

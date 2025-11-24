@@ -19,10 +19,10 @@ internal class NewsImpl(
         installLogger(config)
     }
 
-    // Keep this lazy so we can init logger first.
-    private val logger by lazy {
-        SDKLogger.getLogger(MODULE_IDENTIFIER)
-    }
+//    // Keep this lazy so we can init logger first.
+//    private val logger by lazy {
+//        SDKLogger.getLogger(MODULE_IDENTIFIER)
+//    }
 
     // TODO MJ - make it private whenever used internally
     internal val newsRequestContext: NewsRequestContext by lazy {
@@ -45,8 +45,7 @@ internal class NewsImpl(
 //        ).execute()
 
     private fun provideTrackerApiService(): NewsApiService = NewsApiService(
-        sdkLogger = logger,
-        coinDataConfig = config,
+        newsConfig = config,
     )
 
     private fun installLogger(config: NewsConfig) {
