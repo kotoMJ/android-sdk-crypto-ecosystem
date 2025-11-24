@@ -19,14 +19,6 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 
-// /**
-// * Internal configuration holder allows tests to override strict mode.
-// */
-// internal object SerializationConfig {
-//    // Default to BuildConfig.DEBUG, but mutable for tests
-//    var isStrictMode: Boolean = BuildConfig.DEBUG
-// }
-
 /**
  * Default singleton for general use where you don't need a specific log name.
  */

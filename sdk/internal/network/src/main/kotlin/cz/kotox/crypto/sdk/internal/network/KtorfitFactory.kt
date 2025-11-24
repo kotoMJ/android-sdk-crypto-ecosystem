@@ -25,7 +25,6 @@ public class KtorfitFactory(
 
     init {
         installNetworkLogger(loggerCallback = sdkLoggerCallback)
-        // SerializationConfig.isStrictMode = config.isStrictModeEnabled
     }
 
     public val sdkJson = Json {
