@@ -2,6 +2,7 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import cz.kotox.crypto.sdk.configureAndroid
 import cz.kotox.crypto.sdk.configureDetekt
+import cz.kotox.crypto.sdk.configureGradleManagedDevices
 import cz.kotox.crypto.sdk.configureKotlinAndroid
 import cz.kotox.crypto.sdk.configureSpotless
 import cz.kotox.crypto.sdk.disableUnnecessaryAndroidTests
@@ -34,6 +35,7 @@ class SdkAndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureAndroid(this)
+                configureGradleManagedDevices(this)
                 defaultConfig.targetSdk = libs.version("targetSdk").toInt()
             }
 
@@ -54,6 +56,12 @@ class SdkAndroidLibraryConventionPlugin : Plugin<Project> {
 
                 add("testImplementation", libs.library("kotlin.test"))
                 add("testImplementation", libs.library("kotlinx.coroutines.test"))
+
+                // Ensure these are available for GMD (Instrumented Tests)
+                add("androidTestImplementation", libs.library("androidx.test.core"))
+                add("androidTestImplementation", libs.library("androidx.test.junit"))
+                add("androidTestImplementation", libs.library("kotlin.test"))
+                add("androidTestImplementation", libs.library("kotlinx.coroutines.test"))
             }
         }
     }
