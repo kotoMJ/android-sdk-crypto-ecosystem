@@ -2,6 +2,8 @@
 
 Case study of the SDK ecosystem with real crypto use-case.
 
+[![Build Status](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)
+
 ## Documentation
 
 ### Anatomy
