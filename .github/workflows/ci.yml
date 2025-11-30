@@ -88,8 +88,8 @@ jobs:
           gistID: ${{ secrets.BADGE_GIST_ID }}
           filename: badge-module-versions.json
           label: Unit Tests
-          message: ${{ steps.unit.outcome }}
-          color: ${{ steps.unit.outcome == 'success' && 'success' || 'critical' }}
+          message: ${{ steps.versions.outcome }}
+          color: ${{ steps.versions.outcome == 'success' && 'success' || 'critical' }}
 
       # --- STEP 4: UNIT TESTS ---
       - name: Check Unit Tests
