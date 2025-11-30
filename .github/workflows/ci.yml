@@ -128,7 +128,7 @@ jobs:
       # Because we used 'continue-on-error', the job thinks it succeeded.
       # We must manually check if any step failed and break the build if so.
       - name: Check Final Status
-        if: steps.spotless.outcome == 'failure' || steps.detekt.outcome == 'failure' || steps.unit.outcome == 'failure' || steps.instr.outcome == 'failure'
+        if: steps.spotless.outcome == 'failure' || steps.detekt.outcome == 'failure' || steps.versions.outcome == 'failure' || steps.unit.outcome == 'failure' || steps.instr.outcome == 'failure'
         run: |
           echo "One or more checks failed."
           exit 1
