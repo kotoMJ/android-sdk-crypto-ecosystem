@@ -43,9 +43,93 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run checks
-        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug pixel4api35aospatdCheck
+      # --- STEP 1: SPOTLESS ---
+      - name: Check Spotless
+        id: spotless
+        continue-on-error: true  # Allows pipeline to continue even if this fails
+        run: ./gradlew spotlessCheck
+
+      - name: Badge Spotless
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: ${{ secrets.BADGE_GIST_ID }}
+          filename: badge-spotless.json
+          label: Spotless
+          message: ${{ steps.spotless.outcome }}
+          color: ${{ steps.spotless.outcome == 'success' && 'success' || 'critical' }}
+
+      # --- STEP 2: DETEKT ---
+      - name: Check Detekt
+        id: detekt
+        continue-on-error: true
+        run: ./gradlew detekt
+
+      - name: Badge Detekt
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: ${{ secrets.BADGE_GIST_ID }}
+          filename: badge-detekt.json
+          label: Detekt
+          message: ${{ steps.detekt.outcome }}
+          color: ${{ steps.detekt.outcome == 'success' && 'success' || 'critical' }}
+
+      # --- STEP 3: MODULE VERSIONS ---
+      - name: Check Module Versions
+        id: unit
+        continue-on-error: true
+        run: ./gradlew checkModuleVersions
+
+      - name: Badge Module Versions
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: ${{ secrets.BADGE_GIST_ID }}
+          filename: badge-module-versions.json
+          label: Unit Tests
+          message: ${{ steps.unit.outcome }}
+          color: ${{ steps.unit.outcome == 'success' && 'success' || 'critical' }}
+
+      # --- STEP 4: UNIT TESTS ---
+      - name: Check Unit Tests
+        id: unit
+        continue-on-error: true
+        run: ./gradlew testDebug
+
+      - name: Badge Unit Tests
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: ${{ secrets.BADGE_GIST_ID }}
+          filename: badge-tests-unit.json
+          label: Unit Tests
+          message: ${{ steps.unit.outcome }}
+          color: ${{ steps.unit.outcome == 'success' && 'success' || 'critical' }}
+
+      # --- STEP 5: INSTRUMENTED TESTS ---
+      - name: Check Managed Device Tests
+        id: instr
+        continue-on-error: true
         env:
-          CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
-          # Recommended for GMD on CI to ensure software rendering fallback if hardware fails
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dkotlin.daemon.jvm.options=-Xmx2g"
+        run: ./gradlew pixel4api35aospatdCheck
+
+      - name: Badge Instrumented
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.BADGE_GIST_TOKEN }}
+          gistID: ${{ secrets.BADGE_GIST_ID }}
+          filename: badge-tests-instr.json
+          label: Instrumented
+          message: ${{ steps.instr.outcome }}
+          color: ${{ steps.instr.outcome == 'success' && 'success' || 'critical' }}
+
+      # --- FINAL CHECK ---
+      # Because we used 'continue-on-error', the job thinks it succeeded.
+      # We must manually check if any step failed and break the build if so.
+      - name: Check Final Status
+        if: steps.spotless.outcome == 'failure' || steps.detekt.outcome == 'failure' || steps.unit.outcome == 'failure' || steps.instr.outcome == 'failure'
+        run: |
+          echo "One or more checks failed."
+          exit 1

@@ -4,6 +4,16 @@ Case study of the SDK ecosystem with real crypto use-case.
 
 [![Build Status](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)
 
+### 🛡️ CodeGuard Status
+
+| Pipeline Step       | Status                                                                                                                                                                                                     | Description                         |
+|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------|
+| **Formatting**      | [![Spotless](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kotoMJ/ed736b27c2e58b024ffaed9c81ff24d3/raw/badge-spotless.json)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)          | Code style and formatting checks    |
+| **Static Analysis** | [![Detekt](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kotoMJ/ed736b27c2e58b024ffaed9c81ff24d3/raw/badge-detekt.json)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)              | Kotlin static analysis and linting  |
+| **Module Versions** | [![Unit Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kotoMJ/ed736b27c2e58b024ffaed9c81ff24d3/raw/badge-module-versions.json)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions) | Module versions verification        |
+| **Unit Tests** | [![Unit Tests](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kotoMJ/ed736b27c2e58b024ffaed9c81ff24d3/raw/badge-tests-unit.json)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)      | JUnit logic verification            |
+| **Device Tests** | [![Instrumented](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/kotoMJ/ed736b27c2e58b024ffaed9c81ff24d3/raw/badge-tests-instr.json)](https://github.com/kotoMJ/android-sdk-crypto-ecosystem/actions)   | Android Instrumented tests (API 35) |
+
 ## Documentation
 
 ### Anatomy
