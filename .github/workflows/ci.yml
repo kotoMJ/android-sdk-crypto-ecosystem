@@ -30,7 +30,22 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+#      - name: Run checks
+#        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug
+#        env:
+#          CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
+      # REQUIRED: Enable KVM for hardware acceleration
+      # Without this, GMD will fail or be extremely slow
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Run checks
-        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug
+        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug pixel4api35aospatdCheck
         env:
           CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
+          # Recommended for GMD on CI to ensure software rendering fallback if hardware fails
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dkotlin.daemon.jvm.options=-Xmx2g"
