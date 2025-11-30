@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import cz.kotox.crypto.sdk.common.fold
 import cz.kotox.crypto.sdk.news.TestNews
 import cz.kotox.crypto.sdk.news.internal.NewsImpl
+import cz.kotox.crypto.sdk.news.internal.dto.ArticleDTO
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.fail
 import kotlinx.coroutines.test.runTest
@@ -32,7 +33,7 @@ class NewsApiServiceTest {
             println("$testTag APIERROR: $it")
             fail("testApiNews failed to return value")
         }, {
-            it.articles?.forEach { item ->
+            it.articles?.forEach { item: ArticleDTO ->
                 println("$testTag VALUE: $item")
             }
             assertFalse("The returned list testApiNews should not be empty.", it.articles.isNullOrEmpty())
