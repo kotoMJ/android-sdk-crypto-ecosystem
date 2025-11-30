@@ -32,6 +32,8 @@ https://github.com/kotoMJ/android-sdk-crypto-ecosystem-doc
 
 
 ### Public Speaking
+**November 18, 2025** - Android Meetup in Prague at STRV  
+  
 [![Talk about SDK Ecosystem](extras/presentation/AnatomySDKEcosystem_teaser.png)](extras/presentation/AnatomySDKEcosystem_slides.pdf)
 
 ## Contribution
