@@ -14,6 +14,9 @@ jobs:
     name: CodeGuard
     runs-on: ubuntu-latest
 
+    env:
+      CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -30,10 +33,6 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-#      - name: Run checks
-#        run: ./gradlew clean spotlessCheck detekt checkModuleVersions testDebug
-#        env:
-#          CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
       # REQUIRED: Enable KVM for hardware acceleration
       # Without this, GMD will fail or be extremely slow
 
