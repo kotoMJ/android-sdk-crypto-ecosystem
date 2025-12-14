@@ -1,6 +1,7 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coin
 
 import androidx.lifecycle.ViewModel
+import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.sdk.crypto.app.ui.CoinDetailScreenRoute
 import org.koin.android.annotation.KoinViewModel
 
@@ -11,6 +12,8 @@ internal class CoinDetailViewModel(
 ) : ViewModel() {
 
     val id = navKey.id
+
+    val coinData: CoinDetail = sampleCoin
 
 //    private val coinMarketsFlow: MutableStateFlow<List<CoinMarket>?> = MutableStateFlow(null)
 //

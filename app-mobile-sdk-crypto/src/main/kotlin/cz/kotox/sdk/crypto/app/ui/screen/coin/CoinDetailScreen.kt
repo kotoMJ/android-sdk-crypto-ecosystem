@@ -9,6 +9,7 @@ internal fun CoinDetailScreen(
     // val state by viewModel.state.collectAsStateWithLifecycle()
 
     CoinDetailContentScreen(
-        id = viewModel.id,
+        coin = viewModel.coinData,
+        {},
     )
 }
