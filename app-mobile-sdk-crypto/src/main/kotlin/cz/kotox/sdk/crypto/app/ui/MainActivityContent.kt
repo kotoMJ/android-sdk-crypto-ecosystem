@@ -6,6 +6,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -161,7 +164,21 @@ fun MainActivityContent(
                     )
                 }
 
-                entry<CoinDetailScreenRoute> { key ->
+                entry<CoinDetailScreenRoute>(
+                    metadata = NavDisplay.transitionSpec {
+                        // PUSH: Detail slides IN from Right, List slides OUT to Left
+                        (slideInHorizontally { it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { -it } + fadeOut())
+                    } + NavDisplay.popTransitionSpec {
+                        // POP (Back Button): List slides IN from Left, Detail slides OUT to Right
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    } + NavDisplay.predictivePopTransitionSpec {
+                        // PREDICTIVE GESTURE: Matches the Pop animation exactly
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    },
+                ) { key ->
 
                     val viewModel = koinViewModel<CoinDetailViewModel> {
                         parametersOf(key)
