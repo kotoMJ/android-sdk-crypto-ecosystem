@@ -2,6 +2,10 @@ package cz.kotox.sdk.crypto.app.ui.screen.coin
 
 import android.icu.math.BigDecimal
 import android.icu.text.NumberFormat
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +44,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +65,7 @@ import cz.kotox.crypto.sdk.coindata.domain.model.Links
 import cz.kotox.crypto.sdk.coindata.domain.model.Localization
 import cz.kotox.crypto.sdk.coindata.domain.model.MarketData
 import cz.kotox.crypto.sdk.coindata.domain.model.ReposUrl
+import kotlinx.coroutines.delay
 import java.util.Locale
 import kotlin.time.ExperimentalTime
 
@@ -98,6 +104,10 @@ fun CoinDetailContentScreen(
             description = activeInfoDesc,
             onDismiss = { showDialog = false },
         )
+    }
+
+    LaunchedEffect(Unit) {
+        animateScrollNudge(scrollState)
     }
 
     Scaffold(
@@ -247,7 +257,9 @@ fun PriceSection(
                 onClick = {
                     onInfoClick("Current Price", "The weighted average price across exchanges.\n\nPercentage shows the change over the last rolling 24 hours.")
                 },
-                modifier = Modifier.padding(start = 8.dp).size(24.dp),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
@@ -460,7 +472,7 @@ fun StatCard(
                     val isPos = change >= BigDecimal.ZERO
                     Text(
                         // Keeping your fix here
-                        text = "${if (isPos) "+" else ""}${String.format(Locale.US,"%.2f", change.toDouble())}%",
+                        text = "${if (isPos) "+" else ""}${String.format(Locale.US, "%.2f", change.toDouble())}%",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isPos) PositiveGreen else NegativeRed,
                         modifier = Modifier.padding(top = 4.dp),
@@ -580,6 +592,51 @@ fun formatCompact(amount: BigDecimal?): String {
         doubleVal >= 1_000_000 -> String.format(Locale.US, "%.2fM", doubleVal / 1_000_000)
         doubleVal >= 1_000 -> String.format(Locale.US, "%.2fK", doubleVal / 1_000)
         else -> String.format(Locale.US, "%.2f", doubleVal)
+    }
+}
+
+/**
+ * Performs a subtle "nudge" animation to indicate more content is available.
+ * Safely cancels if the user interacts with the screen.
+ */
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
+suspend fun animateScrollNudge(scrollState: ScrollState) {
+    // 1. Initial delay
+    delay(500)
+
+    // 2. Safety check: Don't run if user is already interacting
+    if (scrollState.isScrollInProgress || scrollState.value > 0) return
+
+    repeat(3) {
+        // Check before every move
+        if (scrollState.isScrollInProgress) return
+
+        try {
+            // STEP 1: Scroll DOWN (Smooth deceleration)
+            // Starts fast, slows down gently at the bottom
+            scrollState.animateScrollTo(
+                value = 100,
+                animationSpec = tween(
+                    durationMillis = 300, // Slower duration for smoothness
+                    easing = FastOutLinearInEasing,
+                ),
+            )
+
+            // STEP 2: Scroll UP (Fast snap back)
+            scrollState.animateScrollTo(
+                value = 0,
+                animationSpec = tween(
+                    durationMillis = 200, // Faster duration (250ms) to return quickly
+                    easing = FastOutSlowInEasing,
+                ),
+            )
+        } catch (e: Exception) {
+            // Stop immediately if user touches screen
+            return
+        }
+
+        // Tiny pause between the two bounces
+        delay(1000)
     }
 }
 
