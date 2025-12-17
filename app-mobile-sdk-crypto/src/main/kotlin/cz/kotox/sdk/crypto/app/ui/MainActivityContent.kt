@@ -145,11 +145,17 @@ fun MainActivityContent(
             onBack = { backStack.removeLastOrNull() },
             sceneStrategy = appSceneStrategy,
             entryDecorators = listOf(
-                // In order to add the `ViewModelStoreNavEntryDecorator` (see comment below for why)
-                // we also need to add the default `NavEntryDecorator`s as well. These provide
-                // extra information to the entry's content to enable it to display correctly
-                // and save its state.
+                /**
+                 * It provides a SavedStateRegistryOwner and uses SaveableStateHolder.
+                 * This allows composables (like rememberSaveable, LazyColumn scroll position, or text fields)
+                 * to save their state when they are swapped out of the UI (e.g., when navigating forward)
+                 * and restore it when you come back.
+                 */
                 rememberSaveableStateHolderNavEntryDecorator(),
+                /**
+                 * Ensures that a unique ViewModelStore is associated with a specific backstack entry,
+                 * so ViewModels survive configuration changes but die when the entry is popped.
+                 */
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
