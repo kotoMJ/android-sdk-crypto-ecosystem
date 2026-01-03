@@ -11,3 +11,4 @@ val SDKShapes = Material3Shapes(
 )
 
 val bottomSheetShape = RoundedCornerShape(16.dp)
+val alertShape = RoundedCornerShape(16.dp)

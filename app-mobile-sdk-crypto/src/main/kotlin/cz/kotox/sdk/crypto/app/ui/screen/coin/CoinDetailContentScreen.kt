@@ -8,12 +8,15 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,7 +45,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -70,6 +72,7 @@ import cz.kotox.crypto.sdk.coindata.domain.model.Localization
 import cz.kotox.crypto.sdk.coindata.domain.model.MarketData
 import cz.kotox.crypto.sdk.coindata.domain.model.ReposUrl
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
+import cz.kotox.sdk.crypto.app.ui.theme.alertShape
 import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
 import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
 import kotlinx.coroutines.delay
@@ -389,7 +392,11 @@ fun StatsGrid(
     val data = coin.marketData
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        // Macro stats
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.height(IntrinsicSize.Max),
+        ) {
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Market Cap",
@@ -407,7 +414,12 @@ fun StatsGrid(
                 onInfoClick = onInfoClick,
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+
+        // Historical context
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.height(IntrinsicSize.Max),
+        ) {
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Circulating Supply",
@@ -425,6 +437,41 @@ fun StatsGrid(
                 onInfoClick = onInfoClick,
             )
         }
+
+        // Daily context
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.height(IntrinsicSize.Max),
+        ) {
+            // 1. All-Time High (Standard Text Card)
+            StatCard(
+                modifier = Modifier.weight(1f),
+                title = "All-Time High",
+                value = formatCompact(data.ath[currency]),
+                change = data.athChangePercentage[currency],
+                description = "Highest price ever recorded.",
+                onInfoClick = onInfoClick,
+            )
+
+            // 2. 24h Range (Custom Progress Bar Card)
+            val currentPrice = data.currentPrice[currency] ?: BigDecimal.ZERO
+            val lowPrice = data.low24h[currency] ?: BigDecimal.ZERO
+            val highPrice = data.high24h[currency] ?: BigDecimal.ZERO
+
+            StatCard(
+                modifier = Modifier.weight(1f),
+                title = "24h Range",
+                description = "Volatility range between today's lowest and highest price.",
+                onInfoClick = onInfoClick,
+                content = {
+                    RangeProgressBar(
+                        current = currentPrice,
+                        low = lowPrice,
+                        high = highPrice,
+                    )
+                },
+            )
+        }
     }
 }
 
@@ -432,11 +479,14 @@ fun StatsGrid(
 fun StatCard(
     modifier: Modifier = Modifier,
     title: String,
-    value: String,
-    subValue: String? = null,
-    change: BigDecimal? = null,
     description: String,
     onInfoClick: (String, String) -> Unit,
+    // Optional standard fields
+    value: String? = null,
+    subValue: String? = null,
+    change: BigDecimal? = null,
+    // Optional Custom Content
+    content: (@Composable () -> Unit)? = null,
 ) {
     Card(
         modifier = modifier,
@@ -456,14 +506,23 @@ fun StatCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .size(32.dp)
-                    .padding(4.dp),
+                    .padding(8.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "Info",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.size(16.dp),
-                )
+                // The Background Circle
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.background),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = "Info",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
             }
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -474,31 +533,98 @@ fun StatCard(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = value,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
-                )
-
-                if (subValue != null) {
+                if (content != null) {
+                    // Render custom content (like our Progress Bar)
+                    content()
+                } else {
+                    // Render Standard Text Content
                     Text(
-                        text = subValue,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = value ?: "",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
                     )
-                }
 
-                if (change != null) {
-                    val isPos = change >= BigDecimal.ZERO
-                    Text(
-                        text = "${if (isPos) "+" else ""}${String.format(Locale.US, "%.2f", change.toDouble())}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (isPos) PositiveGreen else NegativeRed,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
+                    if (subValue != null) {
+                        Text(
+                            text = subValue,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+
+                    if (change != null) {
+                        val isPos = change >= BigDecimal.ZERO
+                        Text(
+                            text = "${if (isPos) "+" else ""}${String.format(java.util.Locale.US, "%.2f", change.toDouble())}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (isPos) PositiveGreen else NegativeRed,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun RangeProgressBar(
+    current: BigDecimal,
+    low: BigDecimal,
+    high: BigDecimal,
+) {
+    // 1. Calculate Progress (0.0 to 1.0)
+    // Avoid division by zero
+    val range = high.subtract(low)
+    val progress = if (range.compareTo(BigDecimal.ZERO) == 0) {
+        0.5f
+    } else {
+        // We use .toFloat() at the end.
+        // Note: divide() requires a scale and rounding mode in ICU BigDecimal
+        current.subtract(low)
+            .divide(range, 4, BigDecimal.ROUND_HALF_UP) // Scale 4 gives enough precision for percentage
+            .toFloat()
+    }
+    // Clamp values between 0.0 and 1.0 just in case
+    // This handles cases where current price might be slightly outside the 24h high/low due to data sync delays
+    val clampedProgress = progress.coerceIn(0f, 1f)
+
+    Column {
+        // Top Labels (Low vs High)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "L: ${formatCompact(low)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = "H: ${formatCompact(high)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // The Bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)), // Track color
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(clampedProgress)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.primary), // Progress color (Gold)
+            )
         }
     }
 }
@@ -509,7 +635,19 @@ fun CryptoInfoDialog(
     description: String,
     onDismiss: () -> Unit,
 ) {
+    val isDark = isSystemInDarkTheme()
+    val borderColor = if (isDark) {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+    } else {
+        Color.Transparent // Or MaterialTheme.colorScheme.outlineVariant
+    }
+
     AlertDialog(
+        modifier = Modifier.border(
+            width = 1.dp,
+            color = borderColor,
+            shape = alertShape,
+        ),
         onDismissRequest = onDismiss,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         title = {
@@ -528,12 +666,20 @@ fun CryptoInfoDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                // In Light mode, this will be Yellow text. It's readable on White cards.
-                Text("Got it", color = MaterialTheme.colorScheme.primary)
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // Gold Background
+                    contentColor = MaterialTheme.colorScheme.onPrimary, // Dark Text (on top of Gold)
+                ),
+            ) {
+                Text(
+                    text = "Got it",
+                    fontWeight = FontWeight.Bold,
+                )
             }
         },
-        shape = RoundedCornerShape(16.dp),
+        shape = alertShape,
     )
 }
 
@@ -651,7 +797,7 @@ suspend fun animateScrollNudge(scrollState: ScrollState) {
     // 2. Safety check: Don't run if user is already interacting
     if (scrollState.isScrollInProgress || scrollState.value > 0) return
 
-    repeat(3) {
+    repeat(1) {
         // Check before every move
         if (scrollState.isScrollInProgress) return
 
@@ -691,6 +837,18 @@ fun CoinDetailScreenPreview() {
         CoinDetailContentScreen(
             coin = sampleCoin,
             onBackClick = {},
+        )
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun CoinDetailCryptoInfoDialog() {
+    SDKCryptoSampleAppTheme {
+        CryptoInfoDialog(
+            title = "Volume (24h)",
+            description = "Total trading volume in the last 24h.",
+            {},
         )
     }
 }
