@@ -1,5 +1,6 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coin
 
+import android.app.Activity
 import android.icu.math.BigDecimal
 import android.icu.text.NumberFormat
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -7,6 +8,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,10 +43,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,10 +55,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.Image
@@ -65,39 +69,40 @@ import cz.kotox.crypto.sdk.coindata.domain.model.Links
 import cz.kotox.crypto.sdk.coindata.domain.model.Localization
 import cz.kotox.crypto.sdk.coindata.domain.model.MarketData
 import cz.kotox.crypto.sdk.coindata.domain.model.ReposUrl
+import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
+import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
+import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
 import kotlinx.coroutines.delay
 import java.util.Locale
 import kotlin.time.ExperimentalTime
-
-// --- Colors based on your dark theme screenshot ---
-val DarkBackground = Color(0xFF121212)
-val CardBackground = Color(0xFF1E1E1E)
-val PrimaryAccent = Color(0xFFFDD835) // Gold-ish for Bitcoin
-val TextWhite = Color(0xFFFFFFFF)
-val TextGray = Color(0xFF888888)
-val PositiveGreen = Color(0xFF4CAF50)
-val NegativeRed = Color(0xFFE53935)
 
 @Composable
 fun CoinDetailContentScreen(
     coin: CoinDetail,
     onBackClick: () -> Unit,
 ) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = Color.Transparent.toArgb()
+            // Force dark icons because our header is Gold
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+        }
+    }
+
     val scrollState = rememberScrollState()
 
-    // --- 1. HOISTED STATE (Lives here at the top level) ---
     var showDialog by remember { mutableStateOf(false) }
     var activeInfoTitle by remember { mutableStateOf("") }
     var activeInfoDesc by remember { mutableStateOf("") }
 
-    // --- 2. SINGLE HANDLER (Passed down to children) ---
     val onInfoClick: (String, String) -> Unit = { title, desc ->
         activeInfoTitle = title
         activeInfoDesc = desc
         showDialog = true
     }
 
-    // --- 3. THE DIALOG ITSELF (Rendered on top of everything) ---
     if (showDialog) {
         CryptoInfoDialog(
             title = activeInfoTitle,
@@ -110,14 +115,12 @@ fun CoinDetailContentScreen(
         animateScrollNudge(scrollState)
     }
 
+    // Scaffold uses 'background' from theme.
+    // In Light Mode, this is now Light Grey. In Dark Mode, Black.
     Scaffold(
-        containerColor = DarkBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            CoinDetailTopBar(
-//                coinName = coin.name,
-//                coinSymbol = coin.symbol,
-                onBackClick = onBackClick,
-            )
+            CoinDetailTopBar(onBackClick = onBackClick)
         },
         bottomBar = {
             ActionButtonsBar()
@@ -130,11 +133,12 @@ fun CoinDetailContentScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp),
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             CoinHeader(coin)
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Pass handler to PriceSection ---
             PriceSection(
                 coin = coin,
                 onInfoClick = onInfoClick,
@@ -144,13 +148,10 @@ fun CoinDetailContentScreen(
 
             ChartPlaceholder()
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             TimeFrameSelector()
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Pass handler to StatsGrid ---
             StatsGrid(
                 coin = coin,
                 onInfoClick = onInfoClick,
@@ -165,33 +166,74 @@ fun CoinDetailContentScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CoinDetailTopBar(
     onBackClick: () -> Unit,
 ) {
-    TopAppBar(
-        title = { },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = PrimaryAccent,
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = { /* TODO: Toggle Favorite */ }) {
-                Icon(
-                    imageVector = Icons.Outlined.Star,
-                    contentDescription = "Favorite",
-                    tint = TextGray,
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground),
+    // 1. The Gradient Brush (Same as List Screen)
+    val topBarBrush = Brush.verticalGradient(
+        colorStops = arrayOf(
+            0.0f to MaterialTheme.colorScheme.primary, // Top: Gold
+            0.85f to MaterialTheme.colorScheme.background, // Fade to Background
+            1.0f to MaterialTheme.colorScheme.background,
+        ),
     )
+
+    // 2. The Glow Brush (Behind Icons)
+    val glowBrush = Brush.radialGradient(
+        colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.0f),
+        ),
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(topBarBrush) // Background goes Edge-to-Edge
+            .statusBarsPadding(), // Content is shifted down
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp) // Standard Toolbar Height
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // --- Back Arrow with Glow ---
+            IconButton(onClick = onBackClick) {
+                Box(contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp) // Large enough to show the glow around the icon
+                            .background(glowBrush),
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+            }
+
+            // --- Star Icon with Glow ---
+            IconButton(onClick = { /* TODO: Toggle Favorite */ }) {
+                Box(contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(glowBrush),
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.Star,
+                        contentDescription = "Favorite",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -210,13 +252,13 @@ fun CoinHeader(coin: CoinDetail) {
             Text(
                 text = "${coin.name} (${coin.symbol.uppercase()})",
                 style = MaterialTheme.typography.headlineSmall,
-                color = TextWhite,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
             )
             Text(
                 text = "Rank #${coin.marketCapRank ?: "N/A"} • Genesis: ${coin.genesisDate ?: "Unknown"}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -225,7 +267,7 @@ fun CoinHeader(coin: CoinDetail) {
 @Composable
 fun PriceSection(
     coin: CoinDetail,
-    onInfoClick: (String, String) -> Unit, // <-- Receives handler
+    onInfoClick: (String, String) -> Unit,
 ) {
     val currency = "usd"
     val currentPrice = coin.marketData.currentPrice[currency] ?: BigDecimal.ZERO
@@ -236,7 +278,7 @@ fun PriceSection(
         Text(
             text = formatCurrency(currentPrice),
             style = MaterialTheme.typography.displayMedium,
-            color = TextWhite,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -252,10 +294,9 @@ fun PriceSection(
                 color = if (isPositive) PositiveGreen else NegativeRed,
             )
 
-            // Invoke the handler here
             IconButton(
                 onClick = {
-                    onInfoClick("Current Price", "The weighted average price across exchanges.\n\nPercentage shows the change over the last rolling 24 hours.")
+                    onInfoClick("Current Price", "The weighted average price across exchanges.")
                 },
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -264,7 +305,7 @@ fun PriceSection(
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = "Info",
-                    tint = TextGray.copy(alpha = 0.5f),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                 )
             }
         }
@@ -273,25 +314,50 @@ fun PriceSection(
 
 @Composable
 fun ChartPlaceholder() {
-    // Since CoinDetail doesn't have chart points, we render a static visual placeholder
-    // representing the "Golden Line" from the screenshot.
-    Box(
+    // In Light mode: We use a subtle grey gradient or tint.
+    // In Dark mode: We use the gold tint.
+    val isDark = isSystemInDarkTheme()
+    val gradientColor = if (isDark) {
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+    } else {
+        Color.Gray.copy(alpha = 0.1f)
+    }
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        PrimaryAccent.copy(alpha = 0.1f),
-                        Color.Transparent,
+            .height(200.dp), // Increased slightly to look like a proper main chart
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        // --- DESIGN SYSTEM: Same border as StatCard & CoinListItem ---
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+        ),
+    ) {
+        // The gradient stays INSIDE the card to represent the "chart area"
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            gradientColor,
+                            Color.Transparent,
+                        ),
                     ),
                 ),
-                shape = RoundedCornerShape(16.dp),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        // In a real app, use a Canvas or a library like Vico/MPAndroidChart here
-        Text("Chart Visualization", color = TextGray.copy(alpha = 0.3f))
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "Chart Visualization",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            )
+        }
     }
 }
 
@@ -305,7 +371,8 @@ fun TimeFrameSelector() {
         frames.forEachIndexed { index, frame ->
             Text(
                 text = frame,
-                color = if (index == 0) TextWhite else TextGray, // Highlight first for demo
+                // In Light mode, non-selected text should be darker grey (onSurfaceVariant)
+                color = if (index == 0) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = if (index == 0) FontWeight.Bold else FontWeight.Normal,
                 modifier = Modifier.padding(8.dp),
             )
@@ -322,14 +389,13 @@ fun StatsGrid(
     val data = coin.marketData
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        // --- Row 1 ---
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Market Cap",
                 value = formatCompact(data.marketCap[currency]),
                 change = data.marketCapChangePercentage24hInCurrency[currency],
-                description = "The total value of all coins currently in circulation.\n\n(Price × Circulating Supply)",
+                description = "Total value of all coins in circulation.",
                 onInfoClick = onInfoClick,
             )
             StatCard(
@@ -337,19 +403,17 @@ fun StatsGrid(
                 title = "Volume (24h)",
                 value = formatCompact(data.totalVolume[currency]),
                 subValue = "Traded today",
-                description = "The total dollar value of all trades for this coin in the past 24 hours.\n\nHigh volume usually means the coin is popular and easy to sell.",
+                description = "Total trading volume in the last 24h.",
                 onInfoClick = onInfoClick,
             )
         }
-
-        // --- Row 2 ---
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Circulating Supply",
                 value = formatCompact(data.circulatingSupply),
                 subValue = "${coin.symbol.uppercase()} (Active)",
-                description = "The amount of coins that are currently circulating in the market and are in public hands.",
+                description = "Coins currently in the market.",
                 onInfoClick = onInfoClick,
             )
             StatCard(
@@ -357,64 +421,9 @@ fun StatsGrid(
                 title = "Fully Diluted Val.",
                 value = formatCompact(data.fullyDilutedValuation[currency]),
                 subValue = "Theoretical Max Cap",
-                description = "The theoretical Market Cap if ALL possible coins (including those not yet released) were in circulation today.\n\nUseful to spot if a coin will have high inflation later.",
+                description = "Market Cap if all coins were in circulation.",
                 onInfoClick = onInfoClick,
             )
-        }
-
-        // --- Row 3 ---
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatCard(
-                modifier = Modifier.weight(1f),
-                title = "All Time High",
-                value = formatCurrency(data.ath[currency]),
-                change = data.athChangePercentage[currency],
-                description = "The highest price this coin has ever reached in its entire history.",
-                onInfoClick = onInfoClick,
-            )
-            StatCard(
-                modifier = Modifier.weight(1f),
-                title = "All Time Low",
-                value = formatCurrency(data.atl[currency]),
-                change = data.atlChangePercentage[currency],
-                description = "The lowest price this coin has ever reached in its entire history.",
-                onInfoClick = onInfoClick,
-            )
-        }
-
-        // --- Row 4 ---
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatCard(
-                modifier = Modifier.weight(1f),
-                title = "24h High",
-                value = formatCurrency(data.high24h[currency]),
-                subValue = "Peak today",
-                description = "The highest price reached in the last 24 hours.",
-                onInfoClick = onInfoClick,
-            )
-            StatCard(
-                modifier = Modifier.weight(1f),
-                title = "24h Low",
-                value = formatCurrency(data.low24h[currency]),
-                subValue = "Bottom today",
-                description = "The lowest price reached in the last 24 hours.",
-                onInfoClick = onInfoClick,
-            )
-        }
-
-        // --- Optional Row 5 ---
-        if (data.maxSupply != null) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    title = "Max Supply",
-                    value = formatCompact(data.maxSupply),
-                    subValue = "Hard Cap Limit",
-                    description = "The maximum number of coins that will ever exist.\n\nOnce this limit is reached, no new coins can be created.",
-                    onInfoClick = onInfoClick,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
         }
     }
 }
@@ -426,52 +435,63 @@ fun StatCard(
     value: String,
     subValue: String? = null,
     change: BigDecimal? = null,
-    description: String, // New parameter for the help text
-    onInfoClick: (String, String) -> Unit, // Callback when 'i' is clicked
+    description: String,
+    onInfoClick: (String, String) -> Unit,
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = CardBackground),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
         shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+        ),
     ) {
-        // Changed Column to Box to overlay the 'i' icon in top-right
         Box(modifier = Modifier.fillMaxSize()) {
-            // The Info Icon Button
             IconButton(
                 onClick = { onInfoClick(title, description) },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(32.dp) // Slightly smaller touch target for the corner
-                    .padding(4.dp), // Padding from the edge
+                    .size(32.dp)
+                    .padding(4.dp),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = "Info",
-                    tint = TextGray.copy(alpha = 0.5f), // Subtle tint
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.size(16.dp),
                 )
             }
 
-            // The content (Standard Column)
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = title, style = MaterialTheme.typography.labelLarge, color = TextGray)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = value,
                     style = MaterialTheme.typography.titleMedium,
-                    color = TextWhite,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                 )
 
                 if (subValue != null) {
-                    Text(text = subValue, style = MaterialTheme.typography.bodySmall, color = TextGray)
+                    Text(
+                        text = subValue,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
 
                 if (change != null) {
                     val isPos = change >= BigDecimal.ZERO
                     Text(
-                        // Keeping your fix here
                         text = "${if (isPos) "+" else ""}${String.format(Locale.US, "%.2f", change.toDouble())}%",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isPos) PositiveGreen else NegativeRed,
@@ -491,12 +511,12 @@ fun CryptoInfoDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = CardBackground,
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
         title = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = TextWhite,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
             )
         },
@@ -504,12 +524,13 @@ fun CryptoInfoDialog(
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyLarge,
-                color = TextGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Got it", color = PrimaryAccent)
+                // In Light mode, this will be Yellow text. It's readable on White cards.
+                Text("Got it", color = MaterialTheme.colorScheme.primary)
             }
         },
         shape = RoundedCornerShape(16.dp),
@@ -518,54 +539,77 @@ fun CryptoInfoDialog(
 
 @Composable
 fun DescriptionSection(coin: CoinDetail) {
-    // Fallback to English description or a default message
     val desc = coin.description.en ?: "No description available."
-
     Column {
         Text(
             text = "About ${coin.name}",
             style = MaterialTheme.typography.titleLarge,
-            color = TextWhite,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = desc.replace(Regex("<.*?>"), ""), // Simple HTML tag strip
+            text = desc.replace(Regex("<.*?>"), ""),
             style = MaterialTheme.typography.bodyMedium,
-            color = TextGray,
-            maxLines = 4, // Truncate for UI cleanliness
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 4,
         )
     }
 }
 
 @Composable
 fun ActionButtonsBar() {
+    val isDark = isSystemInDarkTheme()
+
+    // UX DECISION:
+    // In Dark Mode: Outlined Buttons can be Gold (Primary) or White (OnBackground).
+    // In Light Mode: Outlined Buttons MUST be Dark Grey/Black (OnBackground) because Gold on White is invisible.
+    val outlineButtonContentColor = if (isDark) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+
+    val outlineButtonBorderColor = if (isDark) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.outline // A nice grey border
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // Buy Button (Always Gold Filled)
         Button(
             onClick = {},
             modifier = Modifier.weight(1f),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryAccent),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
         ) {
-            Text("Buy", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text("Buy", fontWeight = FontWeight.Bold)
         }
+
+        // Sell Button
         OutlinedButton(
             onClick = {},
             modifier = Modifier.weight(1f),
-            border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryAccent),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryAccent),
+            border = androidx.compose.foundation.BorderStroke(1.dp, outlineButtonBorderColor),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = outlineButtonContentColor),
         ) {
             Text("Sell")
         }
+
+        // Transfer Button
         OutlinedButton(
             onClick = {},
             modifier = Modifier.weight(1f),
-            border = androidx.compose.foundation.BorderStroke(1.dp, PrimaryAccent),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryAccent),
+            border = androidx.compose.foundation.BorderStroke(1.dp, outlineButtonBorderColor),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = outlineButtonContentColor),
         ) {
             Text("Transfer")
         }
@@ -643,10 +687,12 @@ suspend fun animateScrollNudge(scrollState: ScrollState) {
 @PreviewLightDark
 @Composable
 fun CoinDetailScreenPreview() {
-    CoinDetailContentScreen(
-        coin = sampleCoin,
-        onBackClick = {},
-    )
+    SDKCryptoSampleAppTheme {
+        CoinDetailContentScreen(
+            coin = sampleCoin,
+            onBackClick = {},
+        )
+    }
 }
 
 // --- Mock Data for Preview ---

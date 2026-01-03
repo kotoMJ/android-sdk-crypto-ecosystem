@@ -4,130 +4,120 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-internal val md_theme_light_primary = Color(0xFF006874)
-internal val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-internal val md_theme_light_primaryContainer = Color(0xFF97F0FF)
-internal val md_theme_light_onPrimaryContainer = Color(0xFF001F24)
-internal val md_theme_light_secondary = Color(0xFF1658C7)
-internal val md_theme_light_onSecondary = Color(0xFFFFFFFF)
-internal val md_theme_light_secondaryContainer = Color(0xFFDAE2FF)
-internal val md_theme_light_onSecondaryContainer = Color(0xFF001946)
-internal val md_theme_light_tertiary = Color(0xFFBA0061)
-internal val md_theme_light_onTertiary = Color(0xFFFFFFFF)
-internal val md_theme_light_tertiaryContainer = Color(0xFFFFD9E2)
-internal val md_theme_light_onTertiaryContainer = Color(0xFF3E001D)
-internal val md_theme_light_error = Color(0xFFBA1A1A)
-internal val md_theme_light_errorContainer = Color(0xFFFFDAD6)
-internal val md_theme_light_onError = Color(0xFFFFFFFF)
-internal val md_theme_light_onErrorContainer = Color(0xFF410002)
-internal val md_theme_light_background = Color(0xFFFAFDFD)
-internal val md_theme_light_onBackground = Color(0xFF191C1D)
-internal val md_theme_light_surface = Color(0xFFFAFDFD)
-internal val md_theme_light_onSurface = Color(0xFF191C1D)
-internal val md_theme_light_surfaceVariant = Color(0xFFDBE4E6)
-internal val md_theme_light_onSurfaceVariant = Color(0xFF3F484A)
-internal val md_theme_light_outline = Color(0xFF6F797A)
-internal val md_theme_light_inverseOnSurface = Color(0xFFEFF1F1)
-internal val md_theme_light_inverseSurface = Color(0xFF2E3132)
-internal val md_theme_light_inversePrimary = Color(0xFF4FD8EB)
-internal val md_theme_light_shadow = Color(0xFF000000)
-internal val md_theme_light_surfaceTint = Color(0xFF006874)
-internal val md_theme_light_outlineVariant = Color(0xFFBFC8CA)
-internal val md_theme_light_scrim = Color(0xFF000000)
+// --- Base Palette ---
+private val CryptoGold = Color(0xFFFDD835) // Main Brand Color
+private val CryptoGoldDark = Color(0xFFFBC02D) // For dark mode containers/contrast
 
-internal val md_theme_dark_primary = Color(0xFF4FD8EB)
-internal val md_theme_dark_onPrimary = Color(0xFF00363D)
-internal val md_theme_dark_primaryContainer = Color(0xFF004F58)
-internal val md_theme_dark_onPrimaryContainer = Color(0xFF97F0FF)
-internal val md_theme_dark_secondary = Color(0xFFB1C5FF)
-internal val md_theme_dark_onSecondary = Color(0xFF002C71)
-internal val md_theme_dark_secondaryContainer = Color(0xFF00419E)
-internal val md_theme_dark_onSecondaryContainer = Color(0xFFDAE2FF)
-internal val md_theme_dark_tertiary = Color(0xFFFFB1C7)
-internal val md_theme_dark_onTertiary = Color(0xFF650032)
-internal val md_theme_dark_tertiaryContainer = Color(0xFF8E0049)
-internal val md_theme_dark_onTertiaryContainer = Color(0xFFFFD9E2)
-internal val md_theme_dark_error = Color(0xFFFFB4AB)
-internal val md_theme_dark_errorContainer = Color(0xFF93000A)
-internal val md_theme_dark_onError = Color(0xFF690005)
-internal val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
-internal val md_theme_dark_background = Color(0xFF191C1D)
-internal val md_theme_dark_onBackground = Color(0xFFE1E3E3)
-internal val md_theme_dark_surface = Color(0xFF191C1D)
-internal val md_theme_dark_onSurface = Color(0xFFE1E3E3)
-internal val md_theme_dark_surfaceVariant = Color(0xFF3F484A)
-internal val md_theme_dark_onSurfaceVariant = Color(0xFFBFC8CA)
-internal val md_theme_dark_outline = Color(0xFF899294)
-internal val md_theme_dark_inverseOnSurface = Color(0xFF191C1D)
-internal val md_theme_dark_inverseSurface = Color(0xFFE1E3E3)
-internal val md_theme_dark_inversePrimary = Color(0xFF006874)
-internal val md_theme_dark_shadow = Color(0xFF000000)
-internal val md_theme_dark_surfaceTint = Color(0xFF4FD8EB)
-internal val md_theme_dark_outlineVariant = Color(0xFF3F484A)
-internal val md_theme_dark_scrim = Color(0xFF000000)
+// Dark Palette
+private val DarkBaseBackground = Color(0xFF121212)
+private val DarkCardSurface = Color(0xFF1E1E1E)
+private val DarkTextPrimary = Color(0xFFFFFFFF)
+private val DarkTextSecondary = Color(0xFF888888)
+private val DarkDivider = Color(0xFF2C2C2C)
 
-internal val seed = Color(0xFFFFFFFF)
+// Light Palette (Refined for UX)
+private val LightBaseBackground = Color(0xFFF4F6F8) // Soft Cool Grey (Not White!)
+private val LightCardSurface = Color(0xFFFFFFFF) // Pure White Cards (Pops against grey bg)
+private val LightTextPrimary = Color(0xFF1C1C1E) // Soft Black
+private val LightTextSecondary = Color(0xFF6E6E73) // Accessible Grey
+private val LightDivider = Color(0xFFE5E5EA)
 
+// Semantics
+val PositiveGreen = Color(0xFF34C759)
+val NegativeRed = Color(0xFFFF3B30)
+
+// --- Full Light Theme Definition ---
 internal val LightColors = lightColorScheme(
-    primary = md_theme_light_primary,
-    onPrimary = md_theme_light_onPrimary,
-    primaryContainer = md_theme_light_primaryContainer,
-    onPrimaryContainer = md_theme_light_onPrimaryContainer,
-    secondary = md_theme_light_secondary,
-    onSecondary = md_theme_light_onSecondary,
-    secondaryContainer = md_theme_light_secondaryContainer,
-    onSecondaryContainer = md_theme_light_onSecondaryContainer,
-    tertiary = md_theme_light_tertiary,
-    onTertiary = md_theme_light_onTertiary,
-    tertiaryContainer = md_theme_light_tertiaryContainer,
-    onTertiaryContainer = md_theme_light_onTertiaryContainer,
-    error = md_theme_light_error,
-    errorContainer = md_theme_light_errorContainer,
-    onError = md_theme_light_onError,
-    onErrorContainer = md_theme_light_onErrorContainer,
-    background = md_theme_light_background,
-    onBackground = md_theme_light_onBackground,
-    surface = md_theme_light_surface,
-    onSurface = md_theme_light_onSurface,
-    surfaceVariant = md_theme_light_surfaceVariant,
-    onSurfaceVariant = md_theme_light_onSurfaceVariant,
-    outline = md_theme_light_outline,
-    inverseOnSurface = md_theme_light_inverseOnSurface,
-    inverseSurface = md_theme_light_inverseSurface,
-    inversePrimary = md_theme_light_inversePrimary,
-    surfaceTint = md_theme_light_surfaceTint,
-    outlineVariant = md_theme_light_outlineVariant,
-    scrim = md_theme_light_scrim,
+    // Primary: The Gold actions
+    primary = CryptoGold,
+    onPrimary = Color.Black, // Text on Gold is Black
+    primaryContainer = CryptoGold,
+    onPrimaryContainer = Color.Black,
+
+    // Secondary: Used for less prominent icons/text
+    secondary = LightTextPrimary,
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFE1E4E8),
+    onSecondaryContainer = LightTextPrimary,
+
+    // Tertiary: Accents (like charts or stars)
+    tertiary = LightTextSecondary,
+    onTertiary = Color.White,
+    tertiaryContainer = Color(0xFFEEEEEE),
+    onTertiaryContainer = LightTextPrimary,
+
+    // Backgrounds
+    background = LightBaseBackground, // <--- KEY CHANGE: Grey Background
+    onBackground = LightTextPrimary,
+
+    surface = LightBaseBackground, // Screen surface matches background
+    onSurface = LightTextPrimary,
+
+    // Cards (Mapped to surfaceVariant in your code)
+    surfaceVariant = LightCardSurface, // <--- KEY CHANGE: White Cards
+    onSurfaceVariant = LightTextSecondary,
+
+    // Errors
+    error = NegativeRed,
+    errorContainer = Color(0xFFFFEBEE),
+    onError = Color.White,
+    onErrorContainer = Color(0xFFC62828),
+
+    // Outlines (Dividers/Borders)
+    outline = LightDivider,
+    outlineVariant = Color(0xFFC6C6C8),
+
+    // Extras
+    scrim = Color.Black,
+    inverseSurface = DarkCardSurface,
+    inverseOnSurface = DarkTextPrimary,
+    inversePrimary = CryptoGold,
 )
 
+// --- Full Dark Theme Definition ---
 internal val DarkColors = darkColorScheme(
-    primary = md_theme_dark_primary,
-    onPrimary = md_theme_dark_onPrimary,
-    primaryContainer = md_theme_dark_primaryContainer,
-    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
-    secondary = md_theme_dark_secondary,
-    onSecondary = md_theme_dark_onSecondary,
-    secondaryContainer = md_theme_dark_secondaryContainer,
-    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
-    tertiary = md_theme_dark_tertiary,
-    onTertiary = md_theme_dark_onTertiary,
-    tertiaryContainer = md_theme_dark_tertiaryContainer,
-    onTertiaryContainer = md_theme_dark_onTertiaryContainer,
-    error = md_theme_dark_error,
-    errorContainer = md_theme_dark_errorContainer,
-    onError = md_theme_dark_onError,
-    onErrorContainer = md_theme_dark_onErrorContainer,
-    background = md_theme_dark_background,
-    onBackground = md_theme_dark_onBackground,
-    surface = md_theme_dark_surface,
-    onSurface = md_theme_dark_onSurface,
-    surfaceVariant = md_theme_dark_surfaceVariant,
-    onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-    outline = md_theme_dark_outline,
-    inverseOnSurface = md_theme_dark_inverseOnSurface,
-    inverseSurface = md_theme_dark_inverseSurface,
-    inversePrimary = md_theme_dark_inversePrimary,
-    surfaceTint = md_theme_dark_surfaceTint,
-    outlineVariant = md_theme_dark_outlineVariant,
-    scrim = md_theme_dark_scrim,
+    // Primary
+    primary = CryptoGold,
+    onPrimary = Color.Black,
+    primaryContainer = Color(0xFF3E3000), // Deep muted gold
+    onPrimaryContainer = CryptoGold,
+
+    // Secondary
+    secondary = Color(0xFFB1C5FF),
+    onSecondary = Color(0xFF002C71),
+    secondaryContainer = Color(0xFF00419E),
+    onSecondaryContainer = Color(0xFFDAE2FF),
+
+    // Tertiary
+    tertiary = DarkTextSecondary,
+    onTertiary = Color.Black,
+    tertiaryContainer = Color(0xFF333333),
+    onTertiaryContainer = Color.White,
+
+    // Backgrounds
+    background = DarkBaseBackground,
+    onBackground = DarkTextPrimary,
+
+    surface = DarkBaseBackground,
+    onSurface = DarkTextPrimary,
+
+    // Cards
+    surfaceVariant = DarkCardSurface,
+    onSurfaceVariant = DarkTextSecondary,
+
+    // Errors
+    error = NegativeRed,
+    errorContainer = Color(0xFF93000A),
+    onError = Color.Black,
+    onErrorContainer = Color(0xFFFFDAD6),
+
+    // Outlines
+    outline = DarkDivider,
+    outlineVariant = Color(0xFF444444),
+
+    // Extras
+    scrim = Color.Black,
+    inverseSurface = LightBaseBackground,
+    inverseOnSurface = LightTextPrimary,
+    inversePrimary = CryptoGoldDark,
 )

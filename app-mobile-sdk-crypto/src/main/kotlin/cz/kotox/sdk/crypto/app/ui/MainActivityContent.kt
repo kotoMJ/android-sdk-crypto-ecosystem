@@ -9,14 +9,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CurrencyExchange
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,9 +27,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -108,25 +115,59 @@ fun MainActivityContent(
                 }
             }
 
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        showFab = false
-                        delay(Duration.ofMillis(150))
-                        backStack.add(CurrencyScreenRoute)
-                    }
-                },
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.graphicsLayer {
-                    rotationZ = rotation
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.CurrencyExchange,
-                    contentDescription = "Change Currency",
+            val glowBrush = Brush.radialGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.0f),
+                ),
+            )
+
+            val fabGradientBrush = Brush.radialGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary, // Center: Gold
+                    MaterialTheme.colorScheme.background, // Edge: Darker/Shaded
+                ),
+                // We increase the radius slightly (e.g., 60dp) to ensure the
+                // center Gold dominates and the Black is pushed to the very edges.
+                radius = 180f,
+            )
+
+            // Wrap in a Box to layer the Glow behind the FAB
+            Box(contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp) // Standard FAB is 56dp. 80dp creates a nice outer bloom.
+                        .background(glowBrush),
                 )
+
+                Surface(
+                    onClick = {
+                        scope.launch {
+                            showFab = false
+                            delay(Duration.ofMillis(150))
+                            backStack.add(CurrencyScreenRoute)
+                        }
+                    },
+                    modifier = Modifier
+                        .size(56.dp) // Standard FAB size
+                        .graphicsLayer { rotationZ = rotation },
+                    shape = CircleShape,
+                    color = Color.Transparent,
+                    shadowElevation = 6.dp, // Manually applied shadow
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(fabGradientBrush),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CurrencyExchange,
+                            contentDescription = "Change Currency",
+                        )
+                    }
+                }
             }
         }
     }
@@ -140,7 +181,7 @@ fun MainActivityContent(
         NavDisplay(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(bottom = paddingValues.calculateBottomPadding()),
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             sceneStrategy = appSceneStrategy,

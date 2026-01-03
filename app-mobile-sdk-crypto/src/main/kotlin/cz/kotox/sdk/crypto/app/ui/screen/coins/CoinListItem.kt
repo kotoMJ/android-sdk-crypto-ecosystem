@@ -1,5 +1,6 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coins
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +29,8 @@ import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
 import cz.kotox.sdk.crypto.app.R
 import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
+import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
+import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
 
 @Composable
 fun CoinListItem(
@@ -37,19 +39,24 @@ fun CoinListItem(
     modifier: Modifier = Modifier,
 ) {
     val percentageColor = if ((market.priceChangePercentage24h ?: 0.0) >= 0.0) {
-        Color(0xFF34C759) // Green
+        PositiveGreen
     } else {
-        Color(0xFFFF3B30) // Red
+        NegativeRed
     }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         onClick = { onItemClick(market.id) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
         ),
     ) {
         Row(
@@ -81,7 +88,6 @@ fun CoinListItem(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    // text = formatMarketCap(market.marketCap),
                     text = market.symbol.uppercase(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -94,8 +100,7 @@ fun CoinListItem(
                 Text(
                     text = formatCurrency(market.currentPrice),
                     style = MaterialTheme.typography.bodyMedium,
-                    // This yellow is a semantic color (not theme-based)
-                    // color = Color(0xFFFFD700),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
