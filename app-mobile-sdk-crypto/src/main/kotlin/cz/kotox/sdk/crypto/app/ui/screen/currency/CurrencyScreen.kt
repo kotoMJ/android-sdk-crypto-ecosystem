@@ -19,5 +19,8 @@ internal fun CurrencyScreen(
 //        CoinsScreenState.Loading -> {}
 //    }
 
-    CurrencyContentScreen()
+    CurrencyContentScreen(
+        onCurrencySelected = { selectedCurrency ->
+        },
+    )
 }
