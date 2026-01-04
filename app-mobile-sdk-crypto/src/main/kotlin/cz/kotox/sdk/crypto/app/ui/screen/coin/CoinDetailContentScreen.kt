@@ -44,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -619,7 +620,7 @@ fun CryptoInfoDialog(
     val borderColor = if (isDark) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
     } else {
-        Color.Transparent // Or MaterialTheme.colorScheme.outlineVariant
+        MaterialTheme.colorScheme.outlineVariant
     }
 
     AlertDialog(
@@ -649,8 +650,8 @@ fun CryptoInfoDialog(
             Button(
                 onClick = onDismiss,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary, // Gold Background
-                    contentColor = MaterialTheme.colorScheme.onPrimary, // Dark Text (on top of Gold)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             ) {
                 Text(
@@ -676,7 +677,7 @@ fun DescriptionSection(coin: CoinDetail) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = desc.replace(Regex("<.*?>"), ""),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 4,
         )
@@ -825,11 +826,25 @@ fun CoinDetailScreenPreview() {
 @Composable
 fun CoinDetailCryptoInfoDialog() {
     SDKCryptoSampleAppTheme {
-        CryptoInfoDialog(
-            title = "Volume (24h)",
-            description = "Total trading volume in the last 24h.",
-            {},
-        )
+        Surface(color = MaterialTheme.colorScheme.background) {
+            CryptoInfoDialog(
+                title = "Volume (24h)",
+                description = "Total trading volume in the last 24h.",
+                {},
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun CoinDetailCryptoDescription() {
+    SDKCryptoSampleAppTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            DescriptionSection(
+                coin = coinDetailBitcoin,
+            )
+        }
     }
 }
 
