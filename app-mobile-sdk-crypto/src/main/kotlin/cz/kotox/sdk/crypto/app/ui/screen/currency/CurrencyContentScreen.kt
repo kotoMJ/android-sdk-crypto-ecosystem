@@ -27,20 +27,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
+import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
 
 @Composable
 fun CurrencyContentScreen(
     modifier: Modifier = Modifier,
     onCurrencySelected: (CurrencyOption) -> Unit = {},
 ) {
-    // This Surface provides the main shape of the bottom sheet
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
@@ -49,22 +48,10 @@ fun CurrencyContentScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // --- HEADER AREA WITH GOLD GRADIENT ---
-            // This Box creates the "Header" feel, fading from Gold to Surface
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            // Use colorStops to keep the top 60% Solid Gold.
-                            // This ensures the Black Text always sits on a Bright Background.
-                            colorStops = arrayOf(
-                                0.0f to MaterialTheme.colorScheme.primary, // Top: Solid Gold
-                                0.4f to MaterialTheme.colorScheme.primary, // 30%: Still Solid Gold
-                                1.0f to MaterialTheme.colorScheme.surface, // Bottom: Fade to Surface
-                            ),
-                        ),
-                    ),
+                    .background(SDKTheme.brushes.bottomSheetTopBar),
             ) {
                 Column(
                     modifier = Modifier
@@ -72,8 +59,6 @@ fun CurrencyContentScreen(
                         .padding(bottom = 32.dp), // Space before the gradient ends
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    // 1. The Drag Handle (Contrast Color)
-                    // We keep this Black (onPrimary) because it sits high up in the Gold zone.
                     Box(
                         modifier = Modifier
                             .padding(vertical = 16.dp)
@@ -83,7 +68,6 @@ fun CurrencyContentScreen(
                             .background(MaterialTheme.colorScheme.onPrimary),
                     )
 
-                    // 2. The Title
                     Text(
                         text = "Select Currency",
                         style = MaterialTheme.typography.titleLarge,
@@ -97,12 +81,10 @@ fun CurrencyContentScreen(
                 }
             }
 
-            // --- LIST CONTENT ---
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    // Add some top padding so the list doesn't touch the title immediately
                     .padding(top = 8.dp, bottom = 32.dp),
             ) {
                 items(mockCurrencies) { currency ->

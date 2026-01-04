@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -36,6 +35,7 @@ import androidx.core.view.WindowCompat
 import cz.kotox.sdk.crypto.app.R
 import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
+import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
 
 @Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,20 +62,8 @@ fun CoinsContentScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            val topBarBrush = Brush.verticalGradient(
-                colorStops = arrayOf(
-                    0.0f to MaterialTheme.colorScheme.primary, // Top: Gold
-                    0.85f to MaterialTheme.colorScheme.background, // 85%: Fully Background
-                    1.0f to MaterialTheme.colorScheme.background, // Bottom: Solid Background
-                ),
-            )
-
-            val glowBrush = Brush.radialGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primary,
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.0f),
-                ),
-            )
+            val topBarBrush = SDKTheme.brushes.screenTopBar
+            val glowBrush = SDKTheme.brushes.iconGlow
 
             TopAppBar(
                 title = {
