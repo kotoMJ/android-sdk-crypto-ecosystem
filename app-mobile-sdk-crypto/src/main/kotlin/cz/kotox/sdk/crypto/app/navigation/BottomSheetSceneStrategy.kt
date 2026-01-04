@@ -1,9 +1,15 @@
 package cz.kotox.sdk.crypto.app.navigation
 
+import android.app.Activity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.scene.OverlayScene
 import androidx.navigation3.scene.Scene
@@ -27,7 +33,26 @@ internal class BottomSheetScene<T : Any>(
         ModalBottomSheet(
             onDismissRequest = onBack,
             properties = modalBottomSheetProperties,
+            dragHandle = null, // Disable default handle so we can use our Custom Gold one
+            containerColor = Color.Transparent, // Let content define the shape/color
         ) {
+            // --- THE FIX ---
+            // We must set the status bar icon color INSIDE this block.
+            // This ensures we are targeting the Bottom Sheet's Window (DialogWindow),
+            // not just the underlying Activity Window.
+            val view = LocalView.current
+            SideEffect {
+                // Try to get the DialogWindow (Bottom Sheet's window), fallback to Activity Window
+                val window = (view.parent as? DialogWindowProvider)?.window
+                    ?: (view.context as? Activity)?.window
+
+                window?.let { w ->
+                    // Force Black Icons (isAppearanceLightStatusBars = true)
+                    // This overrides the default "White Icons" behavior of Dark Mode
+                    WindowCompat.getInsetsController(w, view).isAppearanceLightStatusBars = true
+                }
+            }
+
             entry.Content()
         }
     }

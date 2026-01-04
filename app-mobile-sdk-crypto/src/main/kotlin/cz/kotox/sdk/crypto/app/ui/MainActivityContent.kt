@@ -6,14 +6,20 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CurrencyExchange
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,9 +27,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -105,25 +115,59 @@ fun MainActivityContent(
                 }
             }
 
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        showFab = false
-                        delay(Duration.ofMillis(150))
-                        backStack.add(CurrencyScreenRoute)
-                    }
-                },
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.graphicsLayer {
-                    rotationZ = rotation
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.CurrencyExchange,
-                    contentDescription = "Change Currency",
+            val glowBrush = Brush.radialGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.0f),
+                ),
+            )
+
+            val fabGradientBrush = Brush.radialGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primary, // Center: Gold
+                    MaterialTheme.colorScheme.background, // Edge: Darker/Shaded
+                ),
+                // We increase the radius slightly (e.g., 60dp) to ensure the
+                // center Gold dominates and the Black is pushed to the very edges.
+                radius = 180f,
+            )
+
+            // Wrap in a Box to layer the Glow behind the FAB
+            Box(contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp) // Standard FAB is 56dp. 80dp creates a nice outer bloom.
+                        .background(glowBrush),
                 )
+
+                Surface(
+                    onClick = {
+                        scope.launch {
+                            showFab = false
+                            delay(Duration.ofMillis(150))
+                            backStack.add(CurrencyScreenRoute)
+                        }
+                    },
+                    modifier = Modifier
+                        .size(56.dp) // Standard FAB size
+                        .graphicsLayer { rotationZ = rotation },
+                    shape = CircleShape,
+                    color = Color.Transparent,
+                    shadowElevation = 6.dp, // Manually applied shadow
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(fabGradientBrush),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CurrencyExchange,
+                            contentDescription = "Change Currency",
+                        )
+                    }
+                }
             }
         }
     }
@@ -137,16 +181,22 @@ fun MainActivityContent(
         NavDisplay(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(bottom = paddingValues.calculateBottomPadding()),
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             sceneStrategy = appSceneStrategy,
             entryDecorators = listOf(
-                // In order to add the `ViewModelStoreNavEntryDecorator` (see comment below for why)
-                // we also need to add the default `NavEntryDecorator`s as well. These provide
-                // extra information to the entry's content to enable it to display correctly
-                // and save its state.
+                /**
+                 * It provides a SavedStateRegistryOwner and uses SaveableStateHolder.
+                 * This allows composables (like rememberSaveable, LazyColumn scroll position, or text fields)
+                 * to save their state when they are swapped out of the UI (e.g., when navigating forward)
+                 * and restore it when you come back.
+                 */
                 rememberSaveableStateHolderNavEntryDecorator(),
+                /**
+                 * Ensures that a unique ViewModelStore is associated with a specific backstack entry,
+                 * so ViewModels survive configuration changes but die when the entry is popped.
+                 */
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
@@ -161,7 +211,21 @@ fun MainActivityContent(
                     )
                 }
 
-                entry<CoinDetailScreenRoute> { key ->
+                entry<CoinDetailScreenRoute>(
+                    metadata = NavDisplay.transitionSpec {
+                        // PUSH: Detail slides IN from Right, List slides OUT to Left
+                        (slideInHorizontally { it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { -it } + fadeOut())
+                    } + NavDisplay.popTransitionSpec {
+                        // POP (Back Button): List slides IN from Left, Detail slides OUT to Right
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    } + NavDisplay.predictivePopTransitionSpec {
+                        // PREDICTIVE GESTURE: Matches the Pop animation exactly
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    },
+                ) { key ->
 
                     val viewModel = koinViewModel<CoinDetailViewModel> {
                         parametersOf(key)
