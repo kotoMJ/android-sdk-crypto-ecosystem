@@ -1,48 +1,49 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.database.entity
 
-import android.icu.math.BigDecimal
+import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
-// TODO MJ - consider Doubles to be BigDecimals, verify room for that
-@Entity(tableName = "coin_markets")
+// --- 1. Coin Market Entity ---
+@Entity(
+    tableName = "coin_markets",
+    primaryKeys = ["id", "vs_currency"],
+)
+@OptIn(ExperimentalTime::class)
 internal data class CoinMarketEntity(
-    @PrimaryKey val id: String,
+    val id: String,
+    @ColumnInfo(name = "vs_currency")
+    val vsCurrency: String,
     val symbol: String,
     val name: String,
     val imageUrl: String,
-
-    // --- PRICES (CRITICAL) ---
-    val currentPrice: BigDecimal,
-    val high24h: BigDecimal?,
-    val low24h: BigDecimal?,
-    val ath: BigDecimal,
-    val atl: BigDecimal,
-
-    // --- MARKET VALUES ---
-    // Changed from Long -> BigDecimal to capture cents and avoid overflow
-    val marketCap: BigDecimal,
-    val fullyDilutedValuation: BigDecimal?,
-    val totalVolume: BigDecimal,
-
-    // --- VALUE CHANGES ---
-    val priceChange24h: BigDecimal?,
-    val marketCapChange24h: BigDecimal?,
-
-    // --- SUPPLY (CRITICAL for precision) ---
-    val circulatingSupply: BigDecimal,
-    val totalSupply: BigDecimal?,
-    val maxSupply: BigDecimal?,
-
-    // --- PERCENTAGES (OPTIONAL - kept as Double for simplicity, or change to BD) ---
-    val priceChangePercentage24h: Double?,
-    val marketCapChangePercentage24h: Double?,
-    val athChangePercentage: Double,
-    val atlChangePercentage: Double,
-
-    // --- METADATA ---
+    val currentPrice: Double,
+    val marketCap: Long,
     val marketCapRank: Int,
-    val athDate: Long, // Timestamp
-    val atlDate: Long, // Timestamp
-    val lastUpdated: Long, // Timestamp
+    val fullyDilutedValuation: Long?,
+    val totalVolume: Double,
+    val high24h: Double?,
+    val low24h: Double?,
+    val priceChange24h: Double?,
+    val priceChangePercentage24h: Double?,
+    val marketCapChange24h: Double?,
+    val marketCapChangePercentage24h: Double?,
+    val circulatingSupply: Double,
+    val totalSupply: Double?,
+    val maxSupply: Double?,
+    val ath: Double,
+    val athChangePercentage: Double,
+    val athDate: Instant,
+    val atl: Double,
+    val atlChangePercentage: Double,
+    val atlDate: Instant,
+
+    // Flattened ROI (nullable)
+    val roiTimes: Double?,
+    val roiCurrency: String?,
+    val roiPercentage: Double?,
+
+    val lastUpdated: String?,
+    val cachedAt: Long, // Stored as Epoch Millis for efficient comparison
 )
