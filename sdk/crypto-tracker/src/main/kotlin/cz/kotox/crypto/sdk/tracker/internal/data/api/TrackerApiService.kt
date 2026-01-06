@@ -15,7 +15,8 @@ internal class TrackerApiService(
         baseUrl = "https://api.exchange.coinbase.com/",
         isLoggingEnabled = trackerConfig.isLoggingEnabled,
         networkTimeout = trackerConfig.networkTimeout,
-        isStrictModeEnabled = trackerConfig.isStrictModeEnabled,
+        strictModePolicy = trackerConfig.strictModePolicy,
+        loggingPolicy = trackerConfig.loggingPolicy,
     )
 
     val ktorfitFactory = KtorfitFactory(

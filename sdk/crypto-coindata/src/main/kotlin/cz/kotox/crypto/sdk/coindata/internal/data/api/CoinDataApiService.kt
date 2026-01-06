@@ -16,7 +16,8 @@ internal class CoinDataApiService(
         baseUrl = "https://api.coingecko.com/",
         isLoggingEnabled = coinDataConfig.isLoggingEnabled,
         networkTimeout = coinDataConfig.networkTimeout,
-        isStrictModeEnabled = coinDataConfig.isStrictModeEnabled,
+        strictModePolicy = coinDataConfig.strictModePolicy,
+        loggingPolicy = coinDataConfig.loggingPolicy,
     )
 
     val ktorfitFactory = KtorfitFactory(

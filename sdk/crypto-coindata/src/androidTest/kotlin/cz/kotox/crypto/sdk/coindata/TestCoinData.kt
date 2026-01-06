@@ -1,7 +1,9 @@
 package cz.kotox.crypto.sdk.coindata
 
+import android.content.Context
+
 object TestCoinData {
-    fun provideCoinData(): CoinData {
-        return CoinData.Builder().build()
+    fun provideCoinData(context: Context): CoinData {
+        return CoinData.Builder(context = context).build()
     }
 }

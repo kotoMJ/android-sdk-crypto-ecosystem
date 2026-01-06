@@ -67,7 +67,7 @@ public open class SafeNullableLongSerializer(
     override fun deserialize(decoder: Decoder): Long? {
         val jsonDecoder = decoder as? JsonDecoder ?: error("Json only")
         val element = jsonDecoder.decodeJsonElement()
-        val isStrict = decoder.serializersModule.getContextual(StrictModeMarker::class) != null
+        val isStrict = decoder.serializersModule.getContextual(StrictSerializationMarker::class) != null
 
         // Delegates to shared logic
         return parseSafeLong(
@@ -128,7 +128,7 @@ public open class SafeLongSerializer(
         val element = jsonDecoder.decodeJsonElement()
 
         // CHECK CONTEXT: "Is the StrictModeMarker registered?"
-        val isStrict = decoder.serializersModule.getContextual(StrictModeMarker::class) != null
+        val isStrict = decoder.serializersModule.getContextual(StrictSerializationMarker::class) != null
 
         // Delegates to shared logic
         val result = parseSafeLong(

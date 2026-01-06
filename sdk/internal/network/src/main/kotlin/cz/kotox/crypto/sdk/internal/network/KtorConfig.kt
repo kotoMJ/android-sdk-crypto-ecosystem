@@ -1,11 +1,13 @@
 package cz.kotox.crypto.sdk.internal.network
 
+import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
+import cz.kotox.crypto.sdk.common.configuration.StrictModePolicy
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 public data class KtorConfig(
     val baseUrl: String,
-    val networkTimeout: Duration = 30.seconds,
-    val isLoggingEnabled: Boolean = false,
-    val isStrictModeEnabled: Boolean = false,
+    val networkTimeout: Duration,
+    val isLoggingEnabled: Boolean,
+    val strictModePolicy: StrictModePolicy,
+    val loggingPolicy: LoggingPolicy,
 )

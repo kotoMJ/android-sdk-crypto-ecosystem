@@ -170,7 +170,7 @@ class SafeSerializersTest {
             // This logic mirrors KtorfitFactory
             serializersModule = SerializersModule {
                 if (isStrict) {
-                    contextual(StrictModeMarker::class, StrictModeMarker.serializer())
+                    contextual(StrictSerializationMarker::class, StrictSerializationMarker.serializer())
                 }
             }
         }

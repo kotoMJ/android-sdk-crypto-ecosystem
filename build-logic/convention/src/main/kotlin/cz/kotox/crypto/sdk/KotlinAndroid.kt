@@ -19,6 +19,7 @@ internal fun Project.configureKotlinAndroid(
             allWarningsAsErrors.set(properties["warningsAsErrors"] as? Boolean ?: false)
             jvmTarget.set(JvmTarget.fromTarget(libs.javaVersion))
             freeCompilerArgs.addAll(buildFreeCompilerArgs())
+            freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
         }
     }
 

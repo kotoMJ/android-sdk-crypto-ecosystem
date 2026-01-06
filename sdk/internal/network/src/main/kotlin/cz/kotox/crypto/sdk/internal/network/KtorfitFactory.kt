@@ -1,5 +1,6 @@
 package cz.kotox.crypto.sdk.internal.network
 
+import cz.kotox.crypto.sdk.common.configuration.NetworkLogMode
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
@@ -36,8 +37,8 @@ public class KtorfitFactory(
 
         // We dynamically add the StrictModeMarker to the context ONLY if strict mode is enabled.
         serializersModule = SerializersModule {
-            if (config.isStrictModeEnabled) {
-                contextual(StrictModeMarker::class, StrictModeMarker.serializer())
+            if (config.strictModePolicy.strictSerialization) {
+                contextual(StrictSerializationMarker::class, StrictSerializationMarker.serializer())
             }
         }
     }
@@ -56,15 +57,25 @@ public class KtorfitFactory(
             contentConverter = KotlinxWebsocketSerializationConverter(sdkJson)
         }
 
-        if (true || config.isLoggingEnabled) {
+        if (config.isLoggingEnabled) {
             install(Logging) {
-                level = LogLevel.ALL
+                level = when (config.loggingPolicy.networkLogMode) {
+                    NetworkLogMode.BASIC -> LogLevel.INFO
+                    NetworkLogMode.HEADERS -> LogLevel.HEADERS
+                    NetworkLogMode.BODY -> LogLevel.ALL
+                }
+
+                val sdkLogPriority = when (config.loggingPolicy.networkLogMode) {
+                    NetworkLogMode.BASIC -> LogPriority.INFO
+                    NetworkLogMode.HEADERS -> LogPriority.DEBUG
+                    NetworkLogMode.BODY -> LogPriority.VERBOSE
+                }
 
                 logger = object : Logger {
                     override fun log(message: String) {
                         sdkLoggerCallback.onLogMessage(
                             tag = "[KtorLogger]",
-                            priority = LogPriority.VERBOSE,
+                            priority = sdkLogPriority,
                             t = null,
                             message = message,
                         )

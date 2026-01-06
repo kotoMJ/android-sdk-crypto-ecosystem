@@ -13,7 +13,8 @@ internal class NewsApiService(
         baseUrl = "https://newsapi.org/",
         isLoggingEnabled = newsConfig.isLoggingEnabled,
         networkTimeout = newsConfig.networkTimeout,
-        isStrictModeEnabled = newsConfig.isStrictModeEnabled,
+        strictModePolicy = newsConfig.strictModePolicy,
+        loggingPolicy = newsConfig.loggingPolicy,
     )
 
     val ktorfitFactory = KtorfitFactory(

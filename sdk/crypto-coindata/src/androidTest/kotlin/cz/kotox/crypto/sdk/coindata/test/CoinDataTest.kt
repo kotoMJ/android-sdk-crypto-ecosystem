@@ -13,6 +13,8 @@ import cz.kotox.crypto.sdk.common.fold
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import junit.framework.Assert.fail
+import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +29,7 @@ class CoinDataTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        coinData = CoinDataBuilder().setLoggerCallback(
+        coinData = CoinDataBuilder(context = context).setLoggerCallback(
             sdkLoggerCallback = object : SDKLoggerCallback {
                 override fun onLogMessage(
                     tag: String,
@@ -44,24 +46,28 @@ class CoinDataTest {
     @Test
     fun testGetCoinMarkets() = runTest {
         val testTag = "[testGetCoinMarkets]"
-        coinData.getCoinMarkets(CurrencyId("usd")).fold({
-            logE(null) { "$testTag ERROR: $it" }
-            fail("getCoinMarkets failed to return value")
-        }, {
-            it.forEach { item ->
-                logD { "$testTag VALUE: $item" }
-            }
-        })
+        coinData.getCoinMarkets(CurrencyId("usd")).take(1).collect { result ->
+            result.fold({
+                logE(null) { "$testTag ERROR: $it" }
+                fail("getCoinMarkets failed to return value")
+            }, {
+                it.forEach { item ->
+                    logD { "$testTag VALUE: $item" }
+                }
+            })
+        }
     }
 
     @Test
     fun testGetCoinDetail() = runTest {
         val testTag = "[testGetCoinMarkets]"
-        coinData.getCoinDetail(CoinMarketId("usd")).fold({
-            logE(null) { "$testTag ERROR: $it" }
-            fail("getCoinMarkets failed to return value")
-        }, {
-            logD { "$testTag VALUE: $it" }
-        })
+        coinData.getCoinDetail(CoinMarketId("usd")).take(1).collect { result ->
+            result.fold({
+                logE(null) { "$testTag ERROR: $it" }
+                fail("getCoinMarkets failed to return value")
+            }, {
+                logD { "$testTag VALUE: $it" }
+            })
+        }
     }
 }

@@ -1,5 +1,7 @@
 package cz.kotox.crypto.sdk.news
 
+import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
+import cz.kotox.crypto.sdk.common.configuration.StrictModePolicy
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerIdentifier
@@ -21,7 +23,8 @@ internal data class NewsConfig(
     val networkTimeout: Duration,
     val loggerCallback: SDKLoggerCallback,
     val loggerIdentifier: SDKLoggerIdentifier = MODULE_IDENTIFIER,
-    val isStrictModeEnabled: Boolean = false,
+    val strictModePolicy: StrictModePolicy,
+    val loggingPolicy: LoggingPolicy,
 ) {
 
     val isLoggingEnabled: Boolean = loggerCallback !is SDKLoggerCallbackNoOp

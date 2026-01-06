@@ -22,7 +22,7 @@ class CoinDataApiServiceTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        coinData = TestCoinData.provideCoinData() as CoinDataImpl
+        coinData = TestCoinData.provideCoinData(context = context) as CoinDataImpl
     }
 
     @Test

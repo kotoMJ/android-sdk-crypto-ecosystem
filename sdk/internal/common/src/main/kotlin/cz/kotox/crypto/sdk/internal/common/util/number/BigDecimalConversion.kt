@@ -40,3 +40,34 @@ public fun Map<String, String>.toBigDecimalValues(): Map<String, BigDecimal> {
 public fun Map<String, String?>.toBigDecimalOrNullValues(): Map<String, BigDecimal?> {
     return this.mapValues { it.value.toBigDecimalOrNull() }
 }
+
+// Helper to convert Double to android.icu.math.BigDecimal
+// We convert to String first to avoid floating point artifacts (e.g. 0.1 -> 0.1000000005)
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
+public fun Double?.toIcuBigDecimal(): BigDecimal {
+    return if (this == null) {
+        BigDecimal.ZERO
+    } else {
+        try {
+            BigDecimal(this.toString())
+        } catch (e: Exception) {
+            BigDecimal.ZERO
+        }
+    }
+}
+
+public fun Double?.wrapInMap(key: String): Map<String, BigDecimal> {
+    return if (this != null) {
+        mapOf(key to this.toIcuBigDecimal())
+    } else {
+        emptyMap()
+    }
+}
+
+public fun BigDecimal?.wrapInMap(key: String): Map<String, BigDecimal> {
+    return if (this != null) {
+        mapOf(key to this)
+    } else {
+        emptyMap()
+    }
+}
