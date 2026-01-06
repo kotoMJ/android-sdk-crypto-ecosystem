@@ -15,5 +15,5 @@ public interface CoinData {
 
     public fun getCoinMarkets(currency: CurrencyId): Flow<Either<SdkError, List<CoinMarket>>>
 
-    public suspend fun getCoinDetail(coinMarketId: CoinMarketId): Either<SdkError, CoinDetail>
+    public fun getCoinDetail(coinMarketId: CoinMarketId): Flow<Either<SdkError, CoinDetail>>
 }

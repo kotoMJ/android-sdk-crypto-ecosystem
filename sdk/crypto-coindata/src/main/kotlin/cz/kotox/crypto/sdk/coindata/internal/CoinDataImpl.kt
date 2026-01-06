@@ -59,9 +59,9 @@ internal class CoinDataImpl(
             repository = provideRepository(),
         ).execute(currency = currency)
 
-    override suspend fun getCoinDetail(coinMarketId: CoinMarketId): Either<SdkError, CoinDetail> =
+    override fun getCoinDetail(coinMarketId: CoinMarketId): Flow<Either<SdkError, CoinDetail>> =
         GetCoinDetailUseCase(
-            context = coinDataRequestContext,
+            repository = provideRepository(),
         ).execute(coinMarketId = coinMarketId)
 
     private fun provideCoinDataApiService(): CoinDataApiService = CoinDataApiService(

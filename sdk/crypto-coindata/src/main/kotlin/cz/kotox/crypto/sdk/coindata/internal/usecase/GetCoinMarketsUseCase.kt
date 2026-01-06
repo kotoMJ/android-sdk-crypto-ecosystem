@@ -12,12 +12,6 @@ internal class GetCoinMarketsUseCase(
 ) {
 
     internal fun execute(currency: CurrencyId): Flow<Either<SdkError, List<CoinMarket>>> {
-//        return context.withApi {
-//            getMarkets(currency).map { coinMarketDTO ->
-//                coinMarketDTO.toDomain()
-//            }
-//        }
-
         return repository.getCoinMarkets(currency = currency)
     }
 }

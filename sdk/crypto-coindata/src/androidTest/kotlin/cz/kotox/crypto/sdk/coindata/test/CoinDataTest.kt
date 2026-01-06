@@ -61,11 +61,13 @@ class CoinDataTest {
     @Test
     fun testGetCoinDetail() = runTest {
         val testTag = "[testGetCoinMarkets]"
-        coinData.getCoinDetail(CoinMarketId("usd")).fold({
-            logE(null) { "$testTag ERROR: $it" }
-            fail("getCoinMarkets failed to return value")
-        }, {
-            logD { "$testTag VALUE: $it" }
-        })
+        coinData.getCoinDetail(CoinMarketId("usd")).take(1).collect { result ->
+            result.fold({
+                logE(null) { "$testTag ERROR: $it" }
+                fail("getCoinMarkets failed to return value")
+            }, {
+                logD { "$testTag VALUE: $it" }
+            })
+        }
     }
 }
