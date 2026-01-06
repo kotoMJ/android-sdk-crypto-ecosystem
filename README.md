@@ -31,12 +31,19 @@ Case study of the SDK ecosystem with real crypto use-case.
 
 [SDK Documentation pages]
 
-### Versioning
-For details about versioning visit [SDK Versioning] section.
-
 ### GitHub
 SDK Documentation pages source code is available on separated GitHub:  
 https://github.com/kotoMJ/android-sdk-crypto-ecosystem-doc
+
+### Versioning
+SDK Ecosystem implements content based automated versioning.  
+For details about versioning visit [SDK Versioning] section.
+
+### Backend For Frontend
+SDK Ecosystem has it's own backend for frontend in order to handle API keys securely.  
+  
+Complete backend code is available on separated GitHub:  
+https://github.com/kotoMJ/sdk-crypto-ecosystem-bff
 
 ### Anatomy
 The whole SDK Ecosystem details is deconstructed here:
@@ -54,7 +61,7 @@ and here are slides from Prague meetup:
 
 In order to contribute to this codebase read [Conventions] part.
 
-[SDK Documentation pages]:https://kotomj.github.io/android-sdk-crypto-ecosystem-doc/
+[SDK Documentation pages]: https://kotomj.github.io/android-sdk-crypto-ecosystem-doc/
 [The Anatomy of SDK Ecosystem ->]: docs/The_Anatomy_of_SDKs.md
 [SDK Versioning]: sdk/bom/VERSIONING.md
 [Conventions]: extras/CONVENTIONS.md
