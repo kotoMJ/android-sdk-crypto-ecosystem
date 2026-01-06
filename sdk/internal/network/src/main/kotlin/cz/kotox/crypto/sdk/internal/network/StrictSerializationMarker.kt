@@ -8,4 +8,4 @@ import kotlinx.serialization.Serializable
  * it means "Strict Mode" is active.
  */
 @Serializable
-internal class StrictModeMarker
+internal class StrictSerializationMarker

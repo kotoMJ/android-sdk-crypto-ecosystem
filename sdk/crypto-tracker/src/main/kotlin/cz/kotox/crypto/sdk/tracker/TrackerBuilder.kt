@@ -1,5 +1,7 @@
 package cz.kotox.crypto.sdk.tracker
 
+import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
+import cz.kotox.crypto.sdk.common.configuration.StrictModePolicy
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.common.SdkDispatchers
@@ -14,7 +16,8 @@ public open class TrackerBuilder {
     private var databaseDispatcher: CoroutineDispatcher = SdkDispatchers.databaseDispatcher
     private var networkTimeout: Duration = 30.seconds
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
-    private var isStrictModeEnabled: Boolean = false
+    private var strictModePolicy: StrictModePolicy = StrictModePolicy()
+    private var loggingPolicy: LoggingPolicy = LoggingPolicy()
 
     /**
      * Set the fetch dispatcher [CoroutineDispatcher]
@@ -45,11 +48,18 @@ public open class TrackerBuilder {
     }
 
     /**
-     * Enables non-defensive strategy: FAIL FIRST when SDK encounter any unexpected mismatch.
-     * When disabled, observed mismatch is handled with defensive strategy: just logged as an error by the SDKLoggerCallback.
+     * Adjust SDK strictness configuration.
      */
-    public fun setStrictModeEnabled(strictModeEnabled: Boolean): TrackerBuilder {
-        this.isStrictModeEnabled = strictModeEnabled
+    public fun setStrictModePolicy(strictModePolicy: StrictModePolicy): TrackerBuilder {
+        this.strictModePolicy = strictModePolicy
+        return this
+    }
+
+    /**
+     * Adjust SDK diagnostic logging.
+     */
+    public fun setLoggingPolicy(loggingPolicy: LoggingPolicy): TrackerBuilder {
+        this.loggingPolicy = loggingPolicy
         return this
     }
 
@@ -64,7 +74,8 @@ public open class TrackerBuilder {
         config = TrackerConfig(
             networkTimeout = networkTimeout,
             loggerCallback = loggerCallback,
-            isStrictModeEnabled = isStrictModeEnabled,
+            strictModePolicy = strictModePolicy,
+            loggingPolicy = loggingPolicy,
         ),
     )
 }

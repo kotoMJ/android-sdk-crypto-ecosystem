@@ -9,11 +9,18 @@ import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailCurr
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailEntity
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailWithRelations
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinMarketEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface CoinDao {
 
     // --- Markets ---
+
+    // 1. Reactive stream for UI
+    @Query("SELECT * FROM coin_markets WHERE vs_currency = :currency ORDER BY marketCapRank ASC")
+    fun getMarketsFlow(currency: String): Flow<List<CoinMarketEntity>>
+
+    // 2. One-shot fetch for Repository cache-check
     @Query("SELECT * FROM coin_markets WHERE vs_currency = :currency ORDER BY marketCapRank ASC")
     suspend fun getMarkets(currency: String): List<CoinMarketEntity>
 
@@ -21,6 +28,13 @@ internal interface CoinDao {
     suspend fun insertMarkets(markets: List<CoinMarketEntity>)
 
     // --- Detail ---
+
+    // 1. Reactive stream for UI
+    @Transaction
+    @Query("SELECT * FROM coin_details WHERE id = :id")
+    fun getCoinDetailFlow(id: String): Flow<CoinDetailWithRelations?>
+
+    // 2. One-shot fetch for Repository cache-check
     @Transaction
     @Query("SELECT * FROM coin_details WHERE id = :id")
     suspend fun getCoinDetail(id: String): CoinDetailWithRelations?

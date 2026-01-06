@@ -1,5 +1,7 @@
 package cz.kotox.crypto.sdk.coindata.internal
 
+import android.content.Context
+import androidx.room.Room
 import cz.kotox.crypto.sdk.coindata.CoinData
 import cz.kotox.crypto.sdk.coindata.CoinDataConfig
 import cz.kotox.crypto.sdk.coindata.MODULE_IDENTIFIER
@@ -7,9 +9,11 @@ import cz.kotox.crypto.sdk.coindata.domain.CoinDataRequestContext
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
 import cz.kotox.crypto.sdk.coindata.internal.data.api.CoinDataApiService
+import cz.kotox.crypto.sdk.coindata.internal.data.database.CoinDatabase
 import cz.kotox.crypto.sdk.coindata.internal.test.CoinDataApiServiceTestImpl
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinDetailUseCase
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinMarketsUseCase
+import cz.kotox.crypto.sdk.coindata.internal.utils.logV
 import cz.kotox.crypto.sdk.common.Either
 import cz.kotox.crypto.sdk.common.domain.model.coin.CoinMarketId
 import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
@@ -17,6 +21,7 @@ import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
+import java.util.concurrent.Executors
 
 internal class CoinDataImpl(
     private val config: CoinDataConfig,
@@ -26,6 +31,8 @@ internal class CoinDataImpl(
     init {
         installLogger(config)
     }
+
+    private lateinit var database: CoinDatabase
 
 //    // Keep this lazy so we can init logger first.
 //    private val logger by lazy {
@@ -54,6 +61,28 @@ internal class CoinDataImpl(
     private fun provideCoinDataApiService(): CoinDataApiService = CoinDataApiService(
         coinDataConfig = config,
     )
+
+    private fun provideDatabase(context: Context): CoinDatabase {
+        synchronized(CoinDatabase::class.java) {
+            if (!::database.isInitialized) {
+                database = Room.databaseBuilder(
+                    context = context,
+                    klass = CoinDatabase::class.java,
+                    name = "mls-content-database",
+                ).apply {
+                    if (config.loggingPolicy.logDatabaseQueries) {
+                        setQueryCallback(
+                            { sqlQuery, bindArgs ->
+                                logV { "RoomQuerySQL: $sqlQuery | Args: $bindArgs" }
+                            },
+                            Executors.newSingleThreadExecutor(),
+                        )
+                    }
+                }.fallbackToDestructiveMigration().build()
+            }
+        }
+        return database
+    }
 
     private fun installLogger(config: CoinDataConfig) {
         if (config.loggerCallback is SDKLoggerCallbackNoOp) {
