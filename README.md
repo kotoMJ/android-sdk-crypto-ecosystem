@@ -16,10 +16,16 @@ Case study of the SDK ecosystem with real crypto use-case.
 
 ## Sample app
 
-[![Kotox Crypto main screen](extras/screens/kotox-crypto-list.png)](extras/screens/kotox-crypto-list.png)  
-
-[![Kotox Crypto main screen](extras/screens/kotox-crypto-detail.png)](extras/screens/kotox-crypto-detail.png)
-
+<table>
+  <tr>
+    <td>
+      <img src="extras/screens/kotox-crypto-list.png" width="250" alt="Kotox Crypto main screen" />
+    </td>
+    <td>
+      <img src="extras/screens/kotox-crypto-detail.png" width="250" alt="Kotox Crypto detail screen" />
+    </td>
+  </tr>
+</table>
 
 ## Documentation
 
