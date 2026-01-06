@@ -1,5 +1,6 @@
 package cz.kotox.crypto.sdk.coindata
 
+import android.content.Context
 import cz.kotox.crypto.sdk.coindata.internal.CoinDataImpl
 import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
 import cz.kotox.crypto.sdk.common.configuration.StrictModePolicy
@@ -11,7 +12,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-public open class CoinDataBuilder {
+public open class CoinDataBuilder(
+    private val context: Context,
+) {
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
     private var databaseDispatcher: CoroutineDispatcher = SdkDispatchers.databaseDispatcher
     private var networkTimeout: Duration = 30.seconds
@@ -77,5 +80,6 @@ public open class CoinDataBuilder {
             strictModePolicy = strictModePolicy,
             loggingPolicy = loggingPolicy,
         ),
+        context = context,
     )
 }

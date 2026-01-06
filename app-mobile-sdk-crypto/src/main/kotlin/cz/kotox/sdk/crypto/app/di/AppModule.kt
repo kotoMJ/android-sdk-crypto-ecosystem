@@ -1,5 +1,6 @@
 package cz.kotox.sdk.crypto.app.di
 
+import android.content.Context
 import cz.kotox.crypto.sdk.coindata.CoinData
 import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
 import cz.kotox.crypto.sdk.common.configuration.NetworkLogMode
@@ -16,7 +17,7 @@ import timber.log.Timber
 class AppModule {
 
     @Single
-    fun provideCoinData(): CoinData = CoinData.Builder()
+    fun provideCoinData(context: Context): CoinData = CoinData.Builder(context = context)
         .setLoggerCallback(
             sdkLoggerCallback = object : SDKLoggerCallback {
                 override fun onLogMessage(
@@ -38,7 +39,7 @@ class AppModule {
         .setLoggingPolicy(
             LoggingPolicy(
                 logDatabaseQueries = false,
-                networkLogMode = NetworkLogMode.HEADERS,
+                networkLogMode = NetworkLogMode.BASIC,
             ),
         )
         .build()
