@@ -183,7 +183,7 @@ internal fun CoinDetailWithRelations.toDomain(): CoinDetail {
 
 @OptIn(ExperimentalTime::class)
 internal fun CoinDetailDTO.toEntityPair(): Pair<CoinDetailEntity, List<CoinDetailCurrencyValueEntity>> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = Clock.System.now()
 
     val entity = CoinDetailEntity(
         id = id,

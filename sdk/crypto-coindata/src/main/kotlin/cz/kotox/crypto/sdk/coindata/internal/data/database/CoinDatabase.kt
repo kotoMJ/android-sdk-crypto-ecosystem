@@ -3,7 +3,7 @@ package cz.kotox.crypto.sdk.coindata.internal.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import cz.kotox.crypto.sdk.coindata.internal.data.database.dao.CoinDao
+import cz.kotox.crypto.sdk.coindata.internal.data.database.dao.CoinDataDao
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailCurrencyValueEntity
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailEntity
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinMarketEntity
@@ -21,7 +21,7 @@ import java.io.File
 @TypeConverters(CoinRoomConverters::class)
 internal abstract class CoinDatabase : RoomDatabase() {
 
-    abstract fun coinDao(): CoinDao
+    abstract fun coinDataDao(): CoinDataDao
 
     /**
      * Get the approximate size of the database in bytes

@@ -12,7 +12,7 @@ import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinMarketEnti
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-internal interface CoinDao {
+internal interface CoinDataDao {
 
     // --- Markets ---
 

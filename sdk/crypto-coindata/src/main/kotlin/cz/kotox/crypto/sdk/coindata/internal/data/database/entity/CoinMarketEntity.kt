@@ -44,6 +44,6 @@ internal data class CoinMarketEntity(
     val roiCurrency: String?,
     val roiPercentage: Double?,
 
-    val lastUpdated: String?,
-    val cachedAt: Long, // Stored as Epoch Millis for efficient comparison
+    val lastUpdated: Instant?,
+    val cachedAt: Instant,
 )

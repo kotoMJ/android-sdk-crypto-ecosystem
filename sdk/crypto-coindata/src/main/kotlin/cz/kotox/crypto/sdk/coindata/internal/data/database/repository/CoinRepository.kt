@@ -3,7 +3,7 @@ package cz.kotox.crypto.sdk.coindata.internal.data.database.repository
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
 import cz.kotox.crypto.sdk.coindata.internal.data.api.CoinDataApiService
-import cz.kotox.crypto.sdk.coindata.internal.data.database.dao.CoinDao
+import cz.kotox.crypto.sdk.coindata.internal.data.database.dao.CoinDataDao
 import cz.kotox.crypto.sdk.coindata.internal.data.mapper.toDomain
 import cz.kotox.crypto.sdk.coindata.internal.data.mapper.toEntity
 import cz.kotox.crypto.sdk.coindata.internal.data.mapper.toEntityPair
@@ -20,7 +20,7 @@ import kotlin.time.ExperimentalTime
 @Suppress("TooGenericExceptionCaught")
 internal class CoinRepository(
     private val apiService: CoinDataApiService,
-    private val coinDataDao: CoinDao,
+    private val coinDataDao: CoinDataDao,
 ) {
 
     // Define cache duration using kotlin.time
@@ -50,7 +50,7 @@ internal class CoinRepository(
 
             // Check Validity
             val isCacheValid = if (localData.isNotEmpty()) {
-                val cachedAtInstant = kotlin.time.Instant.fromEpochMilliseconds(localData.first().cachedAt)
+                val cachedAtInstant = localData.first().cachedAt
                 (now - cachedAtInstant) < cacheDuration
             } else {
                 false
@@ -90,7 +90,7 @@ internal class CoinRepository(
             val localData = coinDataDao.getCoinDetail(coinMarketId.value)
 
             val isCacheValid = if (localData != null) {
-                val cachedAtInstant = kotlin.time.Instant.fromEpochMilliseconds(localData.coin.cachedAt)
+                val cachedAtInstant = localData.coin.cachedAt
                 (now - cachedAtInstant) < cacheDuration
             } else {
                 false

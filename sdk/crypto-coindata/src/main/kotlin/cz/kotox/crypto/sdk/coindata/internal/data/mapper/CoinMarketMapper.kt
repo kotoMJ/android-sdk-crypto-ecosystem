@@ -86,7 +86,7 @@ internal fun CoinMarketEntity.toDomain(): CoinMarket {
         } else {
             null
         },
-        lastUpdated = lastUpdated?.let { kotlin.time.Instant.parse(it) },
+        lastUpdated = lastUpdated,
     )
 }
 
@@ -94,7 +94,7 @@ internal fun CoinMarketEntity.toDomain(): CoinMarket {
 
 @OptIn(ExperimentalTime::class)
 internal fun CoinMarketDTO.toEntity(vsCurrency: String): CoinMarketEntity {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = Clock.System.now()
     return CoinMarketEntity(
         id = id,
         vsCurrency = vsCurrency,
@@ -124,7 +124,7 @@ internal fun CoinMarketDTO.toEntity(vsCurrency: String): CoinMarketEntity {
         roiTimes = roi?.times,
         roiCurrency = roi?.currency,
         roiPercentage = roi?.percentage,
-        lastUpdated = lastUpdated?.toString(),
+        lastUpdated = lastUpdated,
         cachedAt = now,
     )
 }

@@ -24,7 +24,7 @@ internal data class CoinDetailEntity(
     val marketCapRank: Int?,
     val coingeckoRank: Int?,
     val lastUpdated: Instant?,
-    val cachedAt: Long,
+    val cachedAt: Instant,
 
     @Embedded(prefix = "img_")
     val image: ImageEntityData,
