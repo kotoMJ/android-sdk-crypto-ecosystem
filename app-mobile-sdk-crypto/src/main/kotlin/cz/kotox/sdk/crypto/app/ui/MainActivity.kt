@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
@@ -21,19 +21,23 @@ class MainActivity : ComponentActivity() {
 
         handleIntent(intent)
 
-        setContent {
-            /**
-             * Help prevent leak in AndroidComposeView.composeViews
-             * Force the composition to dispose exactly when the view detaches
-             */
-            (LocalView.current as? androidx.compose.ui.platform.AbstractComposeView)?.apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
-            }
+        /**
+         * Help prevent leak in AndroidComposeView.composeViews
+         * Create the ComposeView manually
+         */
+        val composeView = ComposeView(this).apply {
+            // Set the strategy to DisposeOnViewTreeLifecycleDestroyed
+            // This is the specific fix for the 'composeViews' static leak.
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            SDKCryptoSampleAppTheme {
-                MainActivityContent()
+            setContent {
+                SDKCryptoSampleAppTheme {
+                    MainActivityContent()
+                }
             }
         }
+
+        setContentView(composeView)
     }
 
     override fun onNewIntent(intent: Intent) {
