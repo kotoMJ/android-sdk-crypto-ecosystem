@@ -58,20 +58,23 @@ internal interface CoinDataDao {
         insertCoinDetail(detail)
         deleteCurrencyValues(detail.id)
         insertCurrencyValues(values)
+
+        // Trigger the sync to update Market table with fresh Detail data
+        syncMarketPriceFromDetail(detail.id)
+        syncMarketPriceChangeFromDetail(detail.id)
     }
 
     // --- Sync queries
 
     /**
-     * Updates the CoinMarketEntity currentPrice using the value just inserted into CoinDetailCurrencyValueEntity.
-     * We look for a match on CoinID and Currency.
-     * CAST(value AS REAL) is used because Detail stores exact BigDecimal as String, but Market uses Double.
+     * Updates the CoinMarketEntity currentPrice using the exact BigDecimal value
+     * from CoinDetailCurrencyValueEntity.
      */
     @Query(
         """
         UPDATE coin_markets 
         SET currentPrice = (
-            SELECT CAST(value AS REAL) 
+            SELECT value 
             FROM coin_detail_currency_values 
             WHERE coinId = :coinId 
             AND currency = coin_markets.vs_currency 
@@ -90,13 +93,14 @@ internal interface CoinDataDao {
     suspend fun syncMarketPriceFromDetail(coinId: String)
 
     /**
-     * Updates the CoinMarketEntity priceChangePercentage24h using the value just inserted into CoinDetailCurrencyValueEntity.
+     * Updates the CoinMarketEntity priceChangePercentage24h using the exact BigDecimal value
+     * from CoinDetailCurrencyValueEntity.
      */
     @Query(
         """
         UPDATE coin_markets 
         SET priceChangePercentage24h = (
-            SELECT CAST(value AS REAL) 
+            SELECT value
             FROM coin_detail_currency_values 
             WHERE coinId = :coinId 
             AND currency = coin_markets.vs_currency 
