@@ -1,9 +1,9 @@
 package cz.kotox.crypto.sdk.tracker.internal.mapper
 
-import android.icu.math.BigDecimal // Using your chosen type
 import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrNull
 import cz.kotox.crypto.sdk.tracker.domain.model.TradingProduct
 import cz.kotox.crypto.sdk.tracker.internal.dto.TradingProductDTO // Make sure this is the correct path to your DTO
+import java.math.BigDecimal // Using your chosen type
 
 public fun TradingProductDTO.toDomain(): TradingProduct {
     return TradingProduct(

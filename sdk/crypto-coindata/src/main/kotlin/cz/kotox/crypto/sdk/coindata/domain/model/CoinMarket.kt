@@ -2,6 +2,7 @@ package cz.kotox.crypto.sdk.coindata.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -12,25 +13,25 @@ public data class CoinMarket(
     val symbol: String,
     val name: String,
     val imageUrl: String,
-    val currentPrice: Double,
-    val marketCap: Long,
+    val currentPrice: BigDecimal,
+    val marketCap: BigDecimal,
     val marketCapRank: Int,
-    val fullyDilutedValuation: Long?,
-    val totalVolume: Double,
-    val high24h: Double?,
-    val low24h: Double?,
-    val priceChange24h: Double?,
-    val priceChangePercentage24h: Double?,
-    val marketCapChange24h: Double?,
-    val marketCapChangePercentage24h: Double?,
-    val circulatingSupply: Double,
-    val totalSupply: Double?,
-    val maxSupply: Double?,
-    val ath: Double,
-    val athChangePercentage: Double,
+    val fullyDilutedValuation: BigDecimal?,
+    val totalVolume: BigDecimal,
+    val high24h: BigDecimal?,
+    val low24h: BigDecimal?,
+    val priceChange24h: BigDecimal?,
+    val priceChangePercentage24h: BigDecimal?,
+    val marketCapChange24h: BigDecimal?,
+    val marketCapChangePercentage24h: BigDecimal?,
+    val circulatingSupply: BigDecimal,
+    val totalSupply: BigDecimal?,
+    val maxSupply: BigDecimal?,
+    val ath: BigDecimal,
+    val athChangePercentage: BigDecimal,
     val athDate: Instant,
-    val atl: Double,
-    val atlChangePercentage: Double,
+    val atl: BigDecimal,
+    val atlChangePercentage: BigDecimal,
     val atlDate: Instant,
     val roi: Roi? = null,
     val lastUpdated: Instant?,
@@ -42,7 +43,7 @@ public data class CoinMarket(
  */
 @Parcelize
 public data class Roi(
-    val times: Double,
+    val times: BigDecimal,
     val currency: String,
-    val percentage: Double,
+    val percentage: BigDecimal,
 ) : Parcelable

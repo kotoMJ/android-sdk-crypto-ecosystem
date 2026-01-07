@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.math.BigDecimal
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -43,8 +44,6 @@ class CoinDataDaoTest {
         db.close()
     }
 
-    // --- Tests ---
-
     @Test
     fun insertMarkets_retrievesCorrectCurrency() = runBlocking {
         // GIVEN: Markets for USD and EUR
@@ -64,35 +63,45 @@ class CoinDataDaoTest {
         assertEquals("usd", usdMarkets[0].vsCurrency)
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun insertCoinDetail_savesRelationsCorrectly() = runBlocking {
-        // GIVEN: A coin detail and some dynamic currency values (prices)
         val coinId = "bitcoin"
+        val staleMarket = createMarketEntity(coinId, "usd", 1).copy(
+            currentPrice = BigDecimal("100.0"),
+        )
+        coinDataDao.insertMarkets(listOf(staleMarket))
+
+        // GIVEN: A fresh Coin Detail with new prices (Price 50,000.0)
         val detail = createDetailEntity(coinId)
         val values = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "50000.0"),
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "eur", "45000.0"),
-            CoinDetailCurrencyValueEntity(coinId, "ath", "usd", "69000.0"),
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal("50000.0")), // New Price
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "eur", BigDecimal("45000.0")),
+            CoinDetailCurrencyValueEntity(coinId, "ath", "usd", BigDecimal("69000.0")),
         )
 
-        // WHEN: We insert using the transaction
+        // WHEN: We insert Detail (triggers Sync)
         coinDataDao.insertCoinDetailWithRelations(detail, values)
 
-        // THEN: We can retrieve the coin and its specific relations
-        val result = coinDataDao.getCoinDetail(coinId)
-        assertNotNull(result)
+        // THEN 1: The Detail relations are saved
+        val detailResult = coinDataDao.getCoinDetail(coinId)
+        assertNotNull(detailResult)
+        assertEquals(3, detailResult!!.currencyValues.size)
 
-        // Check Entity
-        assertEquals("Bitcoin", result!!.coin.name)
-
-        // Check Relations
-        assertEquals(3, result.currencyValues.size)
-
-        // Verify we can find the specific price we inserted
-        val usdPrice = result.currencyValues.find {
+        // Find USD price in relations
+        val usdPriceRelation = detailResult.currencyValues.find {
             it.valueType == "current_price" && it.currency == "usd"
         }
-        assertEquals("50000.0", usdPrice?.value)
+        // Use compareTo for BigDecimal safety
+        assertTrue(BigDecimal("50000.0").compareTo(usdPriceRelation?.value) == 0)
+
+        // THEN 2: The Market Entity is automatically synced
+        val marketResult = coinDataDao.getMarkets("usd").first()
+        assertEquals(
+            "Market price should have been synced from Detail",
+            0,
+            BigDecimal("50000.0").compareTo(marketResult.currentPrice),
+        )
     }
 
     @Test
@@ -101,20 +110,22 @@ class CoinDataDaoTest {
         val coinId = "bitcoin"
         val detail = createDetailEntity(coinId)
         val oldValues = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "100.0"), // Old price
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal("100.0")),
         )
         coinDataDao.insertCoinDetailWithRelations(detail, oldValues)
 
         // WHEN: We insert new data for the same coin
         val newValues = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "200.0"), // New price
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal("200.0")),
         )
         coinDataDao.insertCoinDetailWithRelations(detail, newValues)
 
         // THEN: The DB should contain ONLY the new price (old one deleted)
         val result = coinDataDao.getCoinDetail(coinId)
         assertEquals(1, result!!.currencyValues.size)
-        assertEquals("200.0", result.currencyValues.first().value)
+
+        val value = result.currencyValues.first().value
+        assertTrue("Expected 200.0 but got $value", BigDecimal("200.0").compareTo(value) == 0)
     }
 
     @Test
@@ -136,6 +147,45 @@ class CoinDataDaoTest {
         assertEquals("bitcoin", newEmission.first().id)
     }
 
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun insertCoinDetail_syncsAllMarketFields() = runBlocking {
+        // GIVEN: A stale Market entity
+        // Initial state: Price = 100.0, Change = 5.0%
+        val coinId = "bitcoin"
+        val staleMarket = createMarketEntity(coinId, "usd", 1).copy(
+            currentPrice = BigDecimal("100.0"),
+            priceChangePercentage24h = BigDecimal("5.0"),
+        )
+        coinDataDao.insertMarkets(listOf(staleMarket))
+
+        // GIVEN: Fresh Detail data with significantly different values
+        // New state: Price = 50,000.0, Change = -10.5%
+        val detail = createDetailEntity(coinId)
+        val newValues = listOf(
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal("50000.0")),
+            CoinDetailCurrencyValueEntity(coinId, "price_change_pct_24h", "usd", BigDecimal("-10.5")),
+        )
+
+        // WHEN: We insert Detail (triggers Sync)
+        coinDataDao.insertCoinDetailWithRelations(detail, newValues)
+
+        // THEN: The Market entity should reflect BOTH updates
+        val updatedMarket = coinDataDao.getMarkets("usd").first()
+
+        // Verify Price Sync
+        assertTrue(
+            "Price should be synced to 50000.0",
+            BigDecimal("50000.0").compareTo(updatedMarket.currentPrice) == 0,
+        )
+
+        // Verify Price Change Sync
+        assertTrue(
+            "Price Change % should be synced to -10.5",
+            BigDecimal("-10.5").compareTo(updatedMarket.priceChangePercentage24h!!) == 0,
+        )
+    }
+
     // --- Helpers ---
 
     @OptIn(ExperimentalTime::class)
@@ -145,25 +195,25 @@ class CoinDataDaoTest {
         symbol = id.take(3),
         name = id.capitalize(),
         imageUrl = "http://image.com/$id",
-        currentPrice = 100.0,
-        marketCap = 1000,
+        currentPrice = BigDecimal(100.0),
+        marketCap = BigDecimal(1000),
         marketCapRank = rank,
         fullyDilutedValuation = null,
-        totalVolume = 500.0,
-        high24h = 105.0,
-        low24h = 95.0,
-        priceChange24h = 5.0,
-        priceChangePercentage24h = 5.0,
-        marketCapChange24h = 0.0,
-        marketCapChangePercentage24h = 0.0,
-        circulatingSupply = 100.0,
+        totalVolume = BigDecimal(500.0),
+        high24h = BigDecimal(105.0),
+        low24h = BigDecimal(95.0),
+        priceChange24h = BigDecimal(5.0),
+        priceChangePercentage24h = BigDecimal(5.0),
+        marketCapChange24h = BigDecimal(0.0),
+        marketCapChangePercentage24h = BigDecimal(0.0),
+        circulatingSupply = BigDecimal(100.0),
         totalSupply = null,
         maxSupply = null,
-        ath = 200.0,
-        athChangePercentage = -50.0,
+        ath = BigDecimal(200.0),
+        athChangePercentage = BigDecimal(-50.0),
         athDate = Instant.parse("2021-01-01T00:00:00Z"),
-        atl = 1.0,
-        atlChangePercentage = 10000.0,
+        atl = BigDecimal(1.0),
+        atlChangePercentage = BigDecimal(10000.0),
         atlDate = Instant.parse("2015-01-01T00:00:00Z"),
         roiTimes = null,
         roiCurrency = null,
@@ -184,7 +234,7 @@ class CoinDataDaoTest {
         coingeckoRank = 1,
         image = ImageEntityData("", "", ""),
         description = LocalizationEntityData("Desc", null, null, null),
-        circulatingSupply = "1000",
+        circulatingSupply = BigDecimal(1000),
         totalSupply = null,
         maxSupply = null,
         lastUpdated = Clock.System.now(),

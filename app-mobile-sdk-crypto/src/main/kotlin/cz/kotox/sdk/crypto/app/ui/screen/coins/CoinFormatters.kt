@@ -1,5 +1,6 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coins
 
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.Locale
 
@@ -31,6 +32,11 @@ fun formatCurrency(number: Double): String {
     return formatter.format(number)
 }
 
+fun formatCurrency(number: BigDecimal): String {
+    val formatter = DecimalFormat("$#,##0.00")
+    return formatter.format(number)
+}
+
 /**
  * Formats a percentage with a leading + or - sign and two decimal places.
  * e.g., 1.68189 -> "+1.68%"
@@ -39,4 +45,8 @@ fun formatCurrency(number: Double): String {
 fun formatPercentage(number: Double): String {
     // The + flag adds a sign, .2f limits to 2 decimal places, and %% escapes the % symbol
     return String.format(locale = Locale.getDefault(), format = "%+.2f%%", number)
+}
+
+fun formatPercentage(number: BigDecimal): String {
+    return String.format(Locale.getDefault(), "%+.2f%%", number)
 }

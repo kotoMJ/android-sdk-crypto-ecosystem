@@ -1,6 +1,6 @@
 package cz.kotox.crypto.sdk.internal.common.util.number
 
-import android.icu.math.BigDecimal
+import java.math.BigDecimal
 
 /**
  * Safely converts a [String] to [BigDecimal].
@@ -41,10 +41,10 @@ public fun Map<String, String?>.toBigDecimalOrNullValues(): Map<String, BigDecim
     return this.mapValues { it.value.toBigDecimalOrNull() }
 }
 
-// Helper to convert Double to android.icu.math.BigDecimal
+// Helper to convert Double to BigDecimal
 // We convert to String first to avoid floating point artifacts (e.g. 0.1 -> 0.1000000005)
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
-public fun Double?.toIcuBigDecimal(): BigDecimal {
+public fun Double?.toBigDecimal(): BigDecimal {
     return if (this == null) {
         BigDecimal.ZERO
     } else {
@@ -58,7 +58,7 @@ public fun Double?.toIcuBigDecimal(): BigDecimal {
 
 public fun Double?.wrapInMap(key: String): Map<String, BigDecimal> {
     return if (this != null) {
-        mapOf(key to this.toIcuBigDecimal())
+        mapOf(key to this.toBigDecimal())
     } else {
         emptyMap()
     }

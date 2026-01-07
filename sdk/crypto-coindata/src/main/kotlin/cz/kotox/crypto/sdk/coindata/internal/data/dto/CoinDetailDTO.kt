@@ -1,7 +1,11 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.dto
+import cz.kotox.crypto.sdk.internal.network.serializer.BigDecimalSerializer
+import cz.kotox.crypto.sdk.internal.network.serializer.SafeBigDecimalMapNullableSerializer
+import cz.kotox.crypto.sdk.internal.network.serializer.SafeBigDecimalMapSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -130,65 +134,83 @@ public data class ReposUrlDTO(
 @Serializable
 @OptIn(ExperimentalTime::class)
 public data class MarketDataDTO(
+
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("current_price")
-    val currentPrice: Map<String, String>,
+    val currentPrice: Map<String, BigDecimal>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("ath")
-    val ath: Map<String, String>,
+    val ath: Map<String, BigDecimal>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("ath_change_percentage")
-    val athChangePercentage: Map<String, String>,
+    val athChangePercentage: Map<String, BigDecimal>,
 
     @Contextual
     @SerialName("ath_date")
     val athDate: Map<String, Instant>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("atl")
-    val atl: Map<String, String>,
+    val atl: Map<String, BigDecimal>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("atl_change_percentage")
-    val atlChangePercentage: Map<String, String>,
+    val atlChangePercentage: Map<String, BigDecimal>,
 
     @Contextual
     @SerialName("atl_date")
     val atlDate: Map<String, Instant>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("market_cap")
-    val marketCap: Map<String, String>,
+    val marketCap: Map<String, BigDecimal>,
 
     @SerialName("market_cap_rank")
     val marketCapRank: Int? = null,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("fully_diluted_valuation")
-    val fullyDilutedValuation: Map<String, String?>,
+    val fullyDilutedValuation: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapSerializer::class)
     @SerialName("total_volume")
-    val totalVolume: Map<String, String>,
+    val totalVolume: Map<String, BigDecimal>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("high_24h")
-    val high24h: Map<String, String?>,
+    val high24h: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("low_24h")
-    val low24h: Map<String, String?>,
+    val low24h: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("price_change_24h_in_currency")
-    val priceChange24hInCurrency: Map<String, String?>,
+    val priceChange24hInCurrency: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("price_change_percentage_24h_in_currency")
-    val priceChangePercentage24hInCurrency: Map<String, String?>,
+    val priceChangePercentage24hInCurrency: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("market_cap_change_24h_in_currency")
-    val marketCapChange24hInCurrency: Map<String, String?>,
+    val marketCapChange24hInCurrency: Map<String, BigDecimal?>,
 
+    @Serializable(with = SafeBigDecimalMapNullableSerializer::class)
     @SerialName("market_cap_change_percentage_24h_in_currency")
-    val marketCapChangePercentage24hInCurrency: Map<String, String?>,
+    val marketCapChangePercentage24hInCurrency: Map<String, BigDecimal?>,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("circulating_supply")
-    val circulatingSupply: String,
+    val circulatingSupply: BigDecimal,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("total_supply")
-    val totalSupply: String? = null,
+    val totalSupply: BigDecimal? = null,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("max_supply")
-    val maxSupply: String? = null,
+    val maxSupply: BigDecimal? = null,
 )

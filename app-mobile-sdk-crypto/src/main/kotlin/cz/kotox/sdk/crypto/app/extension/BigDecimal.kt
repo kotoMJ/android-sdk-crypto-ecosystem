@@ -1,6 +1,6 @@
 package cz.kotox.sdk.crypto.app.extension
 
-import android.icu.math.BigDecimal
+import java.math.BigDecimal
 
 // Enables the "-" operator
 operator fun BigDecimal.minus(other: BigDecimal): BigDecimal {

@@ -1,7 +1,7 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.database.converters
 
-import android.icu.math.BigDecimal
 import androidx.room.TypeConverter
+import java.math.BigDecimal
 
 internal interface IcuBigDecimalConverter {
 

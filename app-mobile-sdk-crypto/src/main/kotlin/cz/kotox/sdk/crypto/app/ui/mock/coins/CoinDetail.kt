@@ -1,12 +1,12 @@
 package cz.kotox.sdk.crypto.app.ui.mock.coins
 
-import android.icu.math.BigDecimal
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.Image
 import cz.kotox.crypto.sdk.coindata.domain.model.Links
 import cz.kotox.crypto.sdk.coindata.domain.model.Localization
 import cz.kotox.crypto.sdk.coindata.domain.model.MarketData
 import cz.kotox.crypto.sdk.coindata.domain.model.ReposUrl
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
