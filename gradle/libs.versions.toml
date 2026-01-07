@@ -81,6 +81,7 @@ timber = "5.0.1"
 watchface-complications = "1.2.1"
 core = "1.17.0"
 media3Cast = "1.9.0"
+foundationLayout = "1.10.0"
 
 
 [plugins]
@@ -275,6 +276,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-media3-cast = { group = "androidx.media3", name = "media3-cast", version.ref = "media3Cast" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [bundles]
 compose = [

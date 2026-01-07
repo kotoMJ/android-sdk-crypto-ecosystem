@@ -32,10 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.navigation3.runtime.NavKey
 import cz.kotox.sdk.crypto.app.R
+import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
 import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
+import kotlinx.serialization.Serializable
 
 @Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +47,7 @@ fun CoinsContentScreen(
     state: CoinsScreenState.Content,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -136,7 +140,7 @@ fun CoinsContentScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 LazyColumn(
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp + contentPadding.calculateBottomPadding()),
                 ) {
                     items(
                         items = state.coinMarkets,
@@ -153,15 +157,35 @@ fun CoinsContentScreen(
     }
 }
 
+@Serializable
+private data object PreviewMarketRoute : NavKey
+
+@Serializable
+private data object PreviewNewsRoute : NavKey
+
 @PreviewLightDark
 @Composable
 fun CoinsContentScreenPreview() {
     SDKCryptoSampleAppTheme {
-        CoinsContentScreen(
-            state = CoinsScreenState.Content(
-                coinMarkets = mockCoinMarkets,
-            ),
-            onItemClick = {},
-        )
+        Scaffold(
+            bottomBar = {
+                CryptoBottomBar(
+                    currentRoute = PreviewMarketRoute,
+                    marketRoute = PreviewMarketRoute,
+                    newsRoute = PreviewNewsRoute,
+                    onNavigate = {}, // No-op for preview
+                )
+            },
+            containerColor = Color.Transparent, // TODO really needed?
+        ) { paddingValues ->
+            CoinsContentScreen(
+                state = CoinsScreenState.Content(
+                    coinMarkets = mockCoinMarkets,
+                ),
+                onItemClick = {},
+                // This passes the bottom bar height (80dp + insets) down to the LazyColumn
+                contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
+            )
+        }
     }
 }

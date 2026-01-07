@@ -718,7 +718,7 @@ fun ActionButtonsBar() {
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ),
         ) {
-            Text("Buy", fontWeight = FontWeight.Bold)
+            Text("XYZ", fontWeight = FontWeight.Bold)
         }
 
         // Sell Button
@@ -728,7 +728,7 @@ fun ActionButtonsBar() {
             border = androidx.compose.foundation.BorderStroke(1.dp, outlineButtonBorderColor),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = outlineButtonContentColor),
         ) {
-            Text("Sell")
+            Text("ABC")
         }
 
         // Transfer Button
@@ -738,7 +738,7 @@ fun ActionButtonsBar() {
             border = androidx.compose.foundation.BorderStroke(1.dp, outlineButtonBorderColor),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = outlineButtonContentColor),
         ) {
-            Text("Transfer")
+            Text("EFG")
         }
     }
 }

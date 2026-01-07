@@ -7,18 +7,21 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +46,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import cz.kotox.sdk.crypto.app.navigation.BottomSheetSceneStrategy
 import cz.kotox.sdk.crypto.app.navigation.CompositeSceneStrategy
-import cz.kotox.sdk.crypto.app.ui.component.Screen
+import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailViewModel
 import cz.kotox.sdk.crypto.app.ui.screen.coins.CoinsScreen
@@ -56,10 +59,13 @@ import org.koin.core.parameter.parametersOf
 import java.time.Duration
 
 @Serializable
-private data object CoinsScreenRoute : NavKey
+internal data object CoinsScreenRoute : NavKey
 
 @Serializable
-private data object CurrencyScreenRoute : NavKey
+internal data object NewsScreenRoute : NavKey
+
+@Serializable
+internal data object CurrencyScreenRoute : NavKey
 
 @Serializable
 internal data class CoinDetailScreenRoute(val id: String) : NavKey
@@ -172,16 +178,43 @@ fun MainActivityContent(
         }
     }
 
-    Screen(
+    // 2. Define when to show Bottom Bar (Only on root screens)
+    val showBottomBar = currentRoute is CoinsScreenRoute || currentRoute is NewsScreenRoute
+
+    Scaffold(
         modifier = modifier
             .fillMaxSize()
             .testTag("main_activity"),
-        fab = fab,
+        floatingActionButton = fab, // Keep your FAB here
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+            ) {
+                CryptoBottomBar(
+                    currentRoute = currentRoute,
+                    marketRoute = CoinsScreenRoute,
+                    newsRoute = NewsScreenRoute,
+                    onNavigate = { route ->
+                        if (currentRoute != route) {
+                            backStack.clear()
+                            backStack.add(route)
+                        }
+                    },
+                )
+            }
+        },
+        // Transparent container so we see the "Theme" background if needed
+        containerColor = Color.Transparent,
     ) { paddingValues ->
+
+        // 3. THE GLUE: We pass the bottom bar height down to the screens
+        val bottomBarPadding = paddingValues.calculateBottomPadding()
+
         NavDisplay(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding()),
+                .fillMaxSize(),
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             sceneStrategy = appSceneStrategy,
@@ -202,6 +235,7 @@ fun MainActivityContent(
             entryProvider = entryProvider {
                 entry<CoinsScreenRoute> {
                     CoinsScreen(
+                        contentPadding = PaddingValues(bottom = bottomBarPadding),
                         onItemClick = { id ->
                             backStack.add(CoinDetailScreenRoute(id))
                         },

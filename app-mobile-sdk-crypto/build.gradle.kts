@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(libs.coil.kt.compose)
+    implementation(libs.androidx.compose.foundation.layout)
 
     debugImplementation(libs.leakcanary)
 
