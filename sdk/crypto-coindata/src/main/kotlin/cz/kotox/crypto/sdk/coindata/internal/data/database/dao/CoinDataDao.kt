@@ -11,6 +11,7 @@ import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinDetailWith
 import cz.kotox.crypto.sdk.coindata.internal.data.database.entity.CoinMarketEntity
 import kotlinx.coroutines.flow.Flow
 
+@Suppress("TooManyFunctions")
 @Dao
 internal interface CoinDataDao {
 
@@ -58,4 +59,58 @@ internal interface CoinDataDao {
         deleteCurrencyValues(detail.id)
         insertCurrencyValues(values)
     }
+
+    // --- Sync queries
+
+    /**
+     * Updates the CoinMarketEntity currentPrice using the value just inserted into CoinDetailCurrencyValueEntity.
+     * We look for a match on CoinID and Currency.
+     * CAST(value AS REAL) is used because Detail stores exact BigDecimal as String, but Market uses Double.
+     */
+    @Query(
+        """
+        UPDATE coin_markets 
+        SET currentPrice = (
+            SELECT CAST(value AS REAL) 
+            FROM coin_detail_currency_values 
+            WHERE coinId = :coinId 
+            AND currency = coin_markets.vs_currency 
+            AND valueType = 'current_price'
+        ) 
+        WHERE id = :coinId 
+        AND EXISTS (
+            SELECT 1 
+            FROM coin_detail_currency_values 
+            WHERE coinId = :coinId 
+            AND currency = coin_markets.vs_currency 
+            AND valueType = 'current_price'
+        )
+    """,
+    )
+    suspend fun syncMarketPriceFromDetail(coinId: String)
+
+    /**
+     * Updates the CoinMarketEntity priceChangePercentage24h using the value just inserted into CoinDetailCurrencyValueEntity.
+     */
+    @Query(
+        """
+        UPDATE coin_markets 
+        SET priceChangePercentage24h = (
+            SELECT CAST(value AS REAL) 
+            FROM coin_detail_currency_values 
+            WHERE coinId = :coinId 
+            AND currency = coin_markets.vs_currency 
+            AND valueType = 'price_change_pct_24h'
+        ) 
+        WHERE id = :coinId 
+        AND EXISTS (
+            SELECT 1 
+            FROM coin_detail_currency_values 
+            WHERE coinId = :coinId 
+            AND currency = coin_markets.vs_currency 
+            AND valueType = 'price_change_pct_24h'
+        )
+    """,
+    )
+    suspend fun syncMarketPriceChangeFromDetail(coinId: String)
 }

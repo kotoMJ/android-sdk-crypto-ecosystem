@@ -31,6 +31,7 @@ import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
 import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
+import java.math.BigDecimal
 
 @Composable
 fun CoinListItem(
@@ -38,7 +39,7 @@ fun CoinListItem(
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val percentageColor = if ((market.priceChangePercentage24h ?: 0.0) >= 0.0) {
+    val percentageColor = if ((market.priceChangePercentage24h ?: BigDecimal.ZERO) >= BigDecimal.ZERO) {
         PositiveGreen
     } else {
         NegativeRed
@@ -104,7 +105,7 @@ fun CoinListItem(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = formatPercentage(market.priceChangePercentage24h ?: 0.0),
+                    text = formatPercentage(market.priceChangePercentage24h ?: BigDecimal.ZERO),
                     style = MaterialTheme.typography.bodyMedium,
                     color = percentageColor,
                     fontWeight = FontWeight.Bold,

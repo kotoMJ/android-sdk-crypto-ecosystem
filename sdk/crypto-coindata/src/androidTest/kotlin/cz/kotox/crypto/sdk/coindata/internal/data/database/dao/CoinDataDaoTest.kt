@@ -19,6 +19,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.math.BigDecimal
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -145,25 +146,25 @@ class CoinDataDaoTest {
         symbol = id.take(3),
         name = id.capitalize(),
         imageUrl = "http://image.com/$id",
-        currentPrice = 100.0,
-        marketCap = 1000,
+        currentPrice = BigDecimal(100.0),
+        marketCap = BigDecimal(1000),
         marketCapRank = rank,
         fullyDilutedValuation = null,
-        totalVolume = 500.0,
-        high24h = 105.0,
-        low24h = 95.0,
-        priceChange24h = 5.0,
-        priceChangePercentage24h = 5.0,
-        marketCapChange24h = 0.0,
-        marketCapChangePercentage24h = 0.0,
-        circulatingSupply = 100.0,
+        totalVolume = BigDecimal(500.0),
+        high24h = BigDecimal(105.0),
+        low24h = BigDecimal(95.0),
+        priceChange24h = BigDecimal(5.0),
+        priceChangePercentage24h = BigDecimal(5.0),
+        marketCapChange24h = BigDecimal(0.0),
+        marketCapChangePercentage24h = BigDecimal(0.0),
+        circulatingSupply = BigDecimal(100.0),
         totalSupply = null,
         maxSupply = null,
-        ath = 200.0,
-        athChangePercentage = -50.0,
+        ath = BigDecimal(200.0),
+        athChangePercentage = BigDecimal(-50.0),
         athDate = Instant.parse("2021-01-01T00:00:00Z"),
-        atl = 1.0,
-        atlChangePercentage = 10000.0,
+        atl = BigDecimal(1.0),
+        atlChangePercentage = BigDecimal(10000.0),
         atlDate = Instant.parse("2015-01-01T00:00:00Z"),
         roiTimes = null,
         roiCurrency = null,

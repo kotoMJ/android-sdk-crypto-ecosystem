@@ -1,6 +1,6 @@
 package cz.kotox.crypto.sdk.coindata.domain.model
 
-import android.icu.math.BigDecimal
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 

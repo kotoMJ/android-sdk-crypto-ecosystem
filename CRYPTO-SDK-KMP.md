@@ -7,7 +7,7 @@ Frameworks used to build this SDK are KMP compatible and there should not be mas
 ## Current platform locks
 Here is the list of known Android platform locks in this SDK
 
-### import android.icu.math.BigDecimal
+### import java.math.BigDecimal
 Using BigDecimal for financial operations should be replaced by expect/actual or some kmp library like com.ionspin.kotlin.bignum
 
 ### import android.os.Parcelable

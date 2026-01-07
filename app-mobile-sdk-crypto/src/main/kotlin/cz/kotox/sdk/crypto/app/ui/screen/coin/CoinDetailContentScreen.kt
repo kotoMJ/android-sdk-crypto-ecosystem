@@ -1,8 +1,6 @@
 package cz.kotox.sdk.crypto.app.ui.screen.coin
 
 import android.app.Activity
-import android.icu.math.BigDecimal
-import android.icu.text.NumberFormat
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -74,6 +72,8 @@ import cz.kotox.sdk.crypto.app.ui.theme.alertShape
 import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
 import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
 import kotlinx.coroutines.delay
+import java.math.BigDecimal
+import java.text.NumberFormat
 import java.util.Locale
 
 @Composable

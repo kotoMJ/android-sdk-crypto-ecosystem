@@ -1,6 +1,5 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.mapper
 
-import android.icu.math.BigDecimal
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.Image
 import cz.kotox.crypto.sdk.coindata.domain.model.Links
@@ -22,6 +21,7 @@ import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrNull
 import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrNullValues
 import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrZero
 import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalValues
+import java.math.BigDecimal
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

@@ -1,8 +1,8 @@
 package cz.kotox.crypto.sdk.tracker.domain.model
 
-import android.icu.math.BigDecimal
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 /**
  * Represents a single trading product (pair) from Coinbase.

@@ -1,14 +1,16 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.dto
 
-import cz.kotox.crypto.sdk.internal.network.SafeLongSerializer
+import cz.kotox.crypto.sdk.internal.network.BigDecimalSerializer
+import cz.kotox.crypto.sdk.internal.network.SafeBigDecimalSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-private object MarketCapSerializer : SafeLongSerializer("CoinMarketDTO.market_cap")
-private object FullyDilutedValuationSerializer : SafeLongSerializer("CoinMarketDTO.fully_diluted_valuation")
+private object MarketCapSerializer : SafeBigDecimalSerializer("CoinMarketDTO.market_cap")
+private object FullyDilutedValuationSerializer : SafeBigDecimalSerializer("CoinMarketDTO.fully_diluted_valuation")
 
 @Serializable
 public data class CoinMarketDTO
@@ -26,64 +28,79 @@ constructor(
     @SerialName("image")
     val imageUrl: String,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("current_price")
-    val currentPrice: Double,
+    val currentPrice: BigDecimal,
 
     @Serializable(with = MarketCapSerializer::class)
     @SerialName("market_cap")
-    val marketCap: Long,
+    val marketCap: BigDecimal,
 
     @SerialName("market_cap_rank")
     val marketCapRank: Int,
 
     @Serializable(with = FullyDilutedValuationSerializer::class)
     @SerialName("fully_diluted_valuation")
-    val fullyDilutedValuation: Long?,
+    val fullyDilutedValuation: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("total_volume")
-    val totalVolume: Double,
+    val totalVolume: BigDecimal,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("high_24h")
-    val high24h: Double?,
+    val high24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("low_24h")
-    val low24h: Double?,
+    val low24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("price_change_24h")
-    val priceChange24h: Double?,
+    val priceChange24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("price_change_percentage_24h")
-    val priceChangePercentage24h: Double?,
+    val priceChangePercentage24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("market_cap_change_24h")
-    val marketCapChange24h: Double?,
+    val marketCapChange24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("market_cap_change_percentage_24h")
-    val marketCapChangePercentage24h: Double?,
+    val marketCapChangePercentage24h: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("circulating_supply")
-    val circulatingSupply: Double,
+    val circulatingSupply: BigDecimal,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("total_supply")
-    val totalSupply: Double?,
+    val totalSupply: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("max_supply")
-    val maxSupply: Double?,
+    val maxSupply: BigDecimal?,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("ath")
-    val ath: Double,
+    val ath: BigDecimal,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("ath_change_percentage")
-    val athChangePercentage: Double,
+    val athChangePercentage: BigDecimal,
 
     @SerialName("ath_date")
     val athDate: Instant,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("atl")
-    val atl: Double,
+    val atl: BigDecimal,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("atl_change_percentage")
-    val atlChangePercentage: Double,
+    val atlChangePercentage: BigDecimal,
 
     @SerialName("atl_date")
     val atlDate: Instant,
@@ -102,12 +119,14 @@ constructor(
  */
 @Serializable
 public data class RoiDTO(
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("times")
-    val times: Double,
+    val times: BigDecimal,
 
     @SerialName("currency")
     val currency: String,
 
+    @Serializable(with = BigDecimalSerializer::class)
     @SerialName("percentage")
-    val percentage: Double,
+    val percentage: BigDecimal,
 )
