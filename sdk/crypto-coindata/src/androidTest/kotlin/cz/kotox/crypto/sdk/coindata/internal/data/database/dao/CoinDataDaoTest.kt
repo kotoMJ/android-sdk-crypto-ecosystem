@@ -71,9 +71,9 @@ class CoinDataDaoTest {
         val coinId = "bitcoin"
         val detail = createDetailEntity(coinId)
         val values = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "50000.0"),
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "eur", "45000.0"),
-            CoinDetailCurrencyValueEntity(coinId, "ath", "usd", "69000.0"),
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal(50000.0)),
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "eur", BigDecimal(45000.0)),
+            CoinDetailCurrencyValueEntity(coinId, "ath", "usd", BigDecimal(69000.0)),
         )
 
         // WHEN: We insert using the transaction
@@ -102,13 +102,13 @@ class CoinDataDaoTest {
         val coinId = "bitcoin"
         val detail = createDetailEntity(coinId)
         val oldValues = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "100.0"), // Old price
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal(100.0)), // Old price
         )
         coinDataDao.insertCoinDetailWithRelations(detail, oldValues)
 
         // WHEN: We insert new data for the same coin
         val newValues = listOf(
-            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", "200.0"), // New price
+            CoinDetailCurrencyValueEntity(coinId, "current_price", "usd", BigDecimal(200.0)), // New price
         )
         coinDataDao.insertCoinDetailWithRelations(detail, newValues)
 
@@ -185,7 +185,7 @@ class CoinDataDaoTest {
         coingeckoRank = 1,
         image = ImageEntityData("", "", ""),
         description = LocalizationEntityData("Desc", null, null, null),
-        circulatingSupply = "1000",
+        circulatingSupply = BigDecimal(1000),
         totalSupply = null,
         maxSupply = null,
         lastUpdated = Clock.System.now(),

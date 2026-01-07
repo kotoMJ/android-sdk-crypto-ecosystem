@@ -1,7 +1,7 @@
 package cz.kotox.crypto.sdk.coindata.internal.data.dto
 
-import cz.kotox.crypto.sdk.internal.network.BigDecimalSerializer
-import cz.kotox.crypto.sdk.internal.network.SafeBigDecimalSerializer
+import cz.kotox.crypto.sdk.internal.network.serializer.BigDecimalSerializer
+import cz.kotox.crypto.sdk.internal.network.serializer.SafeBigDecimalSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

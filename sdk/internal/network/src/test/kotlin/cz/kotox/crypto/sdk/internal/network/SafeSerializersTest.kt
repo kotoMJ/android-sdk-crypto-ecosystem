@@ -1,5 +1,7 @@
 package cz.kotox.crypto.sdk.internal.network
 
+import cz.kotox.crypto.sdk.internal.network.serializer.SafeLongSerializerDefault
+import cz.kotox.crypto.sdk.internal.network.serializer.SafeNullableLongSerializerDefault
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule

@@ -1,7 +1,8 @@
-package cz.kotox.crypto.sdk.internal.network
+package cz.kotox.crypto.sdk.internal.network.serializer
 
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
+import cz.kotox.crypto.sdk.internal.network.StrictSerializationMarker
 import cz.kotox.crypto.sdk.internal.network.utils.MODULE_IDENTIFIER
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer

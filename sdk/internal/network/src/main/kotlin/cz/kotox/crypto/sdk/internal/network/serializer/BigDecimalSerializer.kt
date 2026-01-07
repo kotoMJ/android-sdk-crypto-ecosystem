@@ -1,4 +1,4 @@
-package cz.kotox.crypto.sdk.internal.network
+package cz.kotox.crypto.sdk.internal.network.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -11,7 +11,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.math.BigDecimal
 
 /**
- * Serializer that reads a JSON number (or string) directly into [BigDecimal]
+ * Serializer that reads a JSON number (or string) directly into [java.math.BigDecimal]
  * without passing through Double, preserving exact API precision.
  */
 public object BigDecimalSerializer : KSerializer<BigDecimal> {

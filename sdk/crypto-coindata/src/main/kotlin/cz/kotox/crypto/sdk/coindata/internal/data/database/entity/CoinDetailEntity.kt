@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -33,9 +34,9 @@ internal data class CoinDetailEntity(
     val description: LocalizationEntityData,
 
     // Flattened simple fields from MarketData
-    val circulatingSupply: String, // BigDecimal as String
-    val totalSupply: String?,
-    val maxSupply: String?,
+    val circulatingSupply: BigDecimal,
+    val totalSupply: BigDecimal?,
+    val maxSupply: BigDecimal?,
 )
 
 // Helper data classes for Embedding
@@ -71,7 +72,7 @@ internal data class CoinDetailCurrencyValueEntity(
     val coinId: String,
     val valueType: String, // e.g. "current_price", "ath", "total_volume"
     val currency: String, // e.g. "usd", "eur"
-    val value: String, // BigDecimal stored as String to preserve precision
+    val value: BigDecimal,
 )
 
 // --- 4. Aggregate Result for Room Query ---

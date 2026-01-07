@@ -17,10 +17,6 @@ import cz.kotox.crypto.sdk.coindata.internal.data.dto.LinksDTO
 import cz.kotox.crypto.sdk.coindata.internal.data.dto.LocalizationDTO
 import cz.kotox.crypto.sdk.coindata.internal.data.dto.MarketDataDTO
 import cz.kotox.crypto.sdk.coindata.internal.data.dto.ReposUrlDTO
-import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrNull
-import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrNullValues
-import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalOrZero
-import cz.kotox.crypto.sdk.internal.common.util.number.toBigDecimalValues
 import java.math.BigDecimal
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -91,28 +87,28 @@ internal fun LinksDTO.toDomain(): Links {
 @OptIn(ExperimentalTime::class)
 internal fun MarketDataDTO.toDomain(): MarketData {
     return MarketData(
-        currentPrice = this.currentPrice.toBigDecimalValues(),
-        ath = this.ath.toBigDecimalValues(),
-        athChangePercentage = this.athChangePercentage.toBigDecimalValues(),
+        currentPrice = this.currentPrice,
+        ath = this.ath,
+        athChangePercentage = this.athChangePercentage,
         athDate = this.athDate,
-        atl = this.atl.toBigDecimalValues(),
-        atlChangePercentage = this.atlChangePercentage.toBigDecimalValues(),
+        atl = this.atl,
+        atlChangePercentage = this.atlChangePercentage,
         atlDate = this.atlDate,
-        marketCap = this.marketCap.toBigDecimalValues(),
+        marketCap = this.marketCap,
         marketCapRank = this.marketCapRank,
-        fullyDilutedValuation = this.fullyDilutedValuation.toBigDecimalOrNullValues(),
-        totalVolume = this.totalVolume.toBigDecimalValues(),
-        high24h = this.high24h.toBigDecimalOrNullValues(),
-        low24h = this.low24h.toBigDecimalOrNullValues(),
-        priceChange24hInCurrency = this.priceChange24hInCurrency.toBigDecimalOrNullValues(),
-        priceChangePercentage24hInCurrency = this.priceChangePercentage24hInCurrency.toBigDecimalOrNullValues(),
-        marketCapChange24hInCurrency = this.marketCapChange24hInCurrency.toBigDecimalOrNullValues(),
-        marketCapChangePercentage24hInCurrency = this.marketCapChangePercentage24hInCurrency.toBigDecimalOrNullValues(),
+        fullyDilutedValuation = this.fullyDilutedValuation,
+        totalVolume = this.totalVolume,
+        high24h = this.high24h,
+        low24h = this.low24h,
+        priceChange24hInCurrency = this.priceChange24hInCurrency,
+        priceChangePercentage24hInCurrency = this.priceChangePercentage24hInCurrency,
+        marketCapChange24hInCurrency = this.marketCapChange24hInCurrency,
+        marketCapChangePercentage24hInCurrency = this.marketCapChangePercentage24hInCurrency,
 
         // Handle single String-to-BigDecimal conversions
-        circulatingSupply = this.circulatingSupply.toBigDecimalOrZero(),
-        totalSupply = this.totalSupply?.toBigDecimalOrNull(),
-        maxSupply = this.maxSupply?.toBigDecimalOrNull(),
+        circulatingSupply = this.circulatingSupply,
+        totalSupply = this.totalSupply,
+        maxSupply = this.maxSupply,
     )
 }
 
@@ -126,13 +122,13 @@ internal fun CoinDetailWithRelations.toDomain(): CoinDetail {
     // Helper to reconstruct Maps from the List<Entity>
     fun getMap(type: String): Map<String, BigDecimal> {
         return values.filter { it.valueType == type }
-            .associate { it.currency to BigDecimal(it.value) }
+            .associate { it.currency to it.value }
     }
 
     // Helper for nullable maps
     fun getMapNullable(type: String): Map<String, BigDecimal?> {
         return values.filter { it.valueType == type }
-            .associate { it.currency to BigDecimal(it.value) }
+            .associate { it.currency to it.value }
     }
 
     // Reconstruct MarketData
@@ -142,9 +138,9 @@ internal fun CoinDetailWithRelations.toDomain(): CoinDetail {
         athChangePercentage = getMap("ath_change_percentage"),
         marketCap = getMap("market_cap"),
         totalVolume = getMap("total_volume"),
-        circulatingSupply = BigDecimal(entity.circulatingSupply),
-        totalSupply = entity.totalSupply?.let { BigDecimal(it) },
-        maxSupply = entity.maxSupply?.let { BigDecimal(it) },
+        circulatingSupply = entity.circulatingSupply,
+        totalSupply = entity.totalSupply,
+        maxSupply = entity.maxSupply,
         // ... map the rest of MarketData fields similarly using specific "types" ...
         // For brevity, assuming similar pattern for all other maps
         athDate = emptyMap(), // Dates are tricky in this map structure, might need specific handling or separate table if critical
@@ -206,7 +202,7 @@ internal fun CoinDetailDTO.toEntityPair(): Pair<CoinDetailEntity, List<CoinDetai
     val values = mutableListOf<CoinDetailCurrencyValueEntity>()
 
     // Helper to flatten maps
-    fun addMap(type: String, map: Map<String, String?>) {
+    fun addMapBigDecimal(type: String, map: Map<String, BigDecimal?>) {
         map.forEach { (currency, value) ->
             if (value != null) {
                 values.add(CoinDetailCurrencyValueEntity(id, type, currency, value))
@@ -215,20 +211,20 @@ internal fun CoinDetailDTO.toEntityPair(): Pair<CoinDetailEntity, List<CoinDetai
     }
 
     // Flatten all MarketData maps
-    addMap("current_price", marketData.currentPrice)
-    addMap("ath", marketData.ath)
-    addMap("ath_change_percentage", marketData.athChangePercentage)
-    addMap("market_cap", marketData.marketCap)
-    addMap("total_volume", marketData.totalVolume)
-    addMap("atl", marketData.atl)
-    addMap("atl_change_percentage", marketData.atlChangePercentage)
-    addMap("fdv", marketData.fullyDilutedValuation)
-    addMap("high_24h", marketData.high24h)
-    addMap("low_24h", marketData.low24h)
-    addMap("price_change_24h", marketData.priceChange24hInCurrency)
-    addMap("price_change_pct_24h", marketData.priceChangePercentage24hInCurrency)
-    addMap("mcap_change_24h", marketData.marketCapChange24hInCurrency)
-    addMap("mcap_change_pct_24h", marketData.marketCapChangePercentage24hInCurrency)
+    addMapBigDecimal("current_price", marketData.currentPrice)
+    addMapBigDecimal("ath", marketData.ath)
+    addMapBigDecimal("ath_change_percentage", marketData.athChangePercentage)
+    addMapBigDecimal("market_cap", marketData.marketCap)
+    addMapBigDecimal("total_volume", marketData.totalVolume)
+    addMapBigDecimal("atl", marketData.atl)
+    addMapBigDecimal("atl_change_percentage", marketData.atlChangePercentage)
+    addMapBigDecimal("fdv", marketData.fullyDilutedValuation)
+    addMapBigDecimal("high_24h", marketData.high24h)
+    addMapBigDecimal("low_24h", marketData.low24h)
+    addMapBigDecimal("price_change_24h", marketData.priceChange24hInCurrency)
+    addMapBigDecimal("price_change_pct_24h", marketData.priceChangePercentage24hInCurrency)
+    addMapBigDecimal("mcap_change_24h", marketData.marketCapChange24hInCurrency)
+    addMapBigDecimal("mcap_change_pct_24h", marketData.marketCapChangePercentage24hInCurrency)
 
     return Pair(entity, values)
 }
