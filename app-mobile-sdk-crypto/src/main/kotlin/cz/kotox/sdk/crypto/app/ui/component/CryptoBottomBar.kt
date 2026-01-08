@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Timeline
@@ -18,6 +19,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -81,11 +83,14 @@ fun CryptoBottomBar(
 
 @Composable
 private fun navigationItemColors() = NavigationBarItemDefaults.colors(
-    selectedIconColor = MaterialTheme.colorScheme.onPrimary, // Icon color when selected (Black/White depending on theme)
-    selectedTextColor = MaterialTheme.colorScheme.primary, // Text color when selected (Gold)
-    indicatorColor = Color.Transparent, // Remove the default pill/oval
+    // Selected: Sharp Black icon (high contrast against Gold Core)
+    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+
+    // Unselected: Dark Grey (Light Mode) or Light Grey (Dark Mode)
+    // The "Ghost Circle" behind it ensures this is always readable.
     unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-    unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+
+    indicatorColor = Color.Transparent, // Remove the default pill/oval
 )
 
 @Composable
@@ -95,27 +100,41 @@ private fun GlowIcon(
     description: String,
 ) {
     Box(contentAlignment = Alignment.Center) {
-        // ALWAYS show a background glow/scrim
+        // LAYER 1: The "Atmosphere" (Outer Glow)
+        // Visible only when selected. Creates the "bloom" effect around the button.
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .background(SDKTheme.brushes.iconGlowSelected), // White/Gold Bloom
+            )
+        }
+
+        // LAYER 2: The "Core" (Touch Target Anchor)
+        // This is the CIRCLE you asked for. It creates a physical button shape.
         Box(
             modifier = Modifier
-                .size(64.dp)
+                .size(48.dp) // Standard touch target size
+                .clip(CircleShape) // Ensures it's a perfect circle
                 .background(
-                    // Switch brush based on state
-                    if (isSelected) {
-                        SDKTheme.brushes.iconGlowSelected
-                    } else {
-                        SDKTheme.brushes.iconGlowUnselected
+                    when {
+                        // Case A: Selected -> Semi-solid Gold Core.
+                        // Anchors the icon so it doesn't float in the glow.
+                        isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+
+                        // Case B: Unselected -> Subtle "Ghost" Circle.
+                        // Provides contrast in Light Mode and defines the clickable area.
+                        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                     },
                 ),
-        )
-
-        // The Icon sits on top
-        Icon(
-            imageVector = icon,
-            contentDescription = description,
-            modifier = Modifier.size(26.dp),
-            // We do NOT tint here, letting NavigationBarItemDefaults handle colors
-            // (Gold for selected, Grey for unselected)
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            // LAYER 3: The Icon
+            Icon(
+                imageVector = icon,
+                contentDescription = description,
+                modifier = Modifier.size(24.dp), // Icon fits nicely inside the 48dp core
+            )
+        }
     }
 }
