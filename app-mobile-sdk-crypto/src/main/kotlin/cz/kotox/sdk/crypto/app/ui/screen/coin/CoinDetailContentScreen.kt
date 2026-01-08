@@ -71,9 +71,10 @@ import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
 import cz.kotox.sdk.crypto.app.ui.theme.alertShape
 import cz.kotox.sdk.crypto.app.ui.theme.color.NegativeRed
 import cz.kotox.sdk.crypto.app.ui.theme.color.PositiveGreen
+import cz.kotox.sdk.crypto.app.utils.formatter.formatAmountCompact
+import cz.kotox.sdk.crypto.app.utils.formatter.formatAmountCurrency
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
-import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
@@ -260,7 +261,7 @@ fun PriceSection(
 
     Column {
         Text(
-            text = formatCurrency(currentPrice),
+            text = currentPrice.formatAmountCurrency(),
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
@@ -381,7 +382,7 @@ fun StatsGrid(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Market Cap",
-                value = formatCompact(data.marketCap[currency]),
+                value = data.marketCap[currency].formatAmountCompact(),
                 change = data.marketCapChangePercentage24hInCurrency[currency],
                 description = "Total value of all coins in circulation.",
                 onInfoClick = onInfoClick,
@@ -389,7 +390,7 @@ fun StatsGrid(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Volume (24h)",
-                value = formatCompact(data.totalVolume[currency]),
+                value = data.totalVolume[currency].formatAmountCompact(),
                 subValue = "Traded today",
                 description = "Total trading volume in the last 24h.",
                 onInfoClick = onInfoClick,
@@ -404,7 +405,7 @@ fun StatsGrid(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Circulating Supply",
-                value = formatCompact(data.circulatingSupply),
+                value = data.circulatingSupply.formatAmountCompact(),
                 subValue = "${coin.symbol.uppercase()} (Active)",
                 description = "Coins currently in the market.",
                 onInfoClick = onInfoClick,
@@ -412,7 +413,7 @@ fun StatsGrid(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "Fully Diluted Val.",
-                value = formatCompact(data.fullyDilutedValuation[currency]),
+                value = data.fullyDilutedValuation[currency].formatAmountCompact(),
                 subValue = "Theoretical Max Cap",
                 description = "Market Cap if all coins were in circulation.",
                 onInfoClick = onInfoClick,
@@ -428,7 +429,7 @@ fun StatsGrid(
             StatCard(
                 modifier = Modifier.weight(1f),
                 title = "All-Time High",
-                value = formatCompact(data.ath[currency]),
+                value = data.ath[currency].formatAmountCompact(),
                 change = data.athChangePercentage[currency],
                 description = "Highest price ever recorded.",
                 onInfoClick = onInfoClick,
@@ -578,12 +579,12 @@ fun RangeProgressBar(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = "L: ${formatCompact(low)}",
+                text = "L: ${low.formatAmountCompact()}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = "H: ${formatCompact(high)}",
+                text = "H: ${high.formatAmountCompact()}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -740,29 +741,6 @@ fun ActionButtonsBar() {
         ) {
             Text("EFG")
         }
-    }
-}
-
-// --- Helper Functions for Formatting ---
-
-@Suppress("TooGenericExceptionCaught", "SwallowedException")
-fun formatCurrency(amount: BigDecimal?): String {
-    if (amount == null) return "N/A"
-    return try {
-        NumberFormat.getCurrencyInstance(Locale.US).format(amount)
-    } catch (e: Exception) {
-        amount.toString()
-    }
-}
-
-fun formatCompact(amount: BigDecimal?): String {
-    if (amount == null) return "N/A"
-    val doubleVal = amount.toDouble()
-    return when {
-        doubleVal >= 1_000_000_000 -> String.format(Locale.US, "%.2fB", doubleVal / 1_000_000_000)
-        doubleVal >= 1_000_000 -> String.format(Locale.US, "%.2fM", doubleVal / 1_000_000)
-        doubleVal >= 1_000 -> String.format(Locale.US, "%.2fK", doubleVal / 1_000)
-        else -> String.format(Locale.US, "%.2f", doubleVal)
     }
 }
 

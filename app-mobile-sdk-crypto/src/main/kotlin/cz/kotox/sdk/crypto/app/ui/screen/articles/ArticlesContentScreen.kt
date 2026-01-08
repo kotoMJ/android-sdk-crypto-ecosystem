@@ -1,4 +1,4 @@
-package cz.kotox.sdk.crypto.app.ui.screen.coins
+package cz.kotox.sdk.crypto.app.ui.screen.articles
 
 import android.app.Activity
 import androidx.compose.foundation.background
@@ -12,7 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,33 +34,71 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import androidx.navigation3.runtime.NavKey
+import cz.kotox.crypto.sdk.news.domain.Article
+import cz.kotox.crypto.sdk.news.domain.Source
 import cz.kotox.sdk.crypto.app.R
-import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
-import cz.kotox.sdk.crypto.app.ui.mock.coins.mockCoinMarkets
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
-import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 @Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CoinsContentScreen(
-    state: CoinsScreenState.Content,
-    onItemClick: (String) -> Unit,
+fun ArticlesContentScreen(
+    onItemClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
+    // --- Mock Data matching your Article domain model ---
+    val articles = listOf(
+        Article(
+            source = Source(null, "Cointelegraph"),
+            author = "Nate Kostar",
+            title = "Riot Platforms vendió USD 161M en BTC tras ajustar su estrategia corporativa",
+            description = "El minero de Bitcoin vendió 1.818 BTC...",
+            url = "https://es.cointelegraph.com/news/...",
+            urlToImage = "https://images.cointelegraph.com/cdn-cgi/image/f=auto,onerror=redirect,w=1200/https://s3.cointelegraph.com/uploads/2026-01/019b990c-3be0-703a-b6fa-35624b794743.jpg",
+            publishedAt = Instant.parse("2026-01-07T17:55:00Z"),
+            content = "Full content...",
+        ),
+        Article(
+            source = Source(null, "Criptonoticias"),
+            author = "Bárbara Distéfano",
+            title = "Bitcoin está subiendo, pero… ¿qué tanta fuerza tiene?",
+            description = "Con el alza que trajo el inicio del 2026...",
+            url = "https://www.criptonoticias.com/...",
+            urlToImage = "https://www.criptonoticias.com/wp-content/uploads/2025/04/bitcoin-precio-analisis-analista.jpg",
+            publishedAt = Instant.parse("2026-01-07T16:39:12Z"),
+            content = "Full content...",
+        ),
+        Article(
+            source = Source(null, "Expansion.com"),
+            author = "Stephen Foley",
+            title = "PwC se 'acerca' a las criptomonedas tras el apoyo de Donald Trump",
+            description = "PwC decidió acercarse al sector...",
+            url = "https://www.expansion.com/...",
+            urlToImage = "https://e01-phantom-expansion.uecdn.es/b19c9c38520ea908449ffe88d0ef065e/crop/0x0/2048x1365/resize/1200/f/webp/assets/multimedia/imagenes/2026/01/07/17678032249553.jpg",
+            publishedAt = Instant.parse("2026-01-07T16:28:03Z"),
+            content = "Full content...",
+        ),
+        Article(
+            source = Source(null, "Cointelegraph"),
+            author = "Aaron Wood",
+            title = "La SEC ya es plenamente republicana y se prepara para legislar a favor de las criptomonedas",
+            description = "La SEC tiene previsto continuar...",
+            url = "https://es.cointelegraph.com/...",
+            urlToImage = "https://images.cointelegraph.com/cdn-cgi/image/f=auto,onerror=redirect,w=1200/https://s3.cointelegraph.com/uploads/2026-01/019b98c3-eecd-7c02-928d-03c97e75a6a7.jpg",
+            publishedAt = Instant.parse("2026-01-07T16:21:13Z"),
+            content = "Full content...",
+        ),
+    )
+
+    // --- System Bar Logic ---
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // 1. Make the Status Bar Transparent so the Gradient shows through
             window.statusBarColor = Color.Transparent.toArgb()
-
-            // 2. Force Status Bar Icons to be DARK (Black).
-            // Since our header is Gold (Light color), we need black icons
-            // even if the system is in Dark Mode.
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
         }
     }
@@ -73,46 +112,26 @@ fun CoinsContentScreen(
             TopAppBar(
                 title = {
                     Box(contentAlignment = Alignment.Center) {
-                        // The Glow Layer
                         Box(
                             modifier = Modifier
-                                .size(56.dp) // Larger than the icon to spread the glow
+                                .size(56.dp)
                                 .background(glowBrush),
                         )
-                        // The Logo Layer
                         Icon(
                             painter = painterResource(id = R.drawable.ic_crypto),
                             contentDescription = "Kotox Crypto Logo",
-                            tint = MaterialTheme.colorScheme.onPrimary, // Black Icon
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(32.dp),
                         )
                     }
                 },
-                modifier = Modifier
-                    // .height(80.dp)
-                    .background(topBarBrush),
+                modifier = Modifier.background(topBarBrush),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 actions = {
-                    // --- Notification Icon with Glow ---
-                    IconButton(onClick = { /* TODO */ }) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp) // Sized to fit nicely in the button touch target
-                                    .background(glowBrush),
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Favorites",
-                            )
-                        }
-                    }
-
-                    // --- Profile Icon with Glow ---
                     IconButton(onClick = { /* TODO */ }) {
                         Box(contentAlignment = Alignment.Center) {
                             Box(
@@ -120,14 +139,20 @@ fun CoinsContentScreen(
                                     .size(48.dp)
                                     .background(glowBrush),
                             )
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                contentDescription = "Sort",
+                            Icon(Icons.Default.Language, "Language")
+                        }
+                    }
+                    IconButton(onClick = { /* TODO */ }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(glowBrush),
                             )
+                            Icon(Icons.AutoMirrored.Outlined.Sort, "Sort")
                         }
                     }
                 },
-                // windowInsets = WindowInsets(0, 0, 0, 0)
             )
         },
     ) { paddingValues ->
@@ -141,14 +166,14 @@ fun CoinsContentScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 LazyColumn(
-                    contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp + contentPadding.calculateBottomPadding()),
+                    contentPadding = PaddingValues(
+                        top = 8.dp,
+                        bottom = 16.dp + contentPadding.calculateBottomPadding(),
+                    ),
                 ) {
-                    items(
-                        items = state.coinMarkets,
-                        key = { it.id },
-                    ) { market ->
-                        CoinListItem(
-                            market = market,
+                    items(items = articles, key = { it.title.hashCode() }) { article ->
+                        ArticleListItem(
+                            article = article,
                             onItemClick = onItemClick,
                         )
                     }
@@ -158,35 +183,13 @@ fun CoinsContentScreen(
     }
 }
 
-@Serializable
-private data object PreviewMarketRoute : NavKey
-
-@Serializable
-private data object PreviewNewsRoute : NavKey
-
 @PreviewLightDark
 @Composable
-fun CoinsContentScreenPreview() {
+private fun ArticlesContentScreenPreview() {
     SDKCryptoSampleAppTheme {
-        Scaffold(
-            bottomBar = {
-                CryptoBottomBar(
-                    currentRoute = PreviewMarketRoute,
-                    marketRoute = PreviewMarketRoute,
-                    newsRoute = PreviewNewsRoute,
-                    onNavigate = {}, // No-op for preview
-                )
-            },
-            containerColor = Color.Transparent,
-        ) { paddingValues ->
-            CoinsContentScreen(
-                state = CoinsScreenState.Content(
-                    coinMarkets = mockCoinMarkets,
-                ),
-                onItemClick = {},
-                // This passes the bottom bar height (80dp + insets) down to the LazyColumn
-                contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding()),
-            )
-        }
+        ArticlesContentScreen(
+            onItemClick = {},
+            contentPadding = PaddingValues(bottom = 80.dp),
+        )
     }
 }

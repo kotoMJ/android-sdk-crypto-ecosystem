@@ -40,6 +40,7 @@ dependencies {
 //    lintChecks(projects.lint)
 
     implementation(projects.sdk.cryptoCoindata)
+    implementation(projects.sdk.cryptoNews)
 
 //    implementation(platform(libs.kotox.crypto.bom))
 //    implementation(libs.kotox.crypto.common)

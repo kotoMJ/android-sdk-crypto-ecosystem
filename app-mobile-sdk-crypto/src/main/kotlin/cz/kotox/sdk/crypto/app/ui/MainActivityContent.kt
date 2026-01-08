@@ -47,6 +47,7 @@ import androidx.navigation3.ui.NavDisplay
 import cz.kotox.sdk.crypto.app.navigation.BottomSheetSceneStrategy
 import cz.kotox.sdk.crypto.app.navigation.CompositeSceneStrategy
 import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
+import cz.kotox.sdk.crypto.app.ui.screen.articles.ArticlesContentScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailViewModel
 import cz.kotox.sdk.crypto.app.ui.screen.coins.CoinsScreen
@@ -59,10 +60,10 @@ import org.koin.core.parameter.parametersOf
 import java.time.Duration
 
 @Serializable
-internal data object CoinsScreenRoute : NavKey
+internal data object ArticlesScreenRoute : NavKey
 
 @Serializable
-internal data object NewsScreenRoute : NavKey
+internal data object CoinsScreenRoute : NavKey
 
 @Serializable
 internal data object CurrencyScreenRoute : NavKey
@@ -89,15 +90,15 @@ fun MainActivityContent(
         )
     }
 
-    var mainContentAvailable: Boolean by remember {
+    var marketContentAvailable: Boolean by remember {
         mutableStateOf(false)
     }
 
     var showFab by remember { mutableStateOf(false) }
     val currentRoute = backStack.lastOrNull()
 
-    LaunchedEffect(currentRoute, mainContentAvailable) {
-        if (currentRoute is CoinsScreenRoute && mainContentAvailable) {
+    LaunchedEffect(currentRoute, marketContentAvailable) {
+        if (currentRoute is CoinsScreenRoute && marketContentAvailable) {
             showFab = true
         } else {
             showFab = false
@@ -179,7 +180,7 @@ fun MainActivityContent(
     }
 
     // 2. Define when to show Bottom Bar (Only on root screens)
-    val showBottomBar = currentRoute is CoinsScreenRoute || currentRoute is NewsScreenRoute
+    val showBottomBar = currentRoute is CoinsScreenRoute || currentRoute is ArticlesScreenRoute
 
     Scaffold(
         modifier = modifier
@@ -195,7 +196,7 @@ fun MainActivityContent(
                 CryptoBottomBar(
                     currentRoute = currentRoute,
                     marketRoute = CoinsScreenRoute,
-                    newsRoute = NewsScreenRoute,
+                    newsRoute = ArticlesScreenRoute,
                     onNavigate = { route ->
                         if (currentRoute != route) {
                             backStack.clear()
@@ -240,7 +241,7 @@ fun MainActivityContent(
                             backStack.add(CoinDetailScreenRoute(id))
                         },
                         contentAvailable = {
-                            mainContentAvailable = it
+                            marketContentAvailable = it
                         },
                     )
                 }
@@ -272,6 +273,13 @@ fun MainActivityContent(
                     metadata = BottomSheetSceneStrategy.bottomSheet(),
                 ) {
                     CurrencyScreen()
+                }
+
+                entry<ArticlesScreenRoute> {
+                    ArticlesContentScreen(
+                        contentPadding = PaddingValues(bottom = bottomBarPadding),
+                        onItemClick = {},
+                    )
                 }
             },
         )

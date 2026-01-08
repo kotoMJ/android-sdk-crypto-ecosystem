@@ -2,7 +2,7 @@ package cz.kotox.crypto.sdk.news.domain
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.time.Instant
+import kotlin.time.Instant
 
 /**
  * Represents a single news article.

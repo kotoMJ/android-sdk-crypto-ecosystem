@@ -9,8 +9,8 @@ import cz.kotox.crypto.sdk.news.internal.dto.ArticleDTO
 import cz.kotox.crypto.sdk.news.internal.dto.NewsApiResponseDTO
 import cz.kotox.crypto.sdk.news.internal.dto.SourceDTO
 import cz.kotox.crypto.sdk.news.internal.utils.logE
-import java.time.Instant
 import java.time.format.DateTimeParseException
+import kotlin.time.Instant
 
 /**
  * Maps the entire [NewsApiResponseDTO] to a list of domain [Article] models.
