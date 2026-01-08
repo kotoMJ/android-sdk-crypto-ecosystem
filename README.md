@@ -19,10 +19,18 @@ Case study of the SDK ecosystem with real crypto use-case.
 <table>
   <tr>
     <td>
-      <img src="extras/screens/kotox-crypto-list.png" width="250" alt="Kotox Crypto main screen" />
+      <img src="extras/screens/crypto-market-list.png" width="250" alt="Kotox Crypto main screen" />
     </td>
     <td>
-      <img src="extras/screens/kotox-crypto-detail.png" width="250" alt="Kotox Crypto detail screen" />
+      <img src="extras/screens/crypto-market-detail.png" width="250" alt="Kotox Crypto detail screen" />
+    </td>
+  </tr>
+<tr>
+    <td>
+      <img src="extras/screens/crypto-market-currency.png" width="250" alt="Kotox Crypto main screen" />
+    </td>
+    <td>
+      <img src="extras/screens/crypto-news-list.png" width="250" alt="Kotox Crypto detail screen" />
     </td>
   </tr>
 </table>
