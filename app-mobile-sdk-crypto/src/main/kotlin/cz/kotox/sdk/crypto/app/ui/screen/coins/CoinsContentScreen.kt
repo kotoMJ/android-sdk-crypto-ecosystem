@@ -170,7 +170,7 @@ fun CoinsContentScreenPreview() {
         Scaffold(
             bottomBar = {
                 CryptoBottomBar(
-                    currentRoute = PreviewMarketRoute,
+                    currentRoute = PreviewNewsRoute,
                     marketRoute = PreviewMarketRoute,
                     newsRoute = PreviewNewsRoute,
                     onNavigate = {}, // No-op for preview
