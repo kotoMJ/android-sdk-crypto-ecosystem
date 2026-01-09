@@ -40,6 +40,7 @@ dependencies {
 //    lintChecks(projects.lint)
 
     implementation(projects.sdk.cryptoCoindata)
+    implementation(projects.sdk.cryptoNews)
 
 //    implementation(platform(libs.kotox.crypto.bom))
 //    implementation(libs.kotox.crypto.common)
@@ -51,6 +52,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(libs.coil.kt.compose)
+    implementation(libs.androidx.compose.foundation.layout)
 
     debugImplementation(libs.leakcanary)
 

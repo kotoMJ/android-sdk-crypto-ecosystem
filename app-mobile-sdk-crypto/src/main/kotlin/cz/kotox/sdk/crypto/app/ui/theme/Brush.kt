@@ -11,7 +11,10 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 data class SDKBrushes(
     val screenTopBar: Brush,
+    val screenBottomBar: Brush,
     val iconGlow: Brush,
+    val iconGlowSelected: Brush,
+    val iconGlowUnselected: Brush,
     val bottomSheetTopBar: Brush,
 )
 
@@ -28,10 +31,35 @@ fun getSDKBrushes(colors: ColorScheme): SDKBrushes {
                 1.0f to colors.background, // Bottom: Solid Background
             ),
         ),
+        screenBottomBar = Brush.verticalGradient(
+            colorStops = arrayOf(
+                0.0f to colors.background, // Top: Matches list background (Seamless)
+                0.35f to colors.background, // Keep it black for a bit to ensure readability
+                1.0f to colors.primary, // Bottom: Solid Gold
+            ),
+        ),
         iconGlow = Brush.radialGradient(
             colors = listOf(
                 colors.primary,
                 colors.primary.copy(alpha = 0.0f),
+            ),
+        ),
+        // 1. SELECTED GLOW: Bright White center fading to Gold.
+        // This makes it "lighter than the gold behind".
+        iconGlowSelected = Brush.radialGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.6f), // Bright center
+                colors.primary.copy(alpha = 0.6f), // Gold halo
+                colors.primary.copy(alpha = 0.0f), // Fade out
+            ),
+        ),
+        // 2. UNSELECTED GLOW: Dark Black scrim.
+        // This blocks the "fog" so the icon stands out.
+        iconGlowUnselected = Brush.radialGradient(
+            colors = listOf(
+                colors.background.copy(alpha = 0.9f), // Solid Black center
+                colors.background.copy(alpha = 0.6f),
+                colors.background.copy(alpha = 0.0f), // Fade out
             ),
         ),
         bottomSheetTopBar = Brush.verticalGradient(
@@ -47,7 +75,10 @@ fun getSDKBrushes(colors: ColorScheme): SDKBrushes {
 // Default "fallback" implementation
 val UnspecifiedBrushes = SDKBrushes(
     screenTopBar = Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent)),
+    screenBottomBar = Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent)),
     iconGlow = Brush.radialGradient(listOf(Color.Transparent, Color.Transparent)),
+    iconGlowSelected = Brush.radialGradient(listOf(Color.Transparent, Color.Transparent)),
+    iconGlowUnselected = Brush.radialGradient(listOf(Color.Transparent, Color.Transparent)),
     bottomSheetTopBar = Brush.radialGradient(listOf(Color.Transparent, Color.Transparent)),
 )
 
