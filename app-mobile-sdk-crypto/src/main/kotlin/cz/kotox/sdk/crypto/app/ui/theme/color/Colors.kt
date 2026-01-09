@@ -8,6 +8,9 @@ import androidx.compose.ui.graphics.Color
 private val CryptoGold = Color(0xFFFDD835) // Main Brand Color
 private val CryptoGoldDark = Color(0xFFFBC02D) // For dark mode containers/contrast
 
+// Accessible Gold for Text on Light Backgrounds
+private val CryptoGoldAccessible = Color(0xFF917208)
+
 // Dark Palette
 private val DarkBaseBackground = Color(0xFF121212)
 private val DarkCardSurface = Color(0xFF1E1E1E)
@@ -35,13 +38,13 @@ internal val LightColors = lightColorScheme(
     onPrimaryContainer = Color.Black,
 
     // Secondary: Used for less prominent icons/text
-    secondary = LightTextPrimary,
+    secondary = CryptoGoldAccessible,
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFE1E4E8),
     onSecondaryContainer = LightTextPrimary,
 
     // Tertiary: Accents (like charts or stars)
-    tertiary = LightTextSecondary,
+    tertiary = LightTextPrimary,
     onTertiary = Color.White,
     tertiaryContainer = Color(0xFFEEEEEE),
     onTertiaryContainer = LightTextPrimary,
@@ -83,16 +86,16 @@ internal val DarkColors = darkColorScheme(
     onPrimaryContainer = CryptoGold,
 
     // Secondary
-    secondary = Color(0xFFB1C5FF),
-    onSecondary = Color(0xFF002C71),
-    secondaryContainer = Color(0xFF00419E),
-    onSecondaryContainer = Color(0xFFDAE2FF),
+    secondary = CryptoGold,
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFF333333),
+    onSecondaryContainer = Color.White,
 
     // Tertiary
-    tertiary = DarkTextSecondary,
-    onTertiary = Color.Black,
-    tertiaryContainer = Color(0xFF333333),
-    onTertiaryContainer = Color.White,
+    tertiary = Color(0xFFB1C5FF),
+    onTertiary = Color(0xFF002C71),
+    tertiaryContainer = Color(0xFF00419E),
+    onTertiaryContainer = Color(0xFFDAE2FF),
 
     // Backgrounds
     background = DarkBaseBackground,

@@ -64,7 +64,7 @@ fun ArticleListItem(
             // 1. Thumbnail Image
             AsyncImage(
                 model = article.urlToImage,
-                placeholder = painterResource(id = R.drawable.ic_crypto), // Use generic crypto icon as placeholder
+                placeholder = painterResource(id = R.drawable.ic_crypto),
                 error = painterResource(id = R.drawable.ic_crypto),
                 contentDescription = null,
                 modifier = Modifier
@@ -89,7 +89,7 @@ fun ArticleListItem(
                 Text(
                     text = "${article.source.name} • $dateStr",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary, // Gold color
+                    color = MaterialTheme.colorScheme.secondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

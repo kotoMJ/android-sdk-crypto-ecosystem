@@ -2,12 +2,14 @@ package cz.kotox.crypto.sdk.news.domain
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
 /**
  * Represents a single news article.
  * This is the domain model, ready to be used in the UI/domain layers.
  */
+@Serializable
 @Parcelize
 public data class Article(
     val source: Source,
@@ -23,6 +25,7 @@ public data class Article(
 /**
  * Represents the source of a news article.
  */
+@Serializable
 @Parcelize
 public data class Source(
     val id: String?,

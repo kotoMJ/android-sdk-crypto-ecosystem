@@ -35,11 +35,10 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import cz.kotox.crypto.sdk.news.domain.Article
-import cz.kotox.crypto.sdk.news.domain.Source
 import cz.kotox.sdk.crypto.app.R
+import cz.kotox.sdk.crypto.app.ui.mock.articles.articles
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
-import kotlin.time.Instant
 
 @Suppress("LongMethod")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,50 +48,6 @@ fun ArticlesContentScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    // --- Mock Data matching your Article domain model ---
-    val articles = listOf(
-        Article(
-            source = Source(null, "Cointelegraph"),
-            author = "Nate Kostar",
-            title = "Riot Platforms vendió USD 161M en BTC tras ajustar su estrategia corporativa",
-            description = "El minero de Bitcoin vendió 1.818 BTC...",
-            url = "https://es.cointelegraph.com/news/...",
-            urlToImage = "https://images.cointelegraph.com/cdn-cgi/image/f=auto,onerror=redirect,w=1200/https://s3.cointelegraph.com/uploads/2026-01/019b990c-3be0-703a-b6fa-35624b794743.jpg",
-            publishedAt = Instant.parse("2026-01-07T17:55:00Z"),
-            content = "Full content...",
-        ),
-        Article(
-            source = Source(null, "Criptonoticias"),
-            author = "Bárbara Distéfano",
-            title = "Bitcoin está subiendo, pero… ¿qué tanta fuerza tiene?",
-            description = "Con el alza que trajo el inicio del 2026...",
-            url = "https://www.criptonoticias.com/...",
-            urlToImage = "https://www.criptonoticias.com/wp-content/uploads/2025/04/bitcoin-precio-analisis-analista.jpg",
-            publishedAt = Instant.parse("2026-01-07T16:39:12Z"),
-            content = "Full content...",
-        ),
-        Article(
-            source = Source(null, "Expansion.com"),
-            author = "Stephen Foley",
-            title = "PwC se 'acerca' a las criptomonedas tras el apoyo de Donald Trump",
-            description = "PwC decidió acercarse al sector...",
-            url = "https://www.expansion.com/...",
-            urlToImage = "https://e01-phantom-expansion.uecdn.es/b19c9c38520ea908449ffe88d0ef065e/crop/0x0/2048x1365/resize/1200/f/webp/assets/multimedia/imagenes/2026/01/07/17678032249553.jpg",
-            publishedAt = Instant.parse("2026-01-07T16:28:03Z"),
-            content = "Full content...",
-        ),
-        Article(
-            source = Source(null, "Cointelegraph"),
-            author = "Aaron Wood",
-            title = "La SEC ya es plenamente republicana y se prepara para legislar a favor de las criptomonedas",
-            description = "La SEC tiene previsto continuar...",
-            url = "https://es.cointelegraph.com/...",
-            urlToImage = "https://images.cointelegraph.com/cdn-cgi/image/f=auto,onerror=redirect,w=1200/https://s3.cointelegraph.com/uploads/2026-01/019b98c3-eecd-7c02-928d-03c97e75a6a7.jpg",
-            publishedAt = Instant.parse("2026-01-07T16:21:13Z"),
-            content = "Full content...",
-        ),
-    )
-
     // --- System Bar Logic ---
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -171,7 +126,7 @@ fun ArticlesContentScreen(
                         bottom = 16.dp + contentPadding.calculateBottomPadding(),
                     ),
                 ) {
-                    items(items = articles, key = { it.title.hashCode() }) { article ->
+                    items(items = articles, key = { it.url.hashCode() + it.publishedAt.hashCode() }) { article ->
                         ArticleListItem(
                             article = article,
                             onItemClick = onItemClick,

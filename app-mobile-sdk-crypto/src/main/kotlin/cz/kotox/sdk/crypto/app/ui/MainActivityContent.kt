@@ -44,9 +44,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import cz.kotox.crypto.sdk.news.domain.Article
 import cz.kotox.sdk.crypto.app.navigation.BottomSheetSceneStrategy
 import cz.kotox.sdk.crypto.app.navigation.CompositeSceneStrategy
 import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
+import cz.kotox.sdk.crypto.app.ui.screen.article.ArticleDetailScreen
+import cz.kotox.sdk.crypto.app.ui.screen.article.ArticleDetailViewModel
 import cz.kotox.sdk.crypto.app.ui.screen.articles.ArticlesContentScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailViewModel
@@ -61,6 +64,9 @@ import java.time.Duration
 
 @Serializable
 internal data object ArticlesScreenRoute : NavKey
+
+@Serializable
+data class ArticleDetailScreenRoute(val article: Article) : NavKey
 
 @Serializable
 internal data object CoinsScreenRoute : NavKey
@@ -265,7 +271,10 @@ fun MainActivityContent(
                     val viewModel = koinViewModel<CoinDetailViewModel> {
                         parametersOf(key)
                     }
-                    CoinDetailScreen(viewModel = viewModel)
+                    CoinDetailScreen(
+                        viewModel = viewModel,
+                        onBackClick = { backStack.removeLastOrNull() },
+                    )
                 }
 
                 entry<CurrencyScreenRoute>(
@@ -278,7 +287,33 @@ fun MainActivityContent(
                 entry<ArticlesScreenRoute> {
                     ArticlesContentScreen(
                         contentPadding = PaddingValues(bottom = bottomBarPadding),
-                        onItemClick = {},
+                        onItemClick = { article ->
+                            backStack.add(ArticleDetailScreenRoute(article))
+                        },
+                    )
+                }
+
+                entry<ArticleDetailScreenRoute>(
+                    metadata = NavDisplay.transitionSpec {
+                        // PUSH: Detail slides IN from Right, List slides OUT to Left
+                        (slideInHorizontally { it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { -it } + fadeOut())
+                    } + NavDisplay.popTransitionSpec {
+                        // POP (Back Button): List slides IN from Left, Detail slides OUT to Right
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    } + NavDisplay.predictivePopTransitionSpec {
+                        // PREDICTIVE GESTURE: Matches the Pop animation exactly
+                        (slideInHorizontally { -it } + fadeIn()) togetherWith
+                            (slideOutHorizontally { it } + fadeOut())
+                    },
+                ) { key ->
+                    val viewModel = koinViewModel<ArticleDetailViewModel> {
+                        parametersOf(key)
+                    }
+                    ArticleDetailScreen(
+                        viewModel = viewModel,
+                        onBackClick = { backStack.removeLastOrNull() },
                     )
                 }
             },

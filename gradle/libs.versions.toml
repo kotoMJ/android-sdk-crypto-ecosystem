@@ -51,6 +51,7 @@ firebaseAppDistributionGradlePlugin = "5.0.0"
 firebaseBom = "33.7.0"
 firebaseCrashlyticsGradlePlugin = "3.0.2"
 firebasePerfGradlePlugin = "1.4.2"
+foundationLayout = "1.10.0"
 gmsGoogleServicesGradlePlugin = "4.4.2"
 gradleVersionPlugin = "0.50.0"
 horologist = "0.6.18"
@@ -81,7 +82,7 @@ timber = "5.0.1"
 watchface-complications = "1.2.1"
 core = "1.17.0"
 media3Cast = "1.9.0"
-foundationLayout = "1.10.0"
+webkit = "1.15.0"
 
 
 [plugins]
@@ -138,6 +139,8 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-material-icons = { module = "androidx.compose.material:material-icons-extended" }
 
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+
 androidx-compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 
@@ -167,7 +170,6 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 androidx-material3-navigation3 = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation3", version.ref = "androidxNavigation3Material" }
 androidx-profileInstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "androidxProfileInstaller" }
 
-
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidxStartupRuntime" }
 
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTest" }
@@ -175,6 +177,7 @@ androidx-test-junit = { module = "androidx.test.ext:junit-ktx", version.ref = "a
 androidx-test-truth = { module = "androidx.test.ext:truth", version.ref = "androidxTestExtTruth" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-uianimator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidxTestUiAnimator" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 
 android-horologist-composeTools = { module = "com.google.android.horologist:horologist-compose-tools", version.ref = "horologist" }
 android-horologist-tiles = { module = "com.google.android.horologist:horologist-tiles", version.ref = "horologist" }
@@ -264,6 +267,7 @@ detektRules-compose = { module = "io.nlopez.compose.rules:detekt", version.ref =
 
 dokka-versioning = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 
+
 # Dependencies of the included build-logic
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
@@ -276,7 +280,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-media3-cast = { group = "androidx.media3", name = "media3-cast", version.ref = "media3Cast" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+
 
 [bundles]
 compose = [
