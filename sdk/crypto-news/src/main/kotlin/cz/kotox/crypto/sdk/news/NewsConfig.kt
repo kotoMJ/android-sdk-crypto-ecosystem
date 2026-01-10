@@ -19,7 +19,6 @@ internal val MODULE_IDENTIFIER = SDKLoggerIdentifier("crypto-sdk-news")
  * @constructor creates initialization configuration.
  */
 internal data class NewsConfig(
-    val newsServiceApiKey: String,
     val networkTimeout: Duration,
     val loggerCallback: SDKLoggerCallback,
     val loggerIdentifier: SDKLoggerIdentifier = MODULE_IDENTIFIER,

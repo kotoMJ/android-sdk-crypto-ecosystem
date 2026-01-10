@@ -17,8 +17,8 @@ internal fun Project.configureSigning(
                 // Configure release signing only if the secrets are available
                 // This allows to build debug app without the need for having release keystore.
                 if (Signing.releaseSigningAvailable()) {
-                    val signingValues = Signing.signingValues()
-                    storeFile = rootProject.file("extras/keystores/release/upload.keystore")
+                    val signingValues: SigningValues = Signing.signingValues()
+                    storeFile = Signing.signingFile()
                     storePassword = signingValues.storePassword
                     keyAlias = signingValues.keyAlias
                     keyPassword = signingValues.keyPassword
@@ -30,8 +30,7 @@ internal fun Project.configureSigning(
 }
 
 internal object Signing {
-    private const val release_keystore_properties: String = "extras/keystores/release/upload.properties"
-    private const val release_keystore_file: String = "extras/keystores/release/upload.keystore"
+    private const val release_keystore: String = "extras/keystores/app/upload.keystore"
 
     fun initialize(project: Project) {
         projectRootDir = project.rootDir.toString()
@@ -39,31 +38,44 @@ internal object Signing {
 
     private lateinit var projectRootDir: String
 
+    fun signingFile(): File =
+        File("$projectRootDir/$release_keystore")
+
     fun releaseSigningAvailable(): Boolean {
-        return File("$projectRootDir/$release_keystore_file").exists()
+        return signingFile().exists()
     }
 
-    fun signingValues(): ReleaseValues {
-        val properties = Properties()
-        val keystoreProperties = release_keystore_properties
-        val keystoreFile = release_keystore_file
-        val storePropertiesPath = "$projectRootDir/$keystoreProperties"
-        val storeFilePath = "$projectRootDir/$keystoreFile"
-
-        properties.load(FileInputStream(File(storePropertiesPath)))
-
-        return ReleaseValues(
-            storeFilePath = storeFilePath,
-            storePassword = properties.getProperty("keystore.store.password", "MISSING"),
-            keyAlias = properties.getProperty("keystore.key.alias", "MISSING"),
-            keyPassword = properties.getProperty("keystore.key.password", "MISSING"),
+    fun signingValues(): SigningValues {
+        return SigningValues(
+            storePassword = getLocalPropertyValue("app.keystore.store.password") ?: System.getenv("APP_KOTOX_CRYPTO_KEYSTORE_PASSWORD"),
+            keyAlias = getLocalPropertyValue("app.keystore.key.alias") ?: System.getenv("APP_KOTOX_CRYPTO_KEY_ALIAS"),
+            keyPassword = getLocalPropertyValue("app.keystore.key.password") ?: System.getenv("APP_KOTOX_CRYPTO_KEY_PASSWORD"),
         )
+    }
+
+    fun getLocalPropertyValue(
+        key: String,
+        file: String = "local.properties",
+    ): String? {
+        try {
+            val prop =
+                Properties().apply {
+                    load(FileInputStream(File(projectRootDir, file)))
+                }
+            val propertyValue = prop.getProperty(key)
+            println("Reading local property $key: $propertyValue")
+            return propertyValue
+        } catch (t: Throwable) {
+            println("Unable to locate property $key in local file $file")
+            return null
+        }
     }
 }
 
-internal data class ReleaseValues(
-    val storeFilePath: String,
+internal data class SigningValues(
     val storePassword: String,
     val keyAlias: String,
     val keyPassword: String,
 )
+
+

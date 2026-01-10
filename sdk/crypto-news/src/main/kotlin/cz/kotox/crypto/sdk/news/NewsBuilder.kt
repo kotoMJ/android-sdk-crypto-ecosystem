@@ -11,9 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-public open class NewsBuilder(
-    private val newsServiceApiKey: String,
-) {
+public open class NewsBuilder {
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
     private var databaseDispatcher: CoroutineDispatcher = SdkDispatchers.databaseDispatcher
     private var networkTimeout: Duration = 30.seconds
@@ -74,7 +72,6 @@ public open class NewsBuilder(
                 this@NewsBuilder.databaseDispatcher
         },
         config = NewsConfig(
-            newsServiceApiKey = newsServiceApiKey,
             networkTimeout = networkTimeout,
             loggerCallback = loggerCallback,
             strictModePolicy = strictModePolicy,

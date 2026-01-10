@@ -1,18 +1,24 @@
 package cz.kotox.crypto.sdk.news.internal.data.api
 
 import cz.kotox.crypto.sdk.news.internal.dto.NewsApiResponseDTO
-import de.jensklingenberg.ktorfit.http.GET
-import de.jensklingenberg.ktorfit.http.Query
+import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.Headers
+import de.jensklingenberg.ktorfit.http.POST
+import kotlinx.serialization.Serializable
 
 public interface NewsApi {
 
-    @GET("v2/everything")
-    public suspend fun getNews(
-        @Query("q") query: String,
-        @Query("sortBy") sortBy: NewsApiSortBy,
-        @Query("apiKey") apiKey: String,
+    @Headers("Content-Type: application/json")
+    @POST("api/news")
+    public suspend fun fetchNews(
+        @Body request: NewsFetchRequest,
     ): NewsApiResponseDTO
 }
+
+@Serializable
+public data class NewsFetchRequest(
+    val integrityToken: String,
+)
 
 public enum class NewsApiSortBy(
     public val value: String,
