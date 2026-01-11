@@ -12,6 +12,7 @@ public interface NewsApi {
     @POST("api/news")
     public suspend fun fetchNews(
         @Body request: NewsFetchRequest,
+
     ): NewsApiResponseDTO
 }
 

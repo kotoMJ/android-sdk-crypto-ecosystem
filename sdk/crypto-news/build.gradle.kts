@@ -26,19 +26,6 @@ android {
                 "proguard-rules.pro",
             )
         }
-
-//        buildTypes {
-//            forEach { buildType ->
-//                val apiKeyProvider = project.getPropertyOrVariable("CRYPTO_SDK_NEWS_API_KEY")
-//                val quotedApiKeyProvider = apiKeyProvider.map { "\"$it\"" }
-//
-//                buildType.buildConfigField(
-//                    "String",
-//                    "TEST_SDK_NEWS_SERVICE_APIKEY",
-//                    quotedApiKeyProvider.get(),
-//                )
-//            }
-//        }
     }
 
     publishing {
