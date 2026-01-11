@@ -35,7 +35,6 @@ internal class NewsImpl(
     internal val apiTestDelegate by lazy {
         NewsApiServiceTestImpl(
             newsRequestContext = newsRequestContext,
-            apiKey = config.newsServiceApiKey,
         )
     }
 

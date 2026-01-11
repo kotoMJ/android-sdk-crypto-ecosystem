@@ -10,7 +10,7 @@ internal class NewsApiService(
 ) {
 
     private val ktorConfig = KtorConfig(
-        baseUrl = "https://newsapi.org/",
+        baseUrl = "https://bff-service-1029057924274.us-central1.run.app/",
         isLoggingEnabled = newsConfig.isLoggingEnabled,
         networkTimeout = newsConfig.networkTimeout,
         strictModePolicy = newsConfig.strictModePolicy,
@@ -25,14 +25,12 @@ internal class NewsApiService(
     private val newsApi: NewsApi = ktorfitFactory.ktorfit.createNewsApi()
 
     suspend fun getNews(
-        query: String,
-        sortBy: NewsApiSortBy,
-        apiKey: String,
+        integrityToken: String,
     ): NewsApiResponseDTO {
-        return newsApi.getNews(
-            query = query,
-            sortBy = sortBy,
-            apiKey = apiKey,
+        return newsApi.fetchNews(
+            request = NewsFetchRequest(
+                integrityToken = integrityToken,
+            ),
         )
     }
 }

@@ -1,5 +1,3 @@
-import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
-
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
     alias(libs.plugins.buildLogic.sdk.version.read)
@@ -27,19 +25,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-        }
-
-        buildTypes {
-            forEach { buildType ->
-                val apiKeyProvider = project.getPropertyOrVariable("CRYPTO_SDK_NEWS_API_KEY")
-                val quotedApiKeyProvider = apiKeyProvider.map { "\"$it\"" }
-
-                buildType.buildConfigField(
-                    "String",
-                    "TEST_SDK_NEWS_SERVICE_APIKEY",
-                    quotedApiKeyProvider.get(),
-                )
-            }
         }
     }
 

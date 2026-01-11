@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      CRYPTO_SDK_NEWS_API_KEY: ${{ secrets.CRYPTO_SDK_NEWS_API_KEY }}
+      BFF_CRYPTO_ADMIN_BYPASS_SECRET: ${{ secrets.BFF_CRYPTO_ADMIN_BYPASS_SECRET }}
 
     steps:
       - name: Check out code

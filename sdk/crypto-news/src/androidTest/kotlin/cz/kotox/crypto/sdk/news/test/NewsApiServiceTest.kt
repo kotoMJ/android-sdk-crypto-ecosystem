@@ -29,7 +29,10 @@ class NewsApiServiceTest {
     @Test
     fun testApiNews() = runTest {
         val testTag = "[testApiNews]"
-        news.apiTestDelegate.getNews(query = "Bitcoin").fold({
+        news.apiTestDelegate.getNews(
+//            query = "Bitcoin"
+            playIntegrityToken = "skip-verification",
+        ).fold({
             println("$testTag APIERROR: $it")
             fail("testApiNews failed to return value")
         }, {

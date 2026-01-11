@@ -1,3 +1,5 @@
+import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
+
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
     alias(libs.plugins.buildLogic.sdk.version.read)
@@ -12,6 +14,7 @@ val singleVariantName = "release"
 android {
     namespace = "cz.kotox.crypto.sdk.internal.network"
     group = "cz.kotox.crypto.sdk.internal"
+    buildFeatures.buildConfig = true
 
     buildTypes {
 
@@ -22,6 +25,28 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+
+        buildTypes {
+            forEach { buildType ->
+
+                if (buildType.name == "debug") {
+                    val apiKeyProvider = project.getPropertyOrVariable("BFF_CRYPTO_ADMIN_BYPASS_SECRET")
+                    val quotedSecret = apiKeyProvider.map { "\"$it\"" }.getOrElse("\"\"")
+
+                    buildType.buildConfigField(
+                        "String",
+                        "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
+                        quotedSecret,
+                    )
+                } else {
+                    buildType.buildConfigField(
+                        "String",
+                        "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
+                        "\"\"",
+                    )
+                }
+            }
         }
     }
 

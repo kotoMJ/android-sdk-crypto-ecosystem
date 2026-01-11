@@ -63,3 +63,6 @@ lint/tmp/
 
 #Kotlin
 .kotlin/
+
+#Signing
+/extras/keystores/
