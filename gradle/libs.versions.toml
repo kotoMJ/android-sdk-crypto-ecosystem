@@ -16,6 +16,7 @@ java = "17"
 
 androidGradlePlugin = "8.13.0"
 androidMaterial = "1.13.0"
+androidPlayIntegrity = "1.6.0"
 androidxActitivty = "1.12.2"
 androidxAppcompat = "1.7.1"
 androidxBaselineProfile = "1.4.1"
@@ -63,6 +64,7 @@ kotlin = "2.2.20"
 kotlin-android = "2.2.20"
 kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutines = "1.10.2"
+kotlinxCoroutinesPlayServices = "1.9.0"
 kotlinxSerialization = "1.9.0"
 ksp = "2.2.20-2.0.4" # Must be compatible with ktorfit
 ktor = "3.3.3"
@@ -183,6 +185,9 @@ android-horologist-composeTools = { module = "com.google.android.horologist:horo
 android-horologist-tiles = { module = "com.google.android.horologist:horologist-tiles", version.ref = "horologist" }
 android-horologist-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }
 android-horologist-audioUi = { module = "com.google.android.horologist:horologist-audio-ui", version.ref = "horologist" }
+
+android-play-integrity = { module = "com.google.android.play:integrity", version.ref = "androidPlayIntegrity"}
+coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices"}
 
 coil-kt = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-kt-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }

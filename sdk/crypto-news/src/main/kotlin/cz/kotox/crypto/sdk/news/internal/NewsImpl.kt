@@ -1,5 +1,8 @@
 package cz.kotox.crypto.sdk.news.internal
 
+import cz.kotox.crypto.sdk.common.Either
+import cz.kotox.crypto.sdk.common.domain.model.integrity.SdkIntegrityToken
+import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
@@ -8,6 +11,7 @@ import cz.kotox.crypto.sdk.news.News
 import cz.kotox.crypto.sdk.news.NewsConfig
 import cz.kotox.crypto.sdk.news.domain.NewsRequestContext
 import cz.kotox.crypto.sdk.news.internal.data.api.NewsApiService
+import cz.kotox.crypto.sdk.news.internal.dto.NewsApiResponseDTO
 import cz.kotox.crypto.sdk.news.internal.test.NewsApiServiceTestImpl
 
 internal class NewsImpl(
@@ -53,5 +57,9 @@ internal class NewsImpl(
         } else {
             SDKLogger.install(tag = MODULE_IDENTIFIER, loggerCallback = config.loggerCallback)
         }
+    }
+
+    override fun getNews(integrityToken: SdkIntegrityToken): Either<SdkError, NewsApiResponseDTO> {
+        TODO("Not yet implemented")
     }
 }

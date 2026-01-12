@@ -34,6 +34,7 @@ include(
     ":sdk:internal:logger",
     ":sdk:internal:network",
     ":sdk:crypto-coindata",
+    ":sdk:crypto-integrity",
     ":sdk:crypto-news",
     ":sdk:crypto-tracker",
     ":docs"
