@@ -58,6 +58,7 @@ dependencies {
     implementation(projects.sdk.internal.logger)
     implementation(projects.sdk.internal.common)
     implementation(projects.sdk.internal.network)
+    implementation(projects.sdk.internal.integrity)
     implementation(kotlin("stdlib"))
 
     implementation(libs.room.ktx)

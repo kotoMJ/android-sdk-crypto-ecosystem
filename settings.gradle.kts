@@ -31,10 +31,10 @@ include(
     ":sdk:bom",
     ":sdk:crypto-common",
     ":sdk:internal:common",
+    ":sdk:internal:integrity",
     ":sdk:internal:logger",
     ":sdk:internal:network",
     ":sdk:crypto-coindata",
-    ":sdk:crypto-integrity",
     ":sdk:crypto-news",
     ":sdk:crypto-tracker",
     ":docs"

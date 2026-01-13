@@ -10,7 +10,7 @@ import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
 import cz.kotox.crypto.sdk.coindata.internal.data.api.CoinDataApiService
 import cz.kotox.crypto.sdk.coindata.internal.data.database.CoinDatabase
-import cz.kotox.crypto.sdk.coindata.internal.data.database.repository.CoinDataRepository
+import cz.kotox.crypto.sdk.coindata.internal.data.repository.CoinDataRepository
 import cz.kotox.crypto.sdk.coindata.internal.test.CoinDataApiServiceTestImpl
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinDetailUseCase
 import cz.kotox.crypto.sdk.coindata.internal.usecase.GetCoinMarketsUseCase
@@ -94,7 +94,7 @@ internal class CoinDataImpl(
         synchronized(CoinDataRepository::class.java) {
             if (!::repository.isInitialized) {
                 repository = CoinDataRepository(
-                    context = coinDataRequestContext,
+                    requestContext = coinDataRequestContext,
                 )
             }
         }

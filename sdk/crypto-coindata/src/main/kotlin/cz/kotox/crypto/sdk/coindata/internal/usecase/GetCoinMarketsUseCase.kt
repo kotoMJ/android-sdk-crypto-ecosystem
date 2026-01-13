@@ -1,7 +1,7 @@
 package cz.kotox.crypto.sdk.coindata.internal.usecase
 
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinMarket
-import cz.kotox.crypto.sdk.coindata.internal.data.database.repository.CoinDataRepository
+import cz.kotox.crypto.sdk.coindata.internal.data.repository.CoinDataRepository
 import cz.kotox.crypto.sdk.common.Either
 import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.common.error.SdkError

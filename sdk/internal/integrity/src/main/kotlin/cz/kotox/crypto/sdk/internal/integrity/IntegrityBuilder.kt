@@ -1,9 +1,7 @@
-package cz.kotox.crypto.sdk.integrity
+package cz.kotox.crypto.sdk.internal.integrity
 
 import android.content.Context
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
-import cz.kotox.crypto.sdk.integrity.internal.IntegrityImpl
-import cz.kotox.crypto.sdk.integrity.internal.integrity.IntegrityProvider
 import cz.kotox.crypto.sdk.internal.common.SdkDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,7 +27,7 @@ public open class IntegrityBuilder(private val context: Context) {
      */
     @JvmSynthetic
     public fun setNetworkTimeout(timeout: Duration): IntegrityBuilder {
-        check(timeout > Duration.ZERO)
+        check(timeout > Duration.Companion.ZERO)
         this.networkTimeout = timeout
         return this
     }

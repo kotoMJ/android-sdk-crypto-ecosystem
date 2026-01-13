@@ -1,8 +1,8 @@
-package cz.kotox.crypto.sdk.integrity.internal.utils
+package cz.kotox.crypto.sdk.internal.integrity.utils
 
 import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.common.logger.LogPriority
-import cz.kotox.crypto.sdk.integrity.MODULE_IDENTIFIER
+import cz.kotox.crypto.sdk.internal.integrity.MODULE_IDENTIFIER
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.toLogPriority
 

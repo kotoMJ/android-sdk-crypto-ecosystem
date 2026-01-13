@@ -1,11 +1,9 @@
-package cz.kotox.crypto.sdk.integrity.internal.integrity
+package cz.kotox.crypto.sdk.internal.integrity
 
 import android.content.Context
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityManager
-import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
-import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
-import cz.kotox.crypto.sdk.integrity.internal.utils.logE
+import cz.kotox.crypto.sdk.internal.integrity.utils.logE
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeoutOrNull
@@ -26,7 +24,7 @@ internal class IntegrityProvider(context: Context) {
     @Suppress("TooGenericExceptionCaught")
     suspend fun prepare() {
         try {
-            val request = PrepareIntegrityTokenRequest.builder()
+            val request = StandardIntegrityManager.PrepareIntegrityTokenRequest.builder()
                 .setCloudProjectNumber(cloudProjectNumber)
                 .build()
 
@@ -39,9 +37,14 @@ internal class IntegrityProvider(context: Context) {
 
     /**
      * Fetches the current token for a network request
+     *
+     * @param uniqueRequestHash - is specifically designed to bind the integrity verdict to the content of your network request,
+     * ensuring the data hasn't been tampered with in transit.
+     * If you reuse the same hash (or the same token) for different requests,
+     * a malicious actor could intercept a "good" token from a news request and try to reuse it to bypass security on a more sensitive action.
      */
     @Suppress("TooGenericExceptionCaught")
-    suspend fun getIntegrityToken(): String? {
+    suspend fun getIntegrityToken(uniqueRequestHash: String): String? {
         return try {
             // Wait for init to finish with a reasonable timeout (e.g., 10s)
             val provider = withTimeoutOrNull(10.seconds) {
@@ -49,7 +52,9 @@ internal class IntegrityProvider(context: Context) {
             } ?: return null
 
             val response = provider.request(
-                StandardIntegrityTokenRequest.builder().build(),
+                StandardIntegrityManager.StandardIntegrityTokenRequest.builder()
+                    .setRequestHash(uniqueRequestHash)
+                    .build(),
             ).await()
             response.token()
         } catch (e: Exception) {

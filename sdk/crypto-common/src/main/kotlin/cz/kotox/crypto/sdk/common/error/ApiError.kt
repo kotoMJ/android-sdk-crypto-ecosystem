@@ -31,6 +31,11 @@ public sealed class ApiError(
     ) : ApiError(message, cause)
 }
 
+public data class IntegrityError(
+    override val message: String,
+    override val cause: Throwable? = null,
+) : SdkError(message, cause)
+
 public fun Exception.transformApiError(errorResponseMessage: String? = null): ApiError {
     return if (message?.containsAnyOf(
             strings = connectivityInfoDictionary,

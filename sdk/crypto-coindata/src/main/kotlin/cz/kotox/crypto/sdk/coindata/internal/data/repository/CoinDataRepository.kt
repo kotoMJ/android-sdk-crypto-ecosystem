@@ -1,4 +1,4 @@
-package cz.kotox.crypto.sdk.coindata.internal.data.database.repository
+package cz.kotox.crypto.sdk.coindata.internal.data.repository
 
 import cz.kotox.crypto.sdk.coindata.domain.CoinDataRequestContext
 import cz.kotox.crypto.sdk.coindata.domain.model.CoinDetail
@@ -22,7 +22,7 @@ import kotlin.time.ExperimentalTime
 
 @Suppress("TooGenericExceptionCaught")
 internal class CoinDataRepository(
-    private val context: CoinDataRequestContext,
+    private val requestContext: CoinDataRequestContext,
 ) {
 
     // Define cache duration using kotlin.time
@@ -36,7 +36,7 @@ internal class CoinDataRepository(
      */
     @OptIn(ExperimentalTime::class)
     fun getCoinMarkets(currency: CurrencyId): Flow<Either<SdkError, List<CoinMarket>>> =
-        with(context) {
+        with(requestContext) {
             channelFlow {
                 val now = Clock.System.now()
 
@@ -63,7 +63,7 @@ internal class CoinDataRepository(
                         }
 
                         if (!isCacheValid) {
-                            context.withApi { getMarkets(currency) }.fold(
+                            requestContext.withApi { getMarkets(currency) }.fold(
                                 { apiError ->
                                     logE(apiError, { "Unable to refresh getCoinMarkets cache" })
                                 },
@@ -80,7 +80,7 @@ internal class CoinDataRepository(
 
     @OptIn(ExperimentalTime::class)
     fun getCoinDetail(coinMarketId: CoinMarketId): Flow<Either<SdkError, CoinDetail>> =
-        with(context) {
+        with(requestContext) {
             channelFlow {
                 val now = Clock.System.now()
 
@@ -108,7 +108,7 @@ internal class CoinDataRepository(
                         }
 
                         if (!isCacheValid) {
-                            context.withApi { getCoinDetail(coinMarketId) }.fold(
+                            requestContext.withApi { getCoinDetail(coinMarketId) }.fold(
                                 { apiError ->
                                     logE(apiError, { "Unable to refresh getCoinMarkets cache" })
                                 },

@@ -1,4 +1,4 @@
-package cz.kotox.crypto.sdk.integrity
+package cz.kotox.crypto.sdk.internal.integrity
 
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp

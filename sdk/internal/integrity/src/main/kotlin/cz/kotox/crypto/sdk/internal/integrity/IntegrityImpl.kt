@@ -1,10 +1,8 @@
-package cz.kotox.crypto.sdk.integrity.internal
+package cz.kotox.crypto.sdk.internal.integrity
 
-import cz.kotox.crypto.sdk.common.domain.model.integrity.SdkIntegrityToken
-import cz.kotox.crypto.sdk.integrity.Integrity
-import cz.kotox.crypto.sdk.integrity.IntegrityConfig
-import cz.kotox.crypto.sdk.integrity.MODULE_IDENTIFIER
-import cz.kotox.crypto.sdk.integrity.internal.integrity.IntegrityProvider
+import cz.kotox.crypto.sdk.internal.integrity.domain.SdkIntegrityToken
+import cz.kotox.crypto.sdk.internal.integrity.domain.SdkSecurityHeader
+import cz.kotox.crypto.sdk.internal.integrity.utils.toSha256Base64
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,14 +34,26 @@ internal class IntegrityImpl(
 
     private fun installLogger(config: IntegrityConfig) {
         if (config.loggerCallback is SDKLoggerCallbackNoOp) {
-            SDKLogger.uninstall(MODULE_IDENTIFIER)
+            SDKLogger.Companion.uninstall(MODULE_IDENTIFIER)
         } else {
-            SDKLogger.install(tag = MODULE_IDENTIFIER, loggerCallback = config.loggerCallback)
+            SDKLogger.Companion.install(tag = MODULE_IDENTIFIER, loggerCallback = config.loggerCallback)
         }
     }
 
-    override suspend fun getFreshToken(): SdkIntegrityToken? =
-        integrityProvider.getIntegrityToken()?.let { SdkIntegrityToken(it) }
+    override suspend fun getFreshToken(uniqueRequestHash: String): SdkIntegrityToken? =
+        integrityProvider.getIntegrityToken(uniqueRequestHash)?.let { SdkIntegrityToken(it) }
+
+    override fun getIntegrityHash(content: String): String = content.toSha256Base64()
+
+    override fun getSecurityHeader(): SdkSecurityHeader? =
+        if (BuildConfig.DEBUG && BuildConfig.BFF_CRYPTO_ADMIN_BYPASS_SECRET.isNotBlank()) {
+            SdkSecurityHeader(
+                key = "X-Kotox-Bypass-Key",
+                value = BuildConfig.BFF_CRYPTO_ADMIN_BYPASS_SECRET,
+            )
+        } else {
+            null
+        }
 
     /**
      * Cancels the scope and stops all background activity.
