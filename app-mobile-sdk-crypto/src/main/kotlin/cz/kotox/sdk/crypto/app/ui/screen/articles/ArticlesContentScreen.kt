@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +42,7 @@ import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticlesContentScreen(
+    state: ArticlesScreenState.Content,
     onItemClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -126,7 +125,7 @@ fun ArticlesContentScreen(
                         bottom = 16.dp + contentPadding.calculateBottomPadding(),
                     ),
                 ) {
-                    items(items = articles, key = { it.url.hashCode() + it.publishedAt.hashCode() }) { article ->
+                    items(items = state.articles, key = { it.url.hashCode() + it.publishedAt.hashCode() }) { article ->
                         ArticleListItem(
                             article = article,
                             onItemClick = onItemClick,
@@ -143,6 +142,7 @@ fun ArticlesContentScreen(
 private fun ArticlesContentScreenPreview() {
     SDKCryptoSampleAppTheme {
         ArticlesContentScreen(
+            state = ArticlesScreenState.Content(articles = articles),
             onItemClick = {},
             contentPadding = PaddingValues(bottom = 80.dp),
         )

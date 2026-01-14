@@ -50,7 +50,7 @@ import cz.kotox.sdk.crypto.app.navigation.CompositeSceneStrategy
 import cz.kotox.sdk.crypto.app.ui.component.CryptoBottomBar
 import cz.kotox.sdk.crypto.app.ui.screen.article.ArticleDetailScreen
 import cz.kotox.sdk.crypto.app.ui.screen.article.ArticleDetailViewModel
-import cz.kotox.sdk.crypto.app.ui.screen.articles.ArticlesContentScreen
+import cz.kotox.sdk.crypto.app.ui.screen.articles.ArticlesScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailScreen
 import cz.kotox.sdk.crypto.app.ui.screen.coin.CoinDetailViewModel
 import cz.kotox.sdk.crypto.app.ui.screen.coins.CoinsScreen
@@ -285,7 +285,7 @@ fun MainActivityContent(
                 }
 
                 entry<ArticlesScreenRoute> {
-                    ArticlesContentScreen(
+                    ArticlesScreen(
                         contentPadding = PaddingValues(bottom = bottomBarPadding),
                         onItemClick = { article ->
                             backStack.add(ArticleDetailScreenRoute(article))
