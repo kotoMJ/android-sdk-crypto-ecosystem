@@ -110,7 +110,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-results
-          path: "**/build/reports/tests/testDebugUnitTest/"
+          path: "**/build/reports/tests/test*UnitTest/"
 
       - name: Badge Unit Tests
         if: always() && github.ref == 'refs/heads/main' # <--- generate badge only on main as there is just one gist for badges.
@@ -136,7 +136,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: instrumented-test-results
-          path: "**/build/reports/androidTests/managedDevice/pixel4api35aospatd/"
+          path: "**/build/reports/androidTests/managedDevice/*/"
 
       - name: Badge Instrumented
         if: always() && github.ref == 'refs/heads/main' # <--- generate badge only on main as there is just one gist for badges.
@@ -153,21 +153,21 @@ jobs:
       - name: Check Final Status
         if: always()
         run: |
-          echo "## 🛡️ CodeGuard Quality Report" >> $GITHUB_STEP_SUMMARY
-          echo "Verification completed. If a check failed, download the corresponding report from the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
+          echo "# 🛡️ CodeGuard Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "Verification complete. Detailed reports are available in the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status | Available Report |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality Gate | Status | Diagnostic Report |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           
           FAILED=false
           
-          # Defined as: "Display Name | Outcome | Artifact Name"
+          # Defined as: "Display Name | Step Outcome | Artifact Name"
           CHECKS=(
-            "Spotless|${{ steps.spotless.outcome }}|None (Check Logs)"
-            "Detekt|${{ steps.detekt.outcome }}|📦 detekt-report"
-            "Module Versions|${{ steps.versions.outcome }}|None"
-            "Unit Tests|${{ steps.unit.outcome }}|📦 unit-test-results"
-            "Instrumented|${{ steps.instr.outcome }}|📦 instrumented-test-results"
+            "Spotless|${{ steps.spotless.outcome }}|📄 _Check workflow logs_"
+            "Detekt|${{ steps.detekt.outcome }}|📦 **detekt-report**"
+            "Module Versions|${{ steps.versions.outcome }}|📄 _Check workflow logs_"
+            "Unit Tests|${{ steps.unit.outcome }}|📦 **unit-test-results**"
+            "Instrumented|${{ steps.instr.outcome }}|📦 **instrumented-test-results**"
           )
 
           for entry in "${CHECKS[@]}"; do
@@ -182,9 +182,13 @@ jobs:
             fi
           done
 
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           if [ "$FAILED" = true ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
             echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
-            echo "> Quality gates failed. Please inspect the artifacts below for details." >> $GITHUB_STEP_SUMMARY
+            echo "> **Action Required:** One or more quality gates failed. Please download the reports listed above to debug the issues." >> $GITHUB_STEP_SUMMARY
             exit 1
+          else
+            echo "> [!TIP]" >> $GITHUB_STEP_SUMMARY
+            echo "> **All Clear:** Your code meets all quality standards. Great job!" >> $GITHUB_STEP_SUMMARY
           fi
