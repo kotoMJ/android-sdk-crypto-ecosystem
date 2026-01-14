@@ -156,6 +156,14 @@ jobs:
           echo "# 🛡️ CodeGuard Quality Report" >> $GITHUB_STEP_SUMMARY
           echo "Verification complete. Detailed reports are available in the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # 🚨 API UNAVAILABILITY DISCLAIMER 🚨
+          if [ "${{ steps.instr.outcome }}" == "failure" ]; then
+            echo "> [!IMPORTANT]" >> $GITHUB_STEP_SUMMARY
+            echo "> **Note on Instrumented Tests:** These tests rely on a live API connection. If you see network-related failures, please verify if the staging/test API is currently reachable before debugging code changes." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
           echo "| Quality Gate | Status | Diagnostic Report |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           
@@ -175,7 +183,7 @@ jobs:
           
             if [ "$OUTCOME" == "failure" ]; then
               echo "| \`$NAME\` | ❌ **FAILED** | $REPORT |" >> $GITHUB_STEP_SUMMARY
-              echo "::error title=CodeGuard Failure::$NAME failed. See $REPORT in artifacts."
+              echo "::error title=CodeGuard Failure::$NAME failed."
               FAILED=true
             else
               echo "| \`$NAME\` | ✅ Passed | - |" >> $GITHUB_STEP_SUMMARY
@@ -186,9 +194,9 @@ jobs:
           
           if [ "$FAILED" = true ]; then
             echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
-            echo "> **Action Required:** One or more quality gates failed. Please download the reports listed above to debug the issues." >> $GITHUB_STEP_SUMMARY
+            echo "> **Action Required:** One or more quality gates failed. Review the table above to identify the issue." >> $GITHUB_STEP_SUMMARY
             exit 1
           else
             echo "> [!TIP]" >> $GITHUB_STEP_SUMMARY
-            echo "> **All Clear:** Your code meets all quality standards. Great job!" >> $GITHUB_STEP_SUMMARY
+            echo "> **All Clear:** Your code meets all quality standards." >> $GITHUB_STEP_SUMMARY
           fi
