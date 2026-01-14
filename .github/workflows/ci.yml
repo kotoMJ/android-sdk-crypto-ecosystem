@@ -64,6 +64,13 @@ jobs:
         continue-on-error: true
         run: ./gradlew detekt
 
+      - name: Upload Detekt Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: "**/build/reports/detekt/detekt.html"
+
       - name: Badge Detekt
         if: always() && github.ref == 'refs/heads/main' # <--- generate badge only on main as there is just one gist for badges.
         uses: schneegans/dynamic-badges-action@v1.7.0
@@ -98,6 +105,13 @@ jobs:
         continue-on-error: true
         run: ./gradlew testDebug
 
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: "**/build/reports/tests/testDebugUnitTest/"
+
       - name: Badge Unit Tests
         if: always() && github.ref == 'refs/heads/main' # <--- generate badge only on main as there is just one gist for badges.
         uses: schneegans/dynamic-badges-action@v1.7.0
@@ -117,6 +131,13 @@ jobs:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx2g -Dkotlin.daemon.jvm.options=-Xmx2g"
         run: ./gradlew pixel4api35aospatdCheck
 
+      - name: Upload Instrumented Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-results
+          path: "**/build/reports/androidTests/managedDevice/pixel4api35aospatd/"
+
       - name: Badge Instrumented
         if: always() && github.ref == 'refs/heads/main' # <--- generate badge only on main as there is just one gist for badges.
         uses: schneegans/dynamic-badges-action@v1.7.0
@@ -133,45 +154,37 @@ jobs:
         if: always()
         run: |
           echo "## 🛡️ CodeGuard Quality Report" >> $GITHUB_STEP_SUMMARY
-          echo "This report summarizes the verification steps performed during this build." >> $GITHUB_STEP_SUMMARY
+          echo "Verification completed. If a check failed, download the corresponding report from the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status | Report / Action |" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status | Available Report |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           
           FAILED=false
           
-          # Array of checks for consistent ordering
-          # Format: "Display Name|Step Outcome|Artifact Name"
+          # Defined as: "Display Name | Outcome | Artifact Name"
           CHECKS=(
-            "Spotless|${{ steps.spotless.outcome }}|None"
-            "Detekt|${{ steps.detekt.outcome }}|detekt-report"
+            "Spotless|${{ steps.spotless.outcome }}|None (Check Logs)"
+            "Detekt|${{ steps.detekt.outcome }}|📦 detekt-report"
             "Module Versions|${{ steps.versions.outcome }}|None"
-            "Unit Tests|${{ steps.unit.outcome }}|test-results"
-            "Instrumented|${{ steps.instr.outcome }}|android-test-results"
+            "Unit Tests|${{ steps.unit.outcome }}|📦 unit-test-results"
+            "Instrumented|${{ steps.instr.outcome }}|📦 instrumented-test-results"
           )
 
           for entry in "${CHECKS[@]}"; do
-            IFS='|' read -r NAME OUTCOME ARTIFACT <<< "$entry"
+            IFS='|' read -r NAME OUTCOME REPORT <<< "$entry"
           
             if [ "$OUTCOME" == "failure" ]; then
-              STATUS="❌ **FAILED**"
-              ACTION="Check logs / Artifacts ⬇️"
-              echo "::error title=CodeGuard Failure::$NAME failed. Check the logs for details."
+              echo "| \`$NAME\` | ❌ **FAILED** | $REPORT |" >> $GITHUB_STEP_SUMMARY
+              echo "::error title=CodeGuard Failure::$NAME failed. See $REPORT in artifacts."
               FAILED=true
             else
-              STATUS="✅ Passed"
-              ACTION="-"
+              echo "| \`$NAME\` | ✅ Passed | - |" >> $GITHUB_STEP_SUMMARY
             fi
-          
-            echo "| \`$NAME\` | $STATUS | $ACTION |" >> $GITHUB_STEP_SUMMARY
           done
 
-          echo "" >> $GITHUB_STEP_SUMMARY
           if [ "$FAILED" = true ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
             echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
-            echo "> One or more quality gates failed. Please review the failures above." >> $GITHUB_STEP_SUMMARY
+            echo "> Quality gates failed. Please inspect the artifacts below for details." >> $GITHUB_STEP_SUMMARY
             exit 1
-          else
-            echo "> [!TIP]" >> $GITHUB_STEP_SUMMARY
-            echo "> All quality checks passed successfully!" >> $GITHUB_STEP_SUMMARY
           fi
