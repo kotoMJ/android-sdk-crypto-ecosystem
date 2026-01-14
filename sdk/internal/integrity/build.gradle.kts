@@ -1,3 +1,5 @@
+import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
+
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
     alias(libs.plugins.buildLogic.sdk.version.read)
@@ -5,15 +7,14 @@ plugins {
     alias(libs.plugins.buildLogic.dokka)
     `maven-publish`
     alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
 }
 
-val publishingName = "news"
+val publishingName = "integrity"
 val singleVariantName = "release"
 
 android {
-    namespace = "cz.kotox.crypto.sdk.news"
-    group = "cz.kotox.crypto.sdk"
+    namespace = "cz.kotox.crypto.sdk.internal.integrity"
+    group = "cz.kotox.crypto.sdk.internal"
     buildFeatures.buildConfig = true
 
     buildTypes {
@@ -25,6 +26,26 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+
+        forEach { buildType ->
+
+            if (buildType.name == "debug") {
+                val apiKeyProvider = project.getPropertyOrVariable("BFF_CRYPTO_ADMIN_BYPASS_SECRET")
+                val quotedSecret = apiKeyProvider.map { "\"$it\"" }.getOrElse("\"\"")
+
+                buildType.buildConfigField(
+                    "String",
+                    "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
+                    quotedSecret,
+                )
+            } else {
+                buildType.buildConfigField(
+                    "String",
+                    "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
+                    "\"\"",
+                )
+            }
         }
     }
 
@@ -44,25 +65,18 @@ android {
 //    }
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
 kotlin {
     explicitApi()
 }
 
 dependencies {
-    api(projects.sdk.cryptoCommon)
-
+    implementation(projects.sdk.cryptoCommon)
     implementation(projects.sdk.internal.logger)
     implementation(projects.sdk.internal.common)
-    implementation(projects.sdk.internal.network)
-    implementation(projects.sdk.internal.integrity)
     implementation(kotlin("stdlib"))
 
-    implementation(libs.room.ktx)
-    implementation(libs.room.runtime)
+    implementation(libs.android.play.integrity)
+    implementation(libs.coroutines.play.services)
 
     ksp(libs.room.compiler)
 

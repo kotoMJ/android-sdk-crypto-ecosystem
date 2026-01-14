@@ -1,5 +1,3 @@
-import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
-
 plugins {
     alias(libs.plugins.buildLogic.sdk.android.library)
     alias(libs.plugins.buildLogic.sdk.version.read)
@@ -26,28 +24,6 @@ android {
                 "proguard-rules.pro",
             )
         }
-
-        buildTypes {
-            forEach { buildType ->
-
-                if (buildType.name == "debug") {
-                    val apiKeyProvider = project.getPropertyOrVariable("BFF_CRYPTO_ADMIN_BYPASS_SECRET")
-                    val quotedSecret = apiKeyProvider.map { "\"$it\"" }.getOrElse("\"\"")
-
-                    buildType.buildConfigField(
-                        "String",
-                        "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
-                        quotedSecret,
-                    )
-                } else {
-                    buildType.buildConfigField(
-                        "String",
-                        "BFF_CRYPTO_ADMIN_BYPASS_SECRET",
-                        "\"\"",
-                    )
-                }
-            }
-        }
     }
 
     publishing {
@@ -59,8 +35,9 @@ android {
 
 dependencies {
     implementation(projects.sdk.internal.common)
-    implementation(projects.sdk.cryptoCommon)
+    implementation(projects.sdk.internal.integrity)
     implementation(projects.sdk.internal.logger)
+    implementation(projects.sdk.cryptoCommon)
 
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)

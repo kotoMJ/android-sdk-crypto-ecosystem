@@ -1,0 +1,14 @@
+package cz.kotox.sdk.crypto.app.ui.screen.articles
+
+import androidx.compose.runtime.Immutable
+import cz.kotox.crypto.sdk.news.domain.Article
+
+@Immutable
+sealed interface ArticlesScreenState {
+
+    data object Loading : ArticlesScreenState
+
+    data class Content(
+        val articles: List<Article>,
+    ) : ArticlesScreenState
+}

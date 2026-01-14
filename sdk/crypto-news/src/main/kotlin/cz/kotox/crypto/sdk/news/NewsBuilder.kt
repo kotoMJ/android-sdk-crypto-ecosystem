@@ -1,17 +1,19 @@
 package cz.kotox.crypto.sdk.news
 
+import android.content.Context
 import cz.kotox.crypto.sdk.common.configuration.LoggingPolicy
 import cz.kotox.crypto.sdk.common.configuration.StrictModePolicy
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.common.SdkDispatchers
+import cz.kotox.crypto.sdk.internal.integrity.IntegrityBuilder
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.news.internal.NewsImpl
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-public open class NewsBuilder {
+public open class NewsBuilder(private val context: Context) {
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
     private var databaseDispatcher: CoroutineDispatcher = SdkDispatchers.databaseDispatcher
     private var networkTimeout: Duration = 30.seconds
@@ -77,5 +79,8 @@ public open class NewsBuilder {
             strictModePolicy = strictModePolicy,
             loggingPolicy = loggingPolicy,
         ),
+        integrity = IntegrityBuilder(context = context)
+            .setLoggerCallback(loggerCallback)
+            .build(),
     )
 }

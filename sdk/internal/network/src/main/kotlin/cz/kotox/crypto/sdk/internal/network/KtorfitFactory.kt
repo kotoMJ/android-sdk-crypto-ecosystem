@@ -3,6 +3,7 @@ package cz.kotox.crypto.sdk.internal.network
 import cz.kotox.crypto.sdk.common.configuration.NetworkLogMode
 import cz.kotox.crypto.sdk.common.logger.LogPriority
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
+import cz.kotox.crypto.sdk.internal.integrity.Integrity
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.internal.network.utils.MODULE_IDENTIFIER
@@ -24,6 +25,8 @@ import kotlinx.serialization.modules.SerializersModule
 public class KtorfitFactory(
     private val config: KtorConfig,
     private val sdkLoggerCallback: SDKLoggerCallback,
+    private val integrity: Integrity? = null,
+
 ) {
 
     init {
@@ -86,10 +89,9 @@ public class KtorfitFactory(
             }
         }
 
-        if (BuildConfig.DEBUG && BuildConfig.BFF_CRYPTO_ADMIN_BYPASS_SECRET.isNotBlank()) {
+        integrity?.getSecurityHeader()?.let { securityHeader ->
             install(DefaultRequest) {
-                // Apply the header to ALL requests made by this client
-                header("X-Kotox-Bypass-Key", BuildConfig.BFF_CRYPTO_ADMIN_BYPASS_SECRET)
+                header(securityHeader.key, securityHeader.value)
             }
         }
     }

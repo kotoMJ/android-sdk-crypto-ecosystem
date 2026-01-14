@@ -23,7 +23,7 @@ class NewsApiServiceTest {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        news = TestNews.provideNews() as NewsImpl
+        news = TestNews.provideNews(context) as NewsImpl
     }
 
     @Test

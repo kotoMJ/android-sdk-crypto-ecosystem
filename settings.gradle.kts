@@ -31,6 +31,7 @@ include(
     ":sdk:bom",
     ":sdk:crypto-common",
     ":sdk:internal:common",
+    ":sdk:internal:integrity",
     ":sdk:internal:logger",
     ":sdk:internal:network",
     ":sdk:crypto-coindata",
