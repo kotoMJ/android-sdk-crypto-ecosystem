@@ -132,7 +132,32 @@ jobs:
       # Because we used 'continue-on-error', the job thinks it succeeded.
       # We must manually check if any step failed and break the build if so.
       - name: Check Final Status
-        if: steps.spotless.outcome == 'failure' || steps.detekt.outcome == 'failure' || steps.versions.outcome == 'failure' || steps.unit.outcome == 'failure' || steps.instr.outcome == 'failure'
+        if: always()
         run: |
-          echo "One or more checks failed."
-          exit 1
+          echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          FAILED=false
+
+          # List of steps to check: "Step Name|Outcome"
+          STEPS=("Spotless|${{ steps.spotless.outcome }}" "Detekt|${{ steps.detekt.outcome }}" "Module Versions|${{ steps.versions.outcome }}" "Unit Tests|${{ steps.unit.outcome }}" "Instrumented|${{ steps.instr.outcome }}")
+
+          for entry in "${STEPS[@]}"; do
+            NAME="${entry%%|*}"
+            OUTCOME="${entry#*|}"
+
+            if [ "$OUTCOME" == "failure" ]; then
+              echo "❌ $NAME failed" >> $GITHUB_STEP_SUMMARY
+              echo "::error::Step '$NAME' failed. Check the logs above for details."
+              FAILED=true
+            else
+              echo "✅ $NAME passed" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          if [ "$FAILED" = true ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Result: **FAILED** 🚨" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Result: **SUCCESS** ✨" >> $GITHUB_STEP_SUMMARY
+          fi
