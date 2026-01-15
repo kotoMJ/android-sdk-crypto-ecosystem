@@ -25,6 +25,11 @@ public sealed class ApiError(
         override val cause: Throwable? = null,
     ) : ApiError(message, cause)
 
+    public data class ForbiddenResponseError(
+        override val message: String,
+        override val cause: Throwable? = null,
+    ) : ApiError(message, cause)
+
     public data class ResponseError(
         override val message: String,
         override val cause: Throwable? = null,

@@ -8,6 +8,7 @@ import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.internal.network.utils.MODULE_IDENTIFIER
 import de.jensklingenberg.ktorfit.Ktorfit
+import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.DefaultRequest
@@ -94,11 +95,15 @@ public class KtorfitFactory(
                 header(securityHeader.key, securityHeader.value)
             }
         }
+
+        // Very important for using Response<T>
+        expectSuccess = false
     }
 
     public val ktorfit: Ktorfit = Ktorfit.Builder()
         .baseUrl(config.baseUrl)
         .httpClient(httpClient)
+        .converterFactories(ResponseConverterFactory())
         .build()
 
     private fun installNetworkLogger(loggerCallback: SDKLoggerCallback) {

@@ -1,6 +1,7 @@
 package cz.kotox.crypto.sdk.news.internal.data.api
 
 import cz.kotox.crypto.sdk.news.internal.dto.NewsApiResponseDTO
+import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.POST
@@ -13,7 +14,7 @@ public interface NewsApi {
     public suspend fun fetchNews(
         @Body request: NewsFetchRequest,
 
-    ): NewsApiResponseDTO
+    ): Response<NewsApiResponseDTO>
 }
 
 @Serializable
