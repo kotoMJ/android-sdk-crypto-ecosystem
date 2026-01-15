@@ -6,6 +6,7 @@ import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.integrity.Integrity
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
+import cz.kotox.crypto.sdk.internal.network.ApiExecutor
 import cz.kotox.crypto.sdk.news.MODULE_IDENTIFIER
 import cz.kotox.crypto.sdk.news.News
 import cz.kotox.crypto.sdk.news.NewsConfig
@@ -37,7 +38,7 @@ internal class NewsImpl(
     internal val newsRequestContext: NewsRequestContext by lazy {
         NewsRequestContext(
             apiService = provideTrackerApiService(),
-            dispatchers = dispatchers,
+            apiExecutor = ApiExecutor(dispatchers),
         )
     }
 

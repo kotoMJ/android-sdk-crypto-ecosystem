@@ -6,26 +6,21 @@ import cz.kotox.crypto.sdk.coindata.internal.data.database.CoinDatabase
 import cz.kotox.crypto.sdk.coindata.internal.utils.logE
 import cz.kotox.crypto.sdk.common.Either
 import cz.kotox.crypto.sdk.common.error.ApiError
-import cz.kotox.crypto.sdk.common.error.transformApiError
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
+import cz.kotox.crypto.sdk.internal.network.ApiExecutor
+import de.jensklingenberg.ktorfit.Response
 import kotlinx.coroutines.withContext
 
 internal class CoinDataRequestContext(
     private val apiService: CoinDataApiService,
     private val dispatchers: CoroutineDispatchers,
     private val database: CoinDatabase,
+    private val apiExecutor: ApiExecutor,
 ) {
-
-    @Suppress("TooGenericExceptionCaught")
-    internal suspend inline fun <T> withApi(
-        crossinline action: suspend CoinDataApiService.() -> T,
-    ): Either<ApiError, T> = withContext(dispatchers.fetchDispatcher) {
-        try {
-            val response = action(apiService)
-            Either.Value(response)
-        } catch (exception: Exception) {
-            Either.Error(exception.transformApiError())
-        }
+    internal suspend inline fun <reified T> withApi(
+        crossinline action: suspend CoinDataApiService.() -> Response<T>,
+    ): Either<ApiError, T> {
+        return apiExecutor.execute { action(apiService) }
     }
 
     internal suspend inline fun <T> withDatabase(

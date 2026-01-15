@@ -7,6 +7,7 @@ import cz.kotox.crypto.sdk.common.domain.model.coin.CoinMarketId
 import cz.kotox.crypto.sdk.common.domain.model.coin.CurrencyId
 import cz.kotox.crypto.sdk.internal.network.KtorConfig
 import cz.kotox.crypto.sdk.internal.network.KtorfitFactory
+import de.jensklingenberg.ktorfit.Response
 
 internal class CoinDataApiService(
     private val coinDataConfig: CoinDataConfig,
@@ -30,14 +31,14 @@ internal class CoinDataApiService(
     /**
      * Fetches coin market data.
      */
-    suspend fun getMarkets(currency: CurrencyId): List<CoinMarketDTO> {
+    suspend fun getMarkets(currency: CurrencyId): Response<List<CoinMarketDTO>> {
         return coinGeckoApi.getMarkets(currency = currency.value)
     }
 
     /**
      * Fetches coin market data.
      */
-    suspend fun getCoinDetail(coinMarketId: CoinMarketId): CoinDetailDTO {
+    suspend fun getCoinDetail(coinMarketId: CoinMarketId): Response<CoinDetailDTO> {
         return coinGeckoApi.getCoinDetail(coinMarketId = coinMarketId.value)
     }
 }
