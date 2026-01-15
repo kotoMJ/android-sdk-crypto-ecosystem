@@ -25,8 +25,11 @@ internal fun ArticlesScreen(
             )
         }
 
-        ArticlesScreenState.Loading -> {
-            // Optional: Add a Loading spinner here or inside ArticlesContentScreen
-        }
+        is ArticlesScreenState.Loading -> ArticlesLoadingView()
+
+        is ArticlesScreenState.Error -> ArticlesErrorView(
+            message = localState.message,
+            onRetry = viewModel::refresh,
+        )
     }
 }
