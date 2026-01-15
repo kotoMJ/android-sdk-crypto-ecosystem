@@ -5,6 +5,7 @@ import cz.kotox.crypto.sdk.internal.network.KtorConfig
 import cz.kotox.crypto.sdk.internal.network.KtorfitFactory
 import cz.kotox.crypto.sdk.news.NewsConfig
 import cz.kotox.crypto.sdk.news.internal.dto.NewsApiResponseDTO
+import de.jensklingenberg.ktorfit.Response
 
 internal class NewsApiService(
     private val newsConfig: NewsConfig,
@@ -29,7 +30,7 @@ internal class NewsApiService(
 
     suspend fun getNews(
         integrityToken: String,
-    ): NewsApiResponseDTO {
+    ): Response<NewsApiResponseDTO> {
         return newsApi.fetchNews(
             request = NewsFetchRequest(
                 integrityToken = integrityToken,

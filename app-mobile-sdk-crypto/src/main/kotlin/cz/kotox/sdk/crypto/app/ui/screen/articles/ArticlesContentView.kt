@@ -38,11 +38,13 @@ import cz.kotox.sdk.crypto.app.ui.mock.articles.articles
 import cz.kotox.sdk.crypto.app.ui.theme.SDKCryptoSampleAppTheme
 import cz.kotox.sdk.crypto.app.ui.theme.SDKTheme
 
-@Suppress("LongMethod")
+@Suppress("LongMethod", "UnusedParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticlesContentScreen(
     state: ArticlesScreenState.Content,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onItemClick: (Article) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -143,6 +145,8 @@ private fun ArticlesContentScreenPreview() {
     SDKCryptoSampleAppTheme {
         ArticlesContentScreen(
             state = ArticlesScreenState.Content(articles = articles),
+            isRefreshing = true,
+            onRefresh = {},
             onItemClick = {},
             contentPadding = PaddingValues(bottom = 80.dp),
         )

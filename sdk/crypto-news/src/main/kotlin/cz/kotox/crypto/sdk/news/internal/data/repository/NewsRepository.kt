@@ -1,6 +1,7 @@
 package cz.kotox.crypto.sdk.news.internal.data.repository
 
 import cz.kotox.crypto.sdk.common.Either
+import cz.kotox.crypto.sdk.common.error.ApiError
 import cz.kotox.crypto.sdk.common.error.IntegrityError
 import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.common.fold
@@ -31,8 +32,13 @@ internal class NewsRepository(
 
         requestContext.withApi { getNews(integrityToken = integrityToken.value) }.fold(
             { newsError ->
-                logE(newsError, { "Unable to refresh getCoinMarkets cache" })
-                return Either.Error(newsError)
+                logE(newsError, { "Unable to refresh getNews: $newsError" })
+                return if (newsError is ApiError.ForbiddenResponseError) {
+                    // Forbidden from BFF means integrity was not verified!
+                    Either.Error(IntegrityError(newsError.message, newsError.cause))
+                } else {
+                    Either.Error(newsError)
+                }
             },
             { newsResponse ->
                 return newsResponse.toDomainArticleList(requireTitle = true)

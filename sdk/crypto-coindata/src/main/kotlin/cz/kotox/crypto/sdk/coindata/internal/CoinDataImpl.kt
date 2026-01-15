@@ -22,6 +22,7 @@ import cz.kotox.crypto.sdk.common.error.SdkError
 import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLogger
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
+import cz.kotox.crypto.sdk.internal.network.ApiExecutor
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Executors
 
@@ -49,6 +50,7 @@ internal class CoinDataImpl(
             apiService = provideCoinDataApiService(),
             dispatchers = dispatchers,
             database = provideDatabase(context),
+            apiExecutor = ApiExecutor(dispatchers),
         )
     }
 

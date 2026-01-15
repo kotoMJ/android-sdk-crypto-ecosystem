@@ -20,11 +20,15 @@ class AndroidKtorConventionPlugin : Plugin<Project> {
                 dependencies {
                     add("implementation", libs.library("network.ktor.core"))
                     add("implementation", libs.library("network.ktor.cio"))
-                    add("implementation", libs.library("network.ktor.logging"))
+//                    add("implementation", libs.library("network.ktor.logging"))
                     add("implementation", libs.library("network.ktor.negotiation"))
                     add("implementation", libs.library("network.ktor.serialization"))
                     add("implementation", libs.library("network.ktor.wss"))
+                    add("implementation", libs.library("network.ktor.logging"))
                     add("implementation", libs.library("network.ktorfit.lib"))
+                    add("implementation", libs.library("network.ktorfit.converters.call"))
+                    add("implementation", libs.library("network.ktorfit.converters.flow"))
+                    add("implementation", libs.library("network.ktorfit.converters.response"))
 
                     add("ksp", libs.library("network.ktorfit.ksp"))
 

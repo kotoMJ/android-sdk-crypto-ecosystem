@@ -2,25 +2,17 @@ package cz.kotox.crypto.sdk.news.domain
 
 import cz.kotox.crypto.sdk.common.Either
 import cz.kotox.crypto.sdk.common.error.ApiError
-import cz.kotox.crypto.sdk.common.error.transformApiError
-import cz.kotox.crypto.sdk.internal.common.CoroutineDispatchers
+import cz.kotox.crypto.sdk.internal.network.ApiExecutor
 import cz.kotox.crypto.sdk.news.internal.data.api.NewsApiService
-import kotlinx.coroutines.withContext
+import de.jensklingenberg.ktorfit.Response
 
 internal class NewsRequestContext(
     private val apiService: NewsApiService,
-    private val dispatchers: CoroutineDispatchers,
+    private val apiExecutor: ApiExecutor,
 ) {
-
-    @Suppress("TooGenericExceptionCaught")
-    internal suspend inline fun <T> withApi(
-        crossinline action: suspend NewsApiService.() -> T,
-    ): Either<ApiError, T> = withContext(dispatchers.fetchDispatcher) {
-        try {
-            val response = action(apiService)
-            Either.Value(response)
-        } catch (exception: Exception) {
-            Either.Error(exception.transformApiError())
-        }
+    internal suspend inline fun <reified T> withApi(
+        crossinline action: suspend NewsApiService.() -> Response<T>,
+    ): Either<ApiError, T> {
+        return apiExecutor.execute { action(apiService) }
     }
 }
