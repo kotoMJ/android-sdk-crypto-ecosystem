@@ -22,6 +22,8 @@ internal fun ArticlesScreen(
                 state = localState,
                 onItemClick = onItemClick,
                 contentPadding = contentPadding,
+                isRefreshing = localState.isRefreshing,
+                onRefresh = viewModel::refresh,
             )
         }
 

@@ -12,5 +12,6 @@ sealed interface ArticlesScreenState {
 
     data class Content(
         val articles: List<Article>,
+        val isRefreshing: Boolean = false,
     ) : ArticlesScreenState
 }
