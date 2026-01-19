@@ -5,7 +5,11 @@ import cz.kotox.crypto.sdk.coindata.BuildConfig
 import cz.kotox.sdk.crypto.app.di.AppModule
 import cz.kotox.sdk.crypto.app.utils.security.SentryStore
 import io.sentry.Sentry
+import io.sentry.SentryAttribute
+import io.sentry.SentryAttributes
+import io.sentry.SentryLogLevel
 import io.sentry.android.core.SentryAndroid
+import io.sentry.logger.SentryLogParameters
 import io.sentry.protocol.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -60,6 +64,8 @@ class SDKCryptoSampleApplication : Application() {
             options.isDebug = isDebug
             options.isEnableAutoSessionTracking = true
 
+            options.logs.isEnabled = true
+
             // Enable Distributed Tracing
             options.isEnableUserInteractionTracing = true
             options.isEnableUserInteractionBreadcrumbs = true
@@ -89,7 +95,18 @@ class SDKCryptoSampleApplication : Application() {
                 id = deviceId // This links all subsequent events to this "Anonymous" user
             },
         )
-        Sentry.captureMessage("Sentry init for $deviceId")
+
+        // Sentry.captureMessage("Sentry init for $deviceId")
+        Sentry.logger().log(
+            SentryLogLevel.INFO,
+            SentryLogParameters.create(
+                SentryAttributes.of(
+                    SentryAttribute.stringAttribute("device_id", deviceId),
+                    SentryAttribute.stringAttribute("storage_type", "tink_datastore"),
+                    SentryAttribute.booleanAttribute("is_cold_start", true),
+                ),
+            ).toString(),
+        )
     }
 
     @Suppress("TooGenericExceptionCaught")
