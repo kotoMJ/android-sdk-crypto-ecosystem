@@ -3,6 +3,13 @@ package cz.kotox.sdk.crypto.app
 import android.app.Application
 import cz.kotox.crypto.sdk.coindata.BuildConfig
 import cz.kotox.sdk.crypto.app.di.AppModule
+import cz.kotox.sdk.crypto.app.utils.security.SentryStore
+import io.sentry.Sentry
+import io.sentry.android.core.SentryAndroid
+import io.sentry.protocol.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -10,6 +17,8 @@ import org.koin.ksp.generated.module
 import timber.log.Timber
 
 class SDKCryptoSampleApplication : Application() {
+
+    private val sentryStore by lazy { SentryStore(this) }
 
     override fun onCreate() {
         super.onCreate()
@@ -21,11 +30,96 @@ class SDKCryptoSampleApplication : Application() {
 
             modules(AppModule().module)
         }
+
+        val config = sentryStore.getInitialConfig()
+
+        if (!config.dsn.isNullOrBlank()) {
+            initSentry(
+                dsn = config.dsn,
+                deviceId = config.installId,
+                isDebug = BuildConfig.DEBUG,
+            )
+        }
+
+        syncMonitoringConfig()
     }
 
     private fun setupTimber(isDebug: Boolean) {
         if (isDebug) {
             Timber.plant(Timber.DebugTree())
+        }
+    }
+
+    private fun initSentry(
+        dsn: String,
+        deviceId: String,
+        isDebug: Boolean,
+    ) {
+        SentryAndroid.init(this) { options ->
+            options.dsn = dsn
+            options.isDebug = isDebug
+            options.isEnableAutoSessionTracking = true
+
+            // Enable Distributed Tracing
+            options.isEnableUserInteractionTracing = true
+            options.isEnableUserInteractionBreadcrumbs = true
+
+            options.environment = "production"
+            options.isEnableExternalConfiguration = false // Ensure it doesn't look for manifest values
+
+            options.tracesSampleRate = 1.0 // Adjust for production to 0.1 or less
+            options.isEnableUserInteractionTracing = true
+
+            // --- Session Replay Configuration ---
+            // 1. Whole Session Sampling (0.0 to 1.0)
+            // Set to 1.0 to capture every single session for testing.
+            options.sessionReplay.sessionSampleRate = 1.0
+
+            // 2. Error-Only Sampling (0.0 to 1.0)
+            // Captures a replay only if an error occurs, including 30s of buffer before the error.
+            options.sessionReplay.onErrorSampleRate = 1.0
+
+            // CRITICAL for Distributed Tracing:
+            // Add your BFF domain here to ensure the sentry-trace header is attached
+            options.setTracePropagationTargets(listOf("localhost", "your-api-domain.com"))
+        }
+
+        Sentry.setUser(
+            User().apply {
+                id = deviceId // This links all subsequent events to this "Anonymous" user
+            },
+        )
+        Sentry.captureMessage("Sentry init for $deviceId")
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun syncMonitoringConfig() {
+        // Use the application scope so the sync isn't killed if an Activity closes
+        MainScope().launch(Dispatchers.IO) {
+            try {
+//                // 1. Fetch Play Integrity Token (You'll need the Google Play library)
+//                val integrityToken = fetchPlayIntegrityToken()
+//
+//                // 2. Call your Ktor BFF
+//                // Pass the installId in a header to link the device to the backend logs
+//                val config = sentryStore.getInitialConfig()
+//                val response = bffClient.get("https://api.yourcryptoapp.com/config/monitoring") {
+//                    header("X-Play-Integrity", integrityToken)
+//                    header("X-Device-ID", config.installId)
+//                }.body<MonitoringConfig>()
+
+                // 3. Update the store if the DSN has changed
+//                if (response.dsn != config.dsn) {
+//                    sentryStore.updateDsn(response.dsn)
+//
+//                    // 4. Re-initialize Sentry immediately with the fresh DSN
+//                    // Sentry handles re-init gracefully by updating the active client
+//                    initSentry(dsn = response.dsn, deviceId = config.installId)
+//                }
+            } catch (e: Exception) {
+                // Log locally; Sentry isn't ready yet or network failed
+                Timber.e(e, "Failed to sync monitoring config")
+            }
         }
     }
 }
