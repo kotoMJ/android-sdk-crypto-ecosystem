@@ -274,6 +274,7 @@ system-ui = { module = "com.google.accompanist:accompanist-systemuicontroller", 
 sentry-bom = { group = "io.sentry", name = "sentry-bom", version.ref = "sentryBom" }
 sentry-android = { group = "io.sentry", name = "sentry-android" }
 sentry-replay = { group = "io.sentry", name = "sentry-android-replay" }
+sentry-ktor-client = { group = "io.sentry", name = "sentry-ktor-client" } # Crucial for TraceID propagation
 
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

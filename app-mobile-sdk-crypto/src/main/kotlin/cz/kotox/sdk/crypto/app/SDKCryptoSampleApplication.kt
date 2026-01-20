@@ -87,7 +87,8 @@ class SDKCryptoSampleApplication : Application() {
 
             // CRITICAL for Distributed Tracing:
             // Add your BFF domain here to ensure the sentry-trace header is attached
-            options.setTracePropagationTargets(listOf("localhost", "your-api-domain.com"))
+            // more restricted variant: "^https://bff-service-1029057924274\\.us-central1\\.run.app/.*"
+            options.setTracePropagationTargets(listOf("localhost", "bff-service-1029057924274.us-central1.run.app"))
         }
 
         Sentry.setUser(
