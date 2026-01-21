@@ -150,7 +150,7 @@ class SdkVersionUpdateConventionPlugin : Plugin<Project> {
         // a deterministic order, regardless of the operating system.
         val filesToHash = module.fileTree(srcDir)
             .filter { it.isFile && it.name != ".DS_Store" }
-            .sortedBy { it.path } // <-- THIS IS THE KEY FIX
+            .sortedBy { it.path }
 
         if (filesToHash.isEmpty() && module.path != ":sdk:bom") {
             module.logger.warn("[VersionCheck] SKIPPING: ${module.path} (no source files found in 'src/main')")
