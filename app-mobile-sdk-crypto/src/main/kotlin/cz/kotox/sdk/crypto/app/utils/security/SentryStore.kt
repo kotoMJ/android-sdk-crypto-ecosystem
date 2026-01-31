@@ -32,7 +32,7 @@ class SentryStore(private val context: Context) {
         }
 
         // FIXME MJ - dev hack, before BFF will be ready
-        runBlocking { updateDsn(BuildConfig.SENTRY_DNS_CRYPTO_TRACKER_ANDROID) }
+        runBlocking { updateDsn(BuildConfig.SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE) }
     }
 
     /**
