@@ -39,12 +39,12 @@ android {
 
         forEach { buildType ->
 
-            val apiKeyProvider = project.getPropertyOrVariable("SENTRY_DNS_CRYPTO_TRACKER_ANDROID")
+            val apiKeyProvider = project.getPropertyOrVariable("SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE")
             val quotedSecret = apiKeyProvider.map { "\"$it\"" }.getOrElse("\"\"")
 
             buildType.buildConfigField(
                 "String",
-                "SENTRY_DNS_CRYPTO_TRACKER_ANDROID",
+                "SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE",
                 quotedSecret,
             )
         }
