@@ -1,14 +1,20 @@
 package cz.kotox.crypto.sdk.monitoring
 
+import android.content.Context
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.common.SdkDispatchers
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.monitoring.internal.MonitoringImpl
+import cz.kotox.crypto.sdk.monitoring.internal.sentry.SentryConfigStore
+import cz.kotox.crypto.sdk.monitoring.internal.sentry.SentryProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-public open class MonitoringBuilder {
+public open class MonitoringBuilder(
+    private val context: Context,
+    private val isDebug: Boolean,
+) {
     private var networkTimeout: Duration = 10.seconds
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
@@ -46,6 +52,10 @@ public open class MonitoringBuilder {
             networkTimeout = networkTimeout,
             loggerCallback = loggerCallback,
         ),
-        dispatcher = fetchDispatcher,
+        sentryProvider = SentryProvider(
+            context = context,
+            sentryConfigStore = SentryConfigStore(context),
+            isDebug = isDebug,
+        ),
     )
 }

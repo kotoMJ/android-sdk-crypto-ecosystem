@@ -1,4 +1,4 @@
-package cz.kotox.sdk.crypto.app.utils.security
+package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
  * @property isMonitoringEnabled - Optional: kill-switch for privacy
  */
 @Serializable
-data class SentryConfig(
+internal data class SentryConfig(
     val dsn: String? = null,
     val installId: String = "",
     val isMonitoringEnabled: Boolean = true,

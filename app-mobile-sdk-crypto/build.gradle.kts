@@ -56,6 +56,7 @@ dependencies {
 
     implementation(projects.sdk.cryptoCoindata)
     implementation(projects.sdk.cryptoNews)
+    implementation(projects.sdk.monitoring)
 
 //    implementation(platform(libs.kotox.crypto.bom))
 //    implementation(libs.kotox.crypto.common)
@@ -68,12 +69,6 @@ dependencies {
 
     implementation(libs.coil.kt.compose)
     implementation(libs.androidx.compose.foundation.layout)
-
-    implementation(libs.google.tink)
-
-    implementation(platform(libs.sentry.bom))
-    implementation(libs.sentry.android)
-    implementation(libs.sentry.replay)
 
     debugImplementation(libs.leakcanary)
 

@@ -4,7 +4,10 @@ import android.content.Context
 
 public interface Monitoring {
 
-    public class Builder(context: Context) : MonitoringBuilder(context = context)
+    public class Builder(context: Context) : MonitoringBuilder(
+        context = context,
+        isDebug = true, // FIXME MJ
+    )
 
 //    /**
 //     * Fetches the current token for a network request
@@ -19,6 +22,8 @@ public interface Monitoring {
 //    public fun getIntegrityHash(content: String): String
 //
 //    public fun getSecurityHeader(): SdkSecurityHeader?
+
+    public fun initMonitoring()
 
     public fun shutdown()
 }

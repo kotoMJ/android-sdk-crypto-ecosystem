@@ -1,4 +1,4 @@
-package cz.kotox.sdk.crypto.app.utils.security
+package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import androidx.datastore.core.Serializer
 import kotlinx.serialization.json.Json
@@ -6,7 +6,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
-class SentryConfigSerializer(private val crypto: CryptoManager) : Serializer<SentryConfig> {
+internal class SentryConfigSerializer(private val crypto: SentryConfigCryptoManager) : Serializer<SentryConfig> {
     override val defaultValue: SentryConfig = SentryConfig()
 
     override suspend fun readFrom(input: InputStream): SentryConfig {

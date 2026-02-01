@@ -1,18 +1,17 @@
-package cz.kotox.sdk.crypto.app.utils.security
+package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import cz.kotox.sdk.crypto.app.BuildConfig
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
-class SentryStore(private val context: Context) {
+internal class SentryConfigStore(private val context: Context) {
 
     private val appContext = context.applicationContext
-    private val cryptoManager = CryptoManager(appContext)
+    private val cryptoManager = SentryConfigCryptoManager(appContext)
 
     private val sentryDataStore: DataStore<SentryConfig> = DataStoreFactory.create(
         serializer = SentryConfigSerializer(cryptoManager),
@@ -32,7 +31,7 @@ class SentryStore(private val context: Context) {
         }
 
         // FIXME MJ - dev hack, before BFF will be ready
-        runBlocking { updateDsn(BuildConfig.SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE) }
+        // runBlocking { updateDsn(BuildConfig.SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE) }
     }
 
     /**

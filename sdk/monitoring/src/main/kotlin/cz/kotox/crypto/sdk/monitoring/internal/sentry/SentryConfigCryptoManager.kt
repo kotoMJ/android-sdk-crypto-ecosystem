@@ -1,4 +1,4 @@
-package cz.kotox.sdk.crypto.app.utils.security
+package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import android.content.Context
 import com.google.crypto.tink.Aead
@@ -6,7 +6,7 @@ import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
-class CryptoManager(context: Context) {
+internal class SentryConfigCryptoManager(context: Context) {
     init {
         AeadConfig.register() // Register AEAD primitives
     }

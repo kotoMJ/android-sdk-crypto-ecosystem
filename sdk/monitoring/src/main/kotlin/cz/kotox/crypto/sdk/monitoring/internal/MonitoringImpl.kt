@@ -5,10 +5,12 @@ import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.monitoring.MODULE_IDENTIFIER
 import cz.kotox.crypto.sdk.monitoring.Monitoring
 import cz.kotox.crypto.sdk.monitoring.MonitoringConfig
+import cz.kotox.crypto.sdk.monitoring.internal.sentry.SentryProvider
 import kotlinx.coroutines.SupervisorJob
 
 internal class MonitoringImpl(
     private val config: MonitoringConfig,
+    private val sentryProvider: SentryProvider,
 //    private val dispatcher: CoroutineDispatcher,
 ) : Monitoring {
 
@@ -36,6 +38,10 @@ internal class MonitoringImpl(
 //        integrityProvider.getIntegrityToken(uniqueRequestHash)?.let { SdkIntegrityToken(it) }
 //
 //    override fun getIntegrityHash(content: String): String = content.toSha256Base64()
+
+    override fun initMonitoring() {
+        sentryProvider.initSentry()
+    }
 
     /**
      * Cancels the scope and stops all background activity.

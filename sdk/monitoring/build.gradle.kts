@@ -54,6 +54,13 @@ dependencies {
     implementation(projects.sdk.internal.common)
     implementation(kotlin("stdlib"))
 
+    implementation(libs.google.tink)
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(platform(libs.sentry.bom))
+    implementation(libs.sentry.android)
+    implementation(libs.sentry.replay)
+
     testImplementation(libs.bundles.test.unit)
     androidTestImplementation(libs.bundles.test.android)
 }
