@@ -6,7 +6,7 @@ import com.google.crypto.tink.KeyTemplates
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
-internal class SentryConfigCryptoManager(context: Context) {
+internal class SentryConfigManager(context: Context) {
     init {
         AeadConfig.register() // Register AEAD primitives
     }

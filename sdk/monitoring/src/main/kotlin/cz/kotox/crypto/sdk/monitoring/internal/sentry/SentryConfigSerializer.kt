@@ -6,7 +6,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
-internal class SentryConfigSerializer(private val crypto: SentryConfigCryptoManager) : Serializer<SentryConfig> {
+internal class SentryConfigSerializer(private val crypto: SentryConfigManager) : Serializer<SentryConfig> {
     override val defaultValue: SentryConfig = SentryConfig()
 
     override suspend fun readFrom(input: InputStream): SentryConfig {

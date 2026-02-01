@@ -11,7 +11,7 @@ import java.util.UUID
 internal class SentryConfigStore(private val context: Context) {
 
     private val appContext = context.applicationContext
-    private val cryptoManager = SentryConfigCryptoManager(appContext)
+    private val cryptoManager = SentryConfigManager(appContext)
 
     private val sentryDataStore: DataStore<SentryConfig> = DataStoreFactory.create(
         serializer = SentryConfigSerializer(cryptoManager),
