@@ -48,14 +48,12 @@ SDK Ecosystem implements content based automated versioning.
 For details about versioning visit [SDK Versioning] section.
 
 ### Backend For Frontend
-SDK Ecosystem has it's own backend for frontend in order to handle API keys securely.  
-  
-Complete backend code is available on separated GitHub:  
+SDK Ecosystem has its own backend for frontend in order to handle API keys securely.
+
+Complete backend code is available on separated GitHub:
 https://github.com/kotoMJ/sdk-crypto-ecosystem-bff
 
-### Anatomy
-The whole SDK Ecosystem details is deconstructed here:
-[The Anatomy of SDK Ecosystem ->]
+For details about BFF authentication (Play Integrity vs debug bypass) see [BFF Authentication].
 
 
 ### Public Speaking
@@ -70,6 +68,6 @@ and here are slides from Prague meetup:
 In order to contribute to this codebase read [Conventions] part.
 
 [SDK Documentation pages]: https://kotomj.github.io/android-sdk-crypto-ecosystem-doc/
-[The Anatomy of SDK Ecosystem ->]: docs/The_Anatomy_of_SDKs.md
 [SDK Versioning]: sdk/bom/VERSIONING.md
+[BFF Authentication]: docs/bff-authentication.md
 [Conventions]: extras/CONVENTIONS.md
