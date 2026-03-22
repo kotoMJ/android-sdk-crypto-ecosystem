@@ -14,11 +14,20 @@ import kotlin.time.Duration.Companion.seconds
 
 public open class MonitoringBuilder(
     private val context: Context,
-    private val isDebug: Boolean,
 ) {
     private var networkTimeout: Duration = 10.seconds
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
+    private var diagnosticsEnabled: Boolean = false
+
+    /**
+     * Enable diagnostic logging for monitoring subsystems (e.g. Sentry payload/envelope logs).
+     * Disabled by default.
+     */
+    public fun setDiagnosticsEnabled(enabled: Boolean): MonitoringBuilder {
+        this.diagnosticsEnabled = enabled
+        return this
+    }
 
     /**
      * Set the fetch dispatcher [CoroutineDispatcher]
@@ -59,7 +68,7 @@ public open class MonitoringBuilder(
             integrity = IntegrityBuilder(context = context)
                 .setLoggerCallback(loggerCallback)
                 .build(),
-            isDebug = isDebug,
+            sentryDiagnosticsEnabled = diagnosticsEnabled,
         ),
     )
 }

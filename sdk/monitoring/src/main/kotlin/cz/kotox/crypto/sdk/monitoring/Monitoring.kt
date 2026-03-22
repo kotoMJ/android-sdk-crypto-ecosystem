@@ -6,7 +6,6 @@ public interface Monitoring {
 
     public class Builder(context: Context) : MonitoringBuilder(
         context = context,
-        isDebug = true, // FIXME MJ
     )
 
 //    /**

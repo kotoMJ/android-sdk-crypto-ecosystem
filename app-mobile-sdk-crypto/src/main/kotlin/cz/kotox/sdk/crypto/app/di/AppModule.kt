@@ -89,5 +89,6 @@ class AppModule {
                 }
             },
         )
+        .setDiagnosticsEnabled(false)
         .build()
 }

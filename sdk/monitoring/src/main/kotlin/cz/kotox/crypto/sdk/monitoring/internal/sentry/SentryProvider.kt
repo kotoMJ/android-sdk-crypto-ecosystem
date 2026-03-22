@@ -1,6 +1,7 @@
 package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import android.content.Context
+import android.util.Log
 import cz.kotox.crypto.sdk.internal.integrity.Integrity
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -13,9 +14,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import io.sentry.ILogger
 import io.sentry.Sentry
 import io.sentry.SentryAttribute
 import io.sentry.SentryAttributes
+import io.sentry.SentryLevel
 import io.sentry.SentryLogLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.logger.SentryLogParameters
@@ -35,7 +38,7 @@ internal class SentryProvider(
     private val context: Context,
     private val sentryConfigStore: SentryConfigStore,
     private val integrity: Integrity,
-    private val isDebug: Boolean,
+    private val sentryDiagnosticsEnabled: Boolean,
 ) {
 
     internal fun initSentry() {
@@ -45,7 +48,7 @@ internal class SentryProvider(
             initSentry(
                 dsn = config.dsn,
                 deviceId = config.installId,
-                isDebug = isDebug,
+                sentryDiagnosticsEnabled = sentryDiagnosticsEnabled,
             )
         }
 
@@ -55,11 +58,42 @@ internal class SentryProvider(
     private fun initSentry(
         dsn: String,
         deviceId: String,
-        isDebug: Boolean,
+        sentryDiagnosticsEnabled: Boolean,
     ) {
         SentryAndroid.init(context) { options ->
             options.dsn = dsn
-            options.isDebug = isDebug
+            options.isDebug = sentryDiagnosticsEnabled
+            if (sentryDiagnosticsEnabled) {
+                options.setLogger(object : ILogger {
+                    private val tag = "Sentry"
+                    override fun log(level: SentryLevel, message: String, vararg args: Any?) {
+                        val msg = if (args.isNotEmpty()) String.format(message, *args) else message
+                        when (level) {
+                            SentryLevel.DEBUG -> Log.v(tag, msg)
+                            SentryLevel.INFO -> Log.i(tag, msg)
+                            SentryLevel.WARNING -> Log.w(tag, msg)
+                            SentryLevel.ERROR, SentryLevel.FATAL -> Log.e(tag, msg)
+                        }
+                    }
+
+                    override fun log(level: SentryLevel, message: String, throwable: Throwable?) {
+                        val logFunc: (String, String, Throwable?) -> Int = when (level) {
+                            SentryLevel.DEBUG -> { t, m, tr -> if (tr != null) Log.v(t, m, tr) else Log.v(t, m) }
+                            SentryLevel.INFO -> { t, m, tr -> if (tr != null) Log.i(t, m, tr) else Log.i(t, m) }
+                            SentryLevel.WARNING -> { t, m, tr -> if (tr != null) Log.w(t, m, tr) else Log.w(t, m) }
+                            SentryLevel.ERROR, SentryLevel.FATAL -> { t, m, tr -> if (tr != null) Log.e(t, m, tr) else Log.e(t, m) }
+                        }
+                        logFunc(tag, message, throwable)
+                    }
+
+                    override fun log(level: SentryLevel, throwable: Throwable?, message: String, vararg args: Any?) {
+                        val msg = if (args.isNotEmpty()) String.format(message, *args) else message
+                        log(level, msg, throwable)
+                    }
+
+                    override fun isEnabled(level: SentryLevel?): Boolean = true
+                })
+            }
             options.isEnableAutoSessionTracking = true
 
             options.logs.isEnabled = true
@@ -136,7 +170,7 @@ internal class SentryProvider(
                 val config = sentryConfigStore.getInitialConfig()
                 if (dsn != config.dsn) {
                     sentryConfigStore.updateDsn(dsn)
-                    initSentry(dsn = dsn, deviceId = config.installId, isDebug = isDebug)
+                    initSentry(dsn = dsn, deviceId = config.installId, sentryDiagnosticsEnabled = sentryDiagnosticsEnabled)
                 }
             } catch (e: Exception) {
                 // Network or integrity failure — Sentry simply won't be initialized with a DSN
