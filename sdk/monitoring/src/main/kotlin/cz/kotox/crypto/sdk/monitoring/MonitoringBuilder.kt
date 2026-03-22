@@ -3,6 +3,7 @@ package cz.kotox.crypto.sdk.monitoring
 import android.content.Context
 import cz.kotox.crypto.sdk.common.logger.SDKLoggerCallback
 import cz.kotox.crypto.sdk.internal.common.SdkDispatchers
+import cz.kotox.crypto.sdk.internal.integrity.Integrity
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.monitoring.internal.MonitoringImpl
 import cz.kotox.crypto.sdk.monitoring.internal.sentry.SentryConfigStore
@@ -18,6 +19,15 @@ public open class MonitoringBuilder(
     private var networkTimeout: Duration = 10.seconds
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
+    private var integrity: Integrity? = null
+
+    /**
+     * Set the [Integrity] instance used to obtain Play Integrity tokens for BFF calls.
+     */
+    public fun setIntegrity(integrity: Integrity): MonitoringBuilder {
+        this.integrity = integrity
+        return this
+    }
 
     /**
      * Set the fetch dispatcher [CoroutineDispatcher]
@@ -47,15 +57,21 @@ public open class MonitoringBuilder(
         return this
     }
 
-    public fun build(): Monitoring = MonitoringImpl(
-        config = MonitoringConfig(
-            networkTimeout = networkTimeout,
-            loggerCallback = loggerCallback,
-        ),
-        sentryProvider = SentryProvider(
-            context = context,
-            sentryConfigStore = SentryConfigStore(context),
-            isDebug = isDebug,
-        ),
-    )
+    public fun build(): Monitoring {
+        val integrity = checkNotNull(integrity) {
+            "Integrity must be set via setIntegrity() before building Monitoring."
+        }
+        return MonitoringImpl(
+            config = MonitoringConfig(
+                networkTimeout = networkTimeout,
+                loggerCallback = loggerCallback,
+            ),
+            sentryProvider = SentryProvider(
+                context = context,
+                sentryConfigStore = SentryConfigStore(context),
+                integrity = integrity,
+                isDebug = isDebug,
+            ),
+        )
+    }
 }

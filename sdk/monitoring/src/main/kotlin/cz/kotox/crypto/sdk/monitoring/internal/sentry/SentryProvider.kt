@@ -1,6 +1,18 @@
 package cz.kotox.crypto.sdk.monitoring.internal.sentry
 
 import android.content.Context
+import cz.kotox.crypto.sdk.internal.integrity.Integrity
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import io.ktor.serialization.kotlinx.json.json
 import io.sentry.Sentry
 import io.sentry.SentryAttribute
 import io.sentry.SentryAttributes
@@ -11,10 +23,18 @@ import io.sentry.protocol.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+
+private const val BFF_BASE_URL = "https://bff-service-1029057924274.us-central1.run.app"
+
+@Serializable
+private data class SentryDsnRequest(val integrityToken: String)
 
 internal class SentryProvider(
     private val context: Context,
     private val sentryConfigStore: SentryConfigStore,
+    private val integrity: Integrity,
     private val isDebug: Boolean,
 ) {
 
@@ -93,28 +113,33 @@ internal class SentryProvider(
         // Use the application scope so the sync isn't killed if an Activity closes
         MainScope().launch(Dispatchers.IO) {
             try {
-//                // 1. Fetch Play Integrity Token (You'll need the Google Play library)
-//                val integrityToken = fetchPlayIntegrityToken()
-//
-//                // 2. Call your Ktor BFF
-//                // Pass the installId in a header to link the device to the backend logs
-//                val config = sentryStore.getInitialConfig()
-//                val response = bffClient.get("https://api.yourcryptoapp.com/config/monitoring") {
-//                    header("X-Play-Integrity", integrityToken)
-//                    header("X-Device-ID", config.installId)
-//                }.body<MonitoringConfig>()
+                val requestHash = integrity.getIntegrityHash("sentry/android")
+                val token = integrity.getFreshToken(requestHash) ?: return@launch
 
-                // 3. Update the store if the DSN has changed
-//                if (response.dsn != config.dsn) {
-//                    sentryStore.updateDsn(response.dsn)
-//
-//                    // 4. Re-initialize Sentry immediately with the fresh DSN
-//                    // Sentry handles re-init gracefully by updating the active client
-//                    initSentry(dsn = response.dsn, deviceId = config.installId)
-//                }
+                val client = HttpClient(CIO) {
+                    install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+                }
+
+                val response = client.use { httpClient ->
+                    httpClient.post("$BFF_BASE_URL/sentry/android") {
+                        contentType(ContentType.Application.Json)
+                        setBody(SentryDsnRequest(integrityToken = token.value))
+                        integrity.getSecurityHeader()?.let { header(it.key, it.value) }
+                    }
+                }
+
+                if (!response.status.isSuccess()) return@launch
+
+                val dsn = response.bodyAsText().trim()
+                if (dsn.isBlank()) return@launch
+
+                val config = sentryConfigStore.getInitialConfig()
+                if (dsn != config.dsn) {
+                    sentryConfigStore.updateDsn(dsn)
+                    initSentry(dsn = dsn, deviceId = config.installId, isDebug = isDebug)
+                }
             } catch (e: Exception) {
-                // Log locally; Sentry isn't ready yet or network failed
-                // Timber.e(e, "Failed to sync monitoring config")
+                // Network or integrity failure — Sentry simply won't be initialized with a DSN
             }
         }
     }
