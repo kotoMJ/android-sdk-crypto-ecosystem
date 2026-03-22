@@ -6,6 +6,8 @@ import cz.kotox.crypto.sdk.monitoring.MODULE_IDENTIFIER
 import cz.kotox.crypto.sdk.monitoring.Monitoring
 import cz.kotox.crypto.sdk.monitoring.MonitoringConfig
 import cz.kotox.crypto.sdk.monitoring.internal.sentry.SentryProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 internal class MonitoringImpl(
@@ -14,6 +16,7 @@ internal class MonitoringImpl(
 ) : Monitoring {
 
     private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.IO)
 
     init {
         installLogger(config)
@@ -28,13 +31,14 @@ internal class MonitoringImpl(
     }
 
     override fun initMonitoring() {
-        sentryProvider.initSentry()
+        sentryProvider.initSentry(scope)
     }
 
     /**
      * Cancels the scope and stops all background activity.
      */
     override fun shutdown() {
+        sentryProvider.close()
         job.cancel()
     }
 }

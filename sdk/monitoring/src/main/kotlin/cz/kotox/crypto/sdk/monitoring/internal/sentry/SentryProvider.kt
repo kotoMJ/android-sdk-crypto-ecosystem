@@ -23,13 +23,14 @@ import io.sentry.SentryLogLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.logger.SentryLogParameters
 import io.sentry.protocol.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.Closeable
+import java.net.URI
 
-private const val BFF_BASE_URL = "https://bff-service-1029057924274.us-central1.run.app"
+private val SENTRY_DSN_REGEX = Regex("^https://[a-f0-9]+@[^/]+/\\d+$")
 
 @Serializable
 private data class SentryDsnRequest(val integrityToken: String)
@@ -39,31 +40,38 @@ internal class SentryProvider(
     private val sentryConfigStore: SentryConfigStore,
     private val integrity: Integrity,
     private val sentryDiagnosticsEnabled: Boolean,
-) {
+    private val bffBaseUrl: String,
+) : Closeable {
 
-    internal fun initSentry() {
+    private val bffHost: String = URI(bffBaseUrl).host
+
+    private val httpClient = HttpClient(CIO) {
+        install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+    }
+
+    internal fun initSentry(scope: CoroutineScope) {
         val config = sentryConfigStore.getInitialConfig()
 
         if (!config.dsn.isNullOrBlank()) {
-            initSentry(
+            doInitSentry(
                 dsn = config.dsn,
                 deviceId = config.installId,
-                sentryDiagnosticsEnabled = sentryDiagnosticsEnabled,
             )
         }
 
-        syncMonitoringConfig()
+        syncMonitoringConfig(scope)
     }
 
-    private fun initSentry(
+    @Synchronized
+    private fun doInitSentry(
         dsn: String,
         deviceId: String,
-        sentryDiagnosticsEnabled: Boolean,
     ) {
+        val isDebug = sentryDiagnosticsEnabled
         SentryAndroid.init(context) { options ->
             options.dsn = dsn
-            options.isDebug = sentryDiagnosticsEnabled
-            if (sentryDiagnosticsEnabled) {
+            options.isDebug = isDebug
+            if (isDebug) {
                 options.setLogger(object : ILogger {
                     private val tag = "Sentry"
                     override fun log(level: SentryLevel, message: String, vararg args: Any?) {
@@ -102,11 +110,10 @@ internal class SentryProvider(
             options.isEnableUserInteractionTracing = true
             options.isEnableUserInteractionBreadcrumbs = true
 
-            options.environment = "production"
+            options.environment = if (isDebug) "development" else "production"
             options.isEnableExternalConfiguration = false // Ensure it doesn't look for manifest values
 
             options.tracesSampleRate = 1.0 // Adjust for production to 0.1 or less
-            options.isEnableUserInteractionTracing = true
 
             // --- Session Replay Configuration ---
             // 1. Whole Session Sampling (0.0 to 1.0)
@@ -119,8 +126,11 @@ internal class SentryProvider(
 
             // CRITICAL for Distributed Tracing:
             // Add your BFF domain here to ensure the sentry-trace header is attached
-            // more restricted variant: "^https://bff-service-1029057924274\\.us-central1\\.run.app/.*"
-            options.setTracePropagationTargets(listOf("localhost", "bff-service-1029057924274.us-central1.run.app"))
+            val traceTargets = buildList {
+                add(bffHost)
+                if (isDebug) add("localhost")
+            }
+            options.setTracePropagationTargets(traceTargets)
         }
 
         Sentry.setUser(
@@ -129,7 +139,6 @@ internal class SentryProvider(
             },
         )
 
-        // Sentry.captureMessage("Sentry init for $deviceId")
         Sentry.logger().log(
             SentryLogLevel.INFO,
             SentryLogParameters.create(
@@ -143,38 +152,35 @@ internal class SentryProvider(
     }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
-    private fun syncMonitoringConfig() {
-        // Use the application scope so the sync isn't killed if an Activity closes
-        MainScope().launch(Dispatchers.IO) {
+    private fun syncMonitoringConfig(scope: CoroutineScope) {
+        scope.launch {
             try {
                 val requestHash = integrity.getIntegrityHash("sentry/android")
                 val token = integrity.getFreshToken(requestHash) ?: return@launch
 
-                val client = HttpClient(CIO) {
-                    install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
-                }
-
-                val response = client.use { httpClient ->
-                    httpClient.post("$BFF_BASE_URL/sentry/android") {
-                        contentType(ContentType.Application.Json)
-                        setBody(SentryDsnRequest(integrityToken = token.value))
-                        integrity.getSecurityHeader()?.let { header(it.key, it.value) }
-                    }
+                val response = httpClient.post("${bffBaseUrl.trimEnd('/')}/sentry/android") {
+                    contentType(ContentType.Application.Json)
+                    setBody(SentryDsnRequest(integrityToken = token.value))
+                    integrity.getSecurityHeader()?.let { header(it.key, it.value) }
                 }
 
                 if (!response.status.isSuccess()) return@launch
 
                 val dsn = response.bodyAsText().trim()
-                if (dsn.isBlank()) return@launch
+                if (dsn.isBlank() || !SENTRY_DSN_REGEX.matches(dsn)) return@launch
 
                 val config = sentryConfigStore.getInitialConfig()
                 if (dsn != config.dsn) {
                     sentryConfigStore.updateDsn(dsn)
-                    initSentry(dsn = dsn, deviceId = config.installId, sentryDiagnosticsEnabled = sentryDiagnosticsEnabled)
+                    doInitSentry(dsn = dsn, deviceId = config.installId)
                 }
             } catch (e: Exception) {
                 // Network or integrity failure — Sentry simply won't be initialized with a DSN
             }
         }
+    }
+
+    override fun close() {
+        httpClient.close()
     }
 }

@@ -15,7 +15,7 @@
 ## Preserve all public classes (except internal package), and their public and protected fields and
 ## methods.
 
--keep public class !cz.kotox.crypto.sdk.news.internal.**,** {
+-keep public class !cz.kotox.crypto.sdk.monitoring.internal.**,** {
      public protected *;
 }
 

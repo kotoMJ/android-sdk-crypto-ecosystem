@@ -19,6 +19,7 @@ public open class MonitoringBuilder(
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
     private var fetchDispatcher: CoroutineDispatcher = SdkDispatchers.fetchDispatcher
     private var diagnosticsEnabled: Boolean = false
+    private var bffBaseUrl: String = "https://bff-service-1029057924274.us-central1.run.app"
 
     /**
      * Enable diagnostic logging for monitoring subsystems (e.g. Sentry payload/envelope logs).
@@ -26,6 +27,14 @@ public open class MonitoringBuilder(
      */
     public fun setDiagnosticsEnabled(enabled: Boolean): MonitoringBuilder {
         this.diagnosticsEnabled = enabled
+        return this
+    }
+
+    /**
+     * Set the BFF base URL used for fetching the Sentry DSN.
+     */
+    public fun setBffBaseUrl(url: String): MonitoringBuilder {
+        this.bffBaseUrl = url
         return this
     }
 
@@ -69,6 +78,7 @@ public open class MonitoringBuilder(
                 .setLoggerCallback(loggerCallback)
                 .build(),
             sentryDiagnosticsEnabled = diagnosticsEnabled,
+            bffBaseUrl = bffBaseUrl,
         ),
     )
 }

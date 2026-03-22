@@ -20,6 +20,7 @@ public open class NewsBuilder(private val context: Context) {
     private var loggerCallback: SDKLoggerCallback = SDKLoggerCallbackNoOp()
     private var strictModePolicy: StrictModePolicy = StrictModePolicy()
     private var loggingPolicy: LoggingPolicy = LoggingPolicy()
+    private var bffBaseUrl: String = "https://bff-service-1029057924274.us-central1.run.app"
 
     /**
      * Set the fetch dispatcher [CoroutineDispatcher]
@@ -58,6 +59,14 @@ public open class NewsBuilder(private val context: Context) {
     }
 
     /**
+     * Set the BFF base URL used for news API calls.
+     */
+    public fun setBffBaseUrl(url: String): NewsBuilder {
+        this.bffBaseUrl = url
+        return this
+    }
+
+    /**
      * Adjust SDK diagnostic logging.
      */
     public fun setLoggingPolicy(loggingPolicy: LoggingPolicy): NewsBuilder {
@@ -78,6 +87,7 @@ public open class NewsBuilder(private val context: Context) {
             loggerCallback = loggerCallback,
             strictModePolicy = strictModePolicy,
             loggingPolicy = loggingPolicy,
+            bffBaseUrl = bffBaseUrl,
         ),
         integrity = IntegrityBuilder(context = context)
             .setLoggerCallback(loggerCallback)

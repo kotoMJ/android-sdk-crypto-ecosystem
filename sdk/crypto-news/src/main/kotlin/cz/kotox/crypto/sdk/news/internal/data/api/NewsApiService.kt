@@ -13,7 +13,7 @@ internal class NewsApiService(
 ) {
 
     private val ktorConfig = KtorConfig(
-        baseUrl = "https://bff-service-1029057924274.us-central1.run.app/",
+        baseUrl = newsConfig.bffBaseUrl.trimEnd('/') + "/",
         isLoggingEnabled = newsConfig.isLoggingEnabled,
         networkTimeout = newsConfig.networkTimeout,
         strictModePolicy = newsConfig.strictModePolicy,

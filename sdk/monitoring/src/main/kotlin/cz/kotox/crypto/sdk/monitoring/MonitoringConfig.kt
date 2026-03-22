@@ -5,21 +5,17 @@ import cz.kotox.crypto.sdk.internal.logger.SDKLoggerCallbackNoOp
 import cz.kotox.crypto.sdk.internal.logger.SDKLoggerIdentifier
 import kotlin.time.Duration
 
-internal val MODULE_IDENTIFIER = SDKLoggerIdentifier("crypto-sdk-integrity")
+internal val MODULE_IDENTIFIER = SDKLoggerIdentifier("crypto-sdk-monitoring")
 
 /**
- * Configuration data for the content module.
+ * Configuration data for the monitoring module.
  *
- * @property networkTimeout is duration of network timeout
- * @property loggerCallback specify proper logger instance
-
- * @property isLoggingEnabled is flag indicating whether logging is enabled.
- * @constructor creates initialization configuration.
+ * @property networkTimeout duration of network timeout
+ * @property loggerCallback logger instance observing SDK logs
  */
 internal data class MonitoringConfig(
     val networkTimeout: Duration,
     val loggerCallback: SDKLoggerCallback,
-    val loggerIdentifier: SDKLoggerIdentifier = MODULE_IDENTIFIER,
 ) {
 
     val isLoggingEnabled: Boolean = loggerCallback !is SDKLoggerCallbackNoOp
