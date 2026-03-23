@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:targetSandboxVersion="2">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
 
     <application
         android:name=".SDKCryptoSampleApplication"
@@ -21,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Sentry is initialized in application with dynamic DSN  -->
+        <meta-data
+            android:name="io.sentry.auto-init"
+            android:value="false" />
 
     </application>
 

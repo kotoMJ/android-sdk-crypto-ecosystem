@@ -2,7 +2,7 @@
 echo "Running pre-commit checks ..."
 
 # Run the checks
-./gradlew spotlessCheck detekt
+./gradlew spotlessCheck detekt checkModuleVersions
 
 # Get the exit code of the last command
 RESULT=$?

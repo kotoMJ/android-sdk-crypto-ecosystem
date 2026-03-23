@@ -30,13 +30,14 @@ include(
     "app-mobile-sdk-crypto",
     ":sdk:bom",
     ":sdk:crypto-common",
+    ":sdk:crypto-coindata",
+    ":sdk:crypto-news",
+    ":sdk:crypto-tracker",
     ":sdk:internal:common",
     ":sdk:internal:integrity",
     ":sdk:internal:logger",
     ":sdk:internal:network",
-    ":sdk:crypto-coindata",
-    ":sdk:crypto-news",
-    ":sdk:crypto-tracker",
+    ":sdk:monitoring",
     ":docs"
 )
 

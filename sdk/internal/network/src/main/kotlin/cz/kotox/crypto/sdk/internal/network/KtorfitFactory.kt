@@ -20,6 +20,7 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
+import io.sentry.ktorClient.SentryKtorClientPlugin
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
@@ -56,6 +57,12 @@ public class KtorfitFactory(
 
         install(ContentNegotiation) {
             json(sdkJson)
+        }
+
+        install(SentryKtorClientPlugin) {
+            // This ensures headers are sent to your specific backend
+            // Use the same domain you set in tracePropagationTargets
+            captureFailedRequests = true
         }
 
         // Install WebSockets plugin

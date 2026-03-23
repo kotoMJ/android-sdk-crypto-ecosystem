@@ -66,3 +66,9 @@ lint/tmp/
 
 #Signing
 /extras/keystores/
+
+#Analytics
+
+# Content of sentry.properties is not bundled to APK/AAB,
+# but it serves only for the build phase to send ProGuard/R8 mapping files during release build to Sentry.
+/sentry.properties

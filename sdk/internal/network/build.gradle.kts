@@ -41,4 +41,7 @@ dependencies {
 
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
+
+    implementation(platform(libs.sentry.bom))
+    implementation(libs.sentry.ktor.client)
 }

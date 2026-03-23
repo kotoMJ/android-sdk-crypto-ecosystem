@@ -20,7 +20,7 @@ androidPlayIntegrity = "1.6.0"
 androidxActitivty = "1.12.2"
 androidxAppcompat = "1.7.1"
 androidxBaselineProfile = "1.4.1"
-androidxComposeBom = "2025.12.01"
+androidxComposeBom = "2026.01.00"
 androidxCore = "1.17.0"
 androidxCoreSplashScreen = "1.2.0"
 androidxDataStore = "1.2.0"
@@ -77,10 +77,13 @@ okhttp = "5.3.2"
 placeholder = "0.36.0"
 prettyTime = "5.0.4.Final"
 room = "2.8.4"
+sentryGradle = "5.12.2"
+sentryBom = "8.30.0"
 spotless = "8.0.0" # Bump to 8.1.0 require Ktlint bump to 1.0+ which requires several migration steps
 systemUi = "0.36.0"
 tiles = "1.5.0"
 timber = "5.0.1"
+tink = "1.20.0"
 watchface-complications = "1.2.1"
 core = "1.17.0"
 media3Cast = "1.9.0"
@@ -123,6 +126,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
+sentry-gradle = { id = "io.sentry.android.gradle", version.ref = "sentryGradle" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
@@ -186,8 +190,8 @@ android-horologist-tiles = { module = "com.google.android.horologist:horologist-
 android-horologist-layout = { module = "com.google.android.horologist:horologist-compose-layout", version.ref = "horologist" }
 android-horologist-audioUi = { module = "com.google.android.horologist:horologist-audio-ui", version.ref = "horologist" }
 
-android-play-integrity = { module = "com.google.android.play:integrity", version.ref = "androidPlayIntegrity"}
-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices"}
+android-play-integrity = { module = "com.google.android.play:integrity", version.ref = "androidPlayIntegrity" }
+coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 
 coil-kt = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-kt-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
@@ -199,6 +203,8 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-perf = { module = "com.google.firebase:firebase-perf-ktx" }
 firebase-remoteconfig = { module = "com.google.firebase:firebase-config-ktx" }
+
+google-tink = { group = "com.google.crypto.tink", name = "tink-android", version.ref = "tink" } #hardware-backed Android Keystore support
 
 junit = { module = "junit:junit", version.ref = "junit" }
 
@@ -264,6 +270,12 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 
 system-ui = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemUi" }
+
+sentry-bom = { group = "io.sentry", name = "sentry-bom", version.ref = "sentryBom" }
+sentry-android = { group = "io.sentry", name = "sentry-android" }
+sentry-replay = { group = "io.sentry", name = "sentry-android-replay" }
+sentry-ktor-client = { group = "io.sentry", name = "sentry-ktor-client" } # Crucial for TraceID propagation
+
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 

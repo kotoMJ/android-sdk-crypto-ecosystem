@@ -1,7 +1,10 @@
+import cz.kotox.crypto.sdk.extensions.getPropertyOrVariable
+
 plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildLogic.sdk.android.application)
     alias(libs.plugins.buildLogic.koin)
+    alias(libs.plugins.sentry.gradle)
 }
 
 android {
@@ -33,6 +36,18 @@ android {
                 "proguard-rules.pro",
             )
         }
+
+        forEach { buildType ->
+
+            val apiKeyProvider = project.getPropertyOrVariable("SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE")
+            val quotedSecret = apiKeyProvider.map { "\"$it\"" }.getOrElse("\"\"")
+
+            buildType.buildConfigField(
+                "String",
+                "SENTRY_DNS_CRYPTO_TRACKER_ANDROID_VALUE",
+                quotedSecret,
+            )
+        }
     }
 }
 
@@ -41,6 +56,7 @@ dependencies {
 
     implementation(projects.sdk.cryptoCoindata)
     implementation(projects.sdk.cryptoNews)
+    implementation(projects.sdk.monitoring)
 
 //    implementation(platform(libs.kotox.crypto.bom))
 //    implementation(libs.kotox.crypto.common)

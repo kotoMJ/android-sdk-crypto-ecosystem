@@ -24,6 +24,7 @@ internal data class NewsConfig(
     val loggerIdentifier: SDKLoggerIdentifier = MODULE_IDENTIFIER,
     val strictModePolicy: StrictModePolicy,
     val loggingPolicy: LoggingPolicy,
+    val bffBaseUrl: String,
 ) {
 
     val isLoggingEnabled: Boolean = loggerCallback !is SDKLoggerCallbackNoOp
